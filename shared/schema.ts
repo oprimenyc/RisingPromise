@@ -206,6 +206,27 @@ export const siteConfigSchema = z.object({
     cna: programSchema,
     it: programSchema,
   }),
+  raffle: z.object({
+    headline: z.string(),
+    subheadline: z.string(),
+    prizes: z.array(z.object({
+      place: z.string(),
+      value: z.string(),
+      description: z.string(),
+      badge: z.boolean(),
+    })),
+    ticketPricing: z.array(ticketPricingSchema),
+    details: z.object({
+      drawDate: z.string(),
+      totalTickets: z.string(),
+      whereMoneyGoes: z.string(),
+      rules: z.array(z.string()),
+    }),
+    faq: z.array(z.object({
+      question: z.string(),
+      answer: z.string(),
+    })),
+  }),
 });
 
 export type SiteConfig = z.infer<typeof siteConfigSchema>;

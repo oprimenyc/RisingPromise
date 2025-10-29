@@ -293,4 +293,81 @@ export const siteConfig: SiteConfig = {
       ]
     }
   },
+
+  /**
+   * RAFFLE PAGE
+   */
+  raffle: {
+    headline: "Win Big, Change Lives",
+    subheadline: "Every ticket you buy helps fund our workforce training programs. Everyone wins.",
+    
+    prizes: [
+      {
+        place: "1st Prize",
+        value: "$10,000",
+        description: "Cash Grand Prize",
+        badge: true
+      },
+      {
+        place: "2nd Prize",
+        value: "$2,500",
+        description: "Cash Prize",
+        badge: false
+      },
+      {
+        place: "3rd Prize",
+        value: "$1,000",
+        description: "Cash Prize",
+        badge: false
+      }
+    ],
+
+    ticketPricing: [
+      {
+        price: "$25",
+        entries: "1 Entry",
+        description: "Single ticket",
+        badge: false
+      },
+      {
+        price: "$100",
+        entries: "5 Entries",
+        description: "Best value - 20% bonus!",
+        badge: true
+      },
+      {
+        price: "$250",
+        entries: "15 Entries",
+        description: "Maximum impact - 50% bonus!",
+        badge: false
+      }
+    ],
+
+    details: {
+      drawDate: "June 15, 2025",
+      totalTickets: "5,000",
+      whereMoneyGoes: "100% of proceeds fund scholarships and wraparound support for our training programs.",
+      rules: [
+        "Must be 18 or older to enter",
+        "No purchase necessary (see official rules)",
+        "Winners notified by email and phone",
+        "Odds depend on total tickets sold"
+      ]
+    },
+
+    faq: [
+      {
+        question: "How do I know this is legitimate?",
+        answer: "Rising Promise is a registered 501(c)(3) nonprofit. All raffle proceeds are tracked and reported according to state gaming regulations."
+      },
+      {
+        question: "Can I donate my winnings back?",
+        answer: "Absolutely! Winners can choose to donate all or part of their prize back to Rising Promise as a tax-deductible donation."
+      },
+      {
+        question: "What if I don't win?",
+        answer: "Your money still makes a difference. Every dollar funds real training for real people building real futures."
+      }
+    ]
+  },
 };
