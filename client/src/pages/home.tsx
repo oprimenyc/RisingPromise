@@ -2,8 +2,11 @@ import { siteConfig } from "@/lib/siteConfig";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, Users, Heart, Facebook, Instagram, Linkedin, Twitter, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 const iconMap: Record<string, any> = {
   "Graduation Cap": GraduationCap,
@@ -14,6 +17,48 @@ const iconMap: Record<string, any> = {
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [joinUsName, setJoinUsName] = useState("");
+  const [joinUsEmail, setJoinUsEmail] = useState("");
+  const [footerEmail, setFooterEmail] = useState("");
+  const { toast } = useToast();
+
+  const newsletterMutation = useMutation({
+    mutationFn: async (data: { email: string; name?: string; source: string }) =>
+      apiRequest("/api/newsletter/signup", "POST", data),
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: "You've been subscribed to our newsletter.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to subscribe. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleJoinUsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    newsletterMutation.mutate({
+      email: joinUsEmail,
+      name: joinUsName || undefined,
+      source: "homepage",
+    });
+    setJoinUsName("");
+    setJoinUsEmail("");
+  };
+
+  const handleFooterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    newsletterMutation.mutate({
+      email: footerEmail,
+      source: "footer",
+    });
+    setFooterEmail("");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -320,11 +365,28 @@ export default function Home() {
               <p className="text-lg mb-6 text-muted-foreground" data-testid="text-need-description">
                 {siteConfig.joinUs.needUs.text}
               </p>
-              <form className="space-y-4" data-testid="form-need-updates">
-                <Input placeholder={siteConfig.joinUs.needUs.formPlaceholderName} data-testid="input-need-name" />
-                <Input type="email" placeholder={siteConfig.joinUs.needUs.formPlaceholderEmail} data-testid="input-need-email" />
-                <Button type="submit" className="w-full" data-testid="button-need-submit">
-                  {siteConfig.joinUs.needUs.buttonText}
+              <form className="space-y-4" onSubmit={handleJoinUsSubmit} data-testid="form-need-updates">
+                <Input 
+                  placeholder={siteConfig.joinUs.needUs.formPlaceholderName} 
+                  value={joinUsName}
+                  onChange={(e) => setJoinUsName(e.target.value)}
+                  data-testid="input-need-name" 
+                />
+                <Input 
+                  type="email" 
+                  placeholder={siteConfig.joinUs.needUs.formPlaceholderEmail}
+                  value={joinUsEmail}
+                  onChange={(e) => setJoinUsEmail(e.target.value)}
+                  required
+                  data-testid="input-need-email" 
+                />
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={newsletterMutation.isPending}
+                  data-testid="button-need-submit"
+                >
+                  {newsletterMutation.isPending ? "Subscribing..." : siteConfig.joinUs.needUs.buttonText}
                 </Button>
                 <p className="text-sm text-center text-muted-foreground" data-testid="text-need-note">
                   {siteConfig.joinUs.needUs.note}
@@ -419,10 +481,24 @@ export default function Home() {
             
             <div>
               <h4 className="font-heading font-bold mb-4">Stay Connected</h4>
-              <form className="space-y-2" data-testid="form-footer-newsletter">
-                <Input placeholder="Your Email" className="bg-white/10 border-white/20" data-testid="input-footer-email" />
-                <Button variant="secondary" className="w-full bg-accent hover:bg-accent/90" data-testid="button-footer-subscribe">
-                  Subscribe
+              <form className="space-y-2" onSubmit={handleFooterSubmit} data-testid="form-footer-newsletter">
+                <Input 
+                  type="email"
+                  placeholder="Your Email" 
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+                  value={footerEmail}
+                  onChange={(e) => setFooterEmail(e.target.value)}
+                  required
+                  data-testid="input-footer-email" 
+                />
+                <Button 
+                  type="submit"
+                  variant="secondary" 
+                  className="w-full bg-accent hover:bg-accent/90"
+                  disabled={newsletterMutation.isPending}
+                  data-testid="button-footer-subscribe"
+                >
+                  {newsletterMutation.isPending ? "Subscribing..." : "Subscribe"}
                 </Button>
               </form>
             </div>

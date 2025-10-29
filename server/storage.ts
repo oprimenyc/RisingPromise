@@ -1,38 +1,70 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import type { 
+  InsertNewsletterSignup, 
+  NewsletterSignup,
+  InsertProgramApplication,
+  ProgramApplication 
+} from "@shared/schema";
+import { newsletterSignups, programApplications } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Newsletter operations
+  createNewsletterSignup(signup: InsertNewsletterSignup): Promise<NewsletterSignup>;
+  getNewsletterSignupByEmail(email: string): Promise<NewsletterSignup | undefined>;
+  getAllNewsletterSignups(): Promise<NewsletterSignup[]>;
+  
+  // Program application operations
+  createProgramApplication(application: InsertProgramApplication): Promise<ProgramApplication>;
+  getProgramApplication(id: number): Promise<ProgramApplication | undefined>;
+  getAllProgramApplications(): Promise<ProgramApplication[]>;
+  getProgramApplicationsByType(programType: string): Promise<ProgramApplication[]>;
+  updateProgramApplicationStatus(id: number, status: string): Promise<ProgramApplication | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DbStorage implements IStorage {
+  // Newsletter operations
+  async createNewsletterSignup(signup: InsertNewsletterSignup): Promise<NewsletterSignup> {
+    const [result] = await db.insert(newsletterSignups).values(signup).returning();
+    return result;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getNewsletterSignupByEmail(email: string): Promise<NewsletterSignup | undefined> {
+    const [result] = await db.select().from(newsletterSignups).where(eq(newsletterSignups.email, email));
+    return result;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getAllNewsletterSignups(): Promise<NewsletterSignup[]> {
+    return await db.select().from(newsletterSignups);
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  // Program application operations
+  async createProgramApplication(application: InsertProgramApplication): Promise<ProgramApplication> {
+    const [result] = await db.insert(programApplications).values(application).returning();
+    return result;
+  }
+
+  async getProgramApplication(id: number): Promise<ProgramApplication | undefined> {
+    const [result] = await db.select().from(programApplications).where(eq(programApplications.id, id));
+    return result;
+  }
+
+  async getAllProgramApplications(): Promise<ProgramApplication[]> {
+    return await db.select().from(programApplications);
+  }
+
+  async getProgramApplicationsByType(programType: string): Promise<ProgramApplication[]> {
+    return await db.select().from(programApplications).where(eq(programApplications.programType, programType));
+  }
+
+  async updateProgramApplicationStatus(id: number, status: string): Promise<ProgramApplication | undefined> {
+    const [result] = await db
+      .update(programApplications)
+      .set({ status })
+      .where(eq(programApplications.id, id))
+      .returning();
+    return result;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DbStorage();

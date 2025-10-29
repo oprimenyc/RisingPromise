@@ -205,3 +205,54 @@ export const siteConfigSchema = z.object({
 });
 
 export type SiteConfig = z.infer<typeof siteConfigSchema>;
+
+// Database Tables
+import { pgTable, text, timestamp, integer, serial } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+
+// Newsletter Signups Table
+export const newsletterSignups = pgTable("newsletter_signups", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  source: text("source").notNull(), // 'homepage', 'footer', 'programs', etc.
+  subscribedAt: timestamp("subscribed_at").defaultNow().notNull(),
+});
+
+export const insertNewsletterSignupSchema = createInsertSchema(newsletterSignups).omit({
+  id: true,
+  subscribedAt: true,
+});
+
+export type InsertNewsletterSignup = z.infer<typeof insertNewsletterSignupSchema>;
+export type NewsletterSignup = typeof newsletterSignups.$inferSelect;
+
+// Program Applications Table
+export const programApplications = pgTable("program_applications", {
+  id: serial("id").primaryKey(),
+  programType: text("program_type").notNull(), // 'cna' or 'it'
+  
+  // Personal Info
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  
+  // Additional Info
+  hasHighSchoolDiploma: text("has_high_school_diploma").notNull(), // 'yes' or 'no'
+  hasTransportation: text("has_transportation").notNull(), // 'yes' or 'no'
+  motivationStatement: text("motivation_statement").notNull(),
+  
+  // Metadata
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+  status: text("status").notNull().default("pending"), // 'pending', 'reviewed', 'accepted', 'rejected'
+});
+
+export const insertProgramApplicationSchema = createInsertSchema(programApplications).omit({
+  id: true,
+  submittedAt: true,
+  status: true,
+});
+
+export type InsertProgramApplication = z.infer<typeof insertProgramApplicationSchema>;
+export type ProgramApplication = typeof programApplications.$inferSelect;
