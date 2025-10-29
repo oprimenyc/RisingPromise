@@ -223,4 +223,74 @@ export const siteConfig: SiteConfig = {
       closing: "This isn't charity. It's investment in people who are ready to invest in themselves.",
     },
   },
+
+  /**
+   * PROGRAMS PAGE
+   */
+  programs: {
+    cna: {
+      visible: true,
+      title: "Certified Nursing Assistant (CNA)",
+      icon: "Heart",
+      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+      duration: "4-6 weeks",
+      format: "Hybrid (online + in-person clinicals)",
+      salary: "$32,000-$45,000/year",
+      certifications: "State CNA Certification",
+      curriculum: [
+        "Patient care fundamentals",
+        "Vital signs monitoring",
+        "Medical terminology",
+        "Infection control",
+        "Communication skills",
+        "Hands-on clinical training"
+      ],
+      requirements: [
+        "High school diploma or GED",
+        "Background check clearance",
+        "TB test and immunizations",
+        "Reliable transportation",
+        "Commitment to attend all sessions"
+      ],
+      careerPaths: [
+        "Hospital nursing assistant",
+        "Long-term care facility aide",
+        "Home health aide",
+        "Medical clinic assistant",
+        "Pathway to LPN/RN programs"
+      ]
+    },
+    it: {
+      visible: true,
+      title: "IT Support Specialist",
+      icon: "Laptop",
+      image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
+      duration: "8-12 weeks",
+      format: "Fully online with live instruction",
+      salary: "$40,000-$60,000/year",
+      certifications: "CompTIA A+ & Network+",
+      curriculum: [
+        "Computer hardware and software",
+        "Operating systems (Windows, Mac, Linux)",
+        "Networking fundamentals",
+        "Troubleshooting techniques",
+        "Customer service skills",
+        "Security best practices"
+      ],
+      requirements: [
+        "High school diploma or GED",
+        "Basic computer literacy",
+        "Reliable internet access",
+        "Computer with webcam",
+        "Commitment to 15-20 hours/week"
+      ],
+      careerPaths: [
+        "Help desk technician",
+        "Desktop support specialist",
+        "IT support analyst",
+        "Network administrator",
+        "Systems administrator"
+      ]
+    }
+  },
 };

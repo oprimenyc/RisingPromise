@@ -202,6 +202,10 @@ export const siteConfigSchema = z.object({
   impact: impactSchema,
   team: teamSchema,
   joinUs: joinUsSchema,
+  programs: z.object({
+    cna: programSchema,
+    it: programSchema,
+  }),
 });
 
 export type SiteConfig = z.infer<typeof siteConfigSchema>;
