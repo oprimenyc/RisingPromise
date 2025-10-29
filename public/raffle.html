@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Enter to win a getaway while supporting Rising Promise's first students. Help us launch and make a difference.">
+  <meta property="og:title" content="Rising Promise Raffle - Help Us Launch">
+  <meta property="og:description" content="Enter to win a 3-day, 2-night escape while supporting workforce training programs.">
+  <meta property="og:type" content="website">
+  
+  <title>Raffle - Rising Promise</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation Header (Same as main site) -->
+  <header class="site-header" id="site-header">
+    <nav class="container nav-container">
+      <a href="index.html" class="site-logo" data-testid="link-home">Rising Promise</a>
+      
+      <div class="nav-menu" id="nav-menu" data-testid="nav-desktop"></div>
+      
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu" data-testid="button-mobile-menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </nav>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" data-testid="nav-mobile">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu" data-testid="button-close-mobile-menu">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Coming Soon Overlay (controlled by config.js) -->
+  <div class="coming-soon-overlay" id="coming-soon-overlay">
+    <div class="coming-soon-content">
+      <h2 data-testid="text-coming-soon-headline">Coming Soon</h2>
+      <p data-testid="text-coming-soon-description">We're preparing something special. Be the first to know when our raffle launches.</p>
+      
+      <form class="email-form" style="max-width: 400px; margin: 0 auto;" id="coming-soon-form" data-testid="form-coming-soon">
+        <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-coming-soon-email">
+        <button type="submit" class="btn btn-accent btn-large" data-testid="button-coming-soon-notify">Notify Me</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="raffle-hero" data-testid="section-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content fade-in">
+      <h1 class="hero-headline" id="raffle-hero-headline" data-testid="text-hero-headline">
+        <!-- Content from config.js -->
+      </h1>
+      <p class="hero-subheadline" id="raffle-hero-subheadline" data-testid="text-hero-subheadline">
+        <!-- Content from config.js -->
+      </p>
+    </div>
+  </section>
+
+  <!-- Prize Details Section -->
+  <section class="content-section" id="prize-details" data-testid="section-prize">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="prize-title" data-testid="text-prize-title">
+        <!-- Content from config.js -->
+      </h2>
+      <p class="section-intro fade-in" id="prize-destination" data-testid="text-prize-destination">
+        <!-- Content from config.js -->
+      </p>
+      <p class="section-intro fade-in" style="font-size: 1rem; margin-bottom: 1rem;" id="prize-note" data-testid="text-prize-note">
+        <!-- Content from config.js -->
+      </p>
+      
+      <div style="text-align: center; margin: 2rem 0;">
+        <p style="font-size: 1.125rem; margin-bottom: 0.5rem;"><strong>Drawing Date:</strong> <span id="drawing-date" data-testid="text-drawing-date"></span></p>
+        <p style="font-size: 1.125rem;"><strong>Winner Announced:</strong> <span id="announcement-date" data-testid="text-announcement-date"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ticket Pricing Section -->
+  <section class="content-section bg-gray" id="pricing" data-testid="section-pricing">
+    <div class="container">
+      <h2 class="section-headline fade-in">Choose Your Entry</h2>
+      
+      <div class="pricing-grid" id="pricing-grid">
+        <!-- Pricing cards from config.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Where Money Goes Section -->
+  <section class="content-section" id="where-money-goes" data-testid="section-impact">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="where-money-headline" data-testid="text-impact-headline">
+        <!-- Content from config.js -->
+      </h2>
+      
+      <div class="features-grid" id="money-goes-grid">
+        <!-- Items from config.js -->
+      </div>
+      
+      <p class="section-intro fade-in" style="margin-top: 3rem; font-style: italic;" id="sponsor-text" data-testid="text-sponsor">
+        <!-- Content from config.js -->
+      </p>
+    </div>
+  </section>
+
+  <!-- Buy Tickets Section -->
+  <section class="content-section bg-navy" id="buy-tickets" data-testid="section-buy-tickets">
+    <div class="container text-center">
+      <div class="fade-in" style="max-width: 700px; margin: 0 auto;">
+        <a href="#buy" class="btn btn-accent btn-large" id="buy-tickets-button" data-testid="button-buy-tickets">
+          <!-- Content from config.js -->
+        </a>
+        
+        <p style="margin-top: 2rem; font-size: 1.125rem; opacity: 0.9;">
+          <span id="alternate-text" data-testid="text-alternate"></span>
+          <br>
+          <a href="#donate" class="btn btn-outline" style="margin-top: 1rem;" id="donate-button" data-testid="button-donate">
+            <!-- Content from config.js -->
+          </a>
+        </p>
+        
+        <div class="trust-badges" id="trust-badges">
+          <!-- Trust badges from config.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Legal/Fine Print Section -->
+  <section class="content-section bg-gray" id="legal" data-testid="section-legal">
+    <div class="container">
+      <h2 class="section-headline fade-in">Official Rules</h2>
+      
+      <div style="max-width: 800px; margin: 0 auto;">
+        <p style="margin-bottom: 1rem; text-align: center;">
+          <a href="#" id="rules-link" style="color: var(--color-sky-blue); font-weight: 600;" data-testid="link-rules">
+            <!-- Content from config.js -->
+          </a>
+        </p>
+        
+        <div style="font-size: 0.9375rem; color: var(--color-gray-700); line-height: 1.8;">
+          <p style="margin-bottom: 1rem;" id="eligibility-text" data-testid="text-eligibility">
+            <!-- Content from config.js -->
+          </p>
+          <p id="details-text" data-testid="text-details">
+            <!-- Content from config.js -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Same as main site) -->
+  <footer class="site-footer" id="footer" data-testid="section-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4 id="footer-org-name" data-testid="text-footer-org">Rising Promise</h4>
+          <p class="footer-tagline" id="footer-tagline" data-testid="text-footer-tagline"></p>
+          <div class="social-links" id="social-links"></div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links" id="footer-quick-links"></ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <div class="footer-contact" id="footer-contact"></div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Stay Connected</h4>
+          <p style="font-size: 0.9375rem; opacity: 0.9; margin-bottom: 1rem;">
+            Get updates on our programs and impact.
+          </p>
+          <form class="email-form" id="footer-email-form" data-testid="form-footer-newsletter">
+            <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-footer-email">
+            <button type="submit" class="btn btn-accent" data-testid="button-footer-subscribe">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p class="footer-copyright" id="footer-copyright" data-testid="text-footer-copyright"></p>
+        <p class="footer-nonprofit" id="footer-nonprofit" data-testid="text-footer-nonprofit"></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

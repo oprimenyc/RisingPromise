@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Government-funded career training in high-demand fields. CNA and IT certification programs with job placement support.">
+  <meta property="og:title" content="Programs - Rising Promise">
+  <meta property="og:description" content="Real training. Real jobs. Real change. No experience required.">
+  <meta property="og:type" content="website">
+  
+  <title>Programs - Rising Promise</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="site-header" id="site-header">
+    <nav class="container nav-container">
+      <a href="index.html" class="site-logo" data-testid="link-home">Rising Promise</a>
+      
+      <div class="nav-menu" id="nav-menu" data-testid="nav-desktop"></div>
+      
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu" data-testid="button-mobile-menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </nav>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" data-testid="nav-mobile">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu" data-testid="button-close-mobile-menu">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Coming Soon Overlay (controlled by config.js) -->
+  <div class="coming-soon-overlay" id="coming-soon-overlay">
+    <div class="coming-soon-content">
+      <h2 data-testid="text-coming-soon-headline">Programs Launching Soon</h2>
+      <p data-testid="text-coming-soon-description">Our career training programs are almost ready. Be the first to know when applications open.</p>
+      
+      <form class="email-form" style="max-width: 400px; margin: 0 auto;" id="coming-soon-form" data-testid="form-coming-soon">
+        <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-coming-soon-email">
+        <button type="submit" class="btn btn-accent btn-large" data-testid="button-coming-soon-notify">Notify Me</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="programs-hero" data-testid="section-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content fade-in">
+      <h1 class="hero-headline" id="programs-hero-headline" data-testid="text-hero-headline">
+        <!-- Content from config.js -->
+      </h1>
+      <p class="hero-subheadline" id="programs-hero-subheadline" data-testid="text-hero-subheadline">
+        <!-- Content from config.js -->
+      </p>
+    </div>
+  </section>
+
+  <!-- Overview Section -->
+  <section class="content-section" id="overview" data-testid="section-overview">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="overview-headline" data-testid="text-overview-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <p class="section-intro fade-in" id="overview-text" data-testid="text-overview-description">
+        <!-- Content from config.js -->
+      </p>
+    </div>
+  </section>
+
+  <!-- Programs Grid -->
+  <section class="content-section bg-gray" id="programs" data-testid="section-programs">
+    <div class="container">
+      <div class="programs-grid" id="programs-grid">
+        <!-- Program cards from config.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon Programs -->
+  <section class="content-section" id="coming-soon-programs" data-testid="section-coming-soon">
+    <div class="container text-center">
+      <h2 class="section-headline fade-in" id="coming-soon-headline" data-testid="text-coming-soon-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <p class="section-intro fade-in" id="coming-soon-text" data-testid="text-coming-soon-text">
+        <!-- Content from config.js -->
+      </p>
+      
+      <div class="features-grid" id="upcoming-programs">
+        <!-- Upcoming programs from config.js -->
+      </div>
+      
+      <div class="fade-in" style="margin-top: 3rem;">
+        <form class="email-form" style="max-width: 500px; margin: 0 auto;" id="coming-soon-email-form" data-testid="form-coming-soon-programs">
+          <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-coming-soon-programs-email">
+          <button type="submit" class="btn btn-primary btn-large" data-testid="button-coming-soon-programs-notify">Get Notified</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="content-section bg-gray" id="how-it-works" data-testid="section-how-it-works">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="how-it-works-headline" data-testid="text-how-headline">
+        <!-- Content from config.js -->
+      </h2>
+      
+      <div class="process-steps" id="process-steps">
+        <!-- Steps from config.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Eligibility Section -->
+  <section class="content-section" id="eligibility" data-testid="section-eligibility">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="eligibility-headline" data-testid="text-eligibility-headline">
+        <!-- Content from config.js -->
+      </h2>
+      
+      <div style="max-width: 800px; margin: 0 auto;">
+        <div class="features-grid" style="grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem;">
+          <div id="eligibility-items">
+            <!-- Items from config.js -->
+          </div>
+        </div>
+        
+        <p class="section-intro fade-in" id="eligibility-note" data-testid="text-eligibility-note">
+          <!-- Content from config.js -->
+        </p>
+        
+        <div class="text-center fade-in">
+          <a href="#application" class="btn btn-primary btn-large" id="eligibility-button" data-testid="button-check-eligibility">
+            <!-- Content from config.js -->
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Application Section -->
+  <section class="content-section bg-navy" id="application" data-testid="section-application">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="application-headline" data-testid="text-application-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <p class="section-intro fade-in" id="application-text" data-testid="text-application-description">
+        <!-- Content from config.js -->
+      </p>
+      
+      <div style="max-width: 700px; margin: 0 auto;">
+        <form id="application-form" data-testid="form-application">
+          <div class="form-group">
+            <input type="text" class="form-input" id="app-name" placeholder="Full Name" required data-testid="input-application-name">
+          </div>
+          
+          <div class="form-group">
+            <input type="email" class="form-input" id="app-email" placeholder="Email Address" required data-testid="input-application-email">
+          </div>
+          
+          <div class="form-group">
+            <input type="tel" class="form-input" id="app-phone" placeholder="Phone Number" required data-testid="input-application-phone">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" style="color: var(--color-white);">Program Interest</label>
+            <select class="form-select" id="app-program" required data-testid="select-application-program">
+              <option value="">Select a program...</option>
+              <option value="cna">Certified Nursing Assistant (CNA)</option>
+              <option value="it">CompTIA IT Certification</option>
+              <option value="other">Interested in future programs</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <textarea class="form-textarea" id="app-background" placeholder="Tell us a bit about yourself and your goals..." required data-testid="textarea-application-background"></textarea>
+          </div>
+          
+          <button type="submit" class="btn btn-accent btn-large" style="width: 100%;" id="submit-application" data-testid="button-application-submit">
+            <!-- Content from config.js -->
+          </button>
+          
+          <p class="form-note" style="color: rgba(255, 255, 255, 0.8); margin-top: 1rem;" id="application-success" data-testid="text-application-success">
+            <!-- Success message will appear here -->
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer" id="footer" data-testid="section-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4 id="footer-org-name" data-testid="text-footer-org">Rising Promise</h4>
+          <p class="footer-tagline" id="footer-tagline" data-testid="text-footer-tagline"></p>
+          <div class="social-links" id="social-links"></div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links" id="footer-quick-links"></ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <div class="footer-contact" id="footer-contact"></div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Stay Connected</h4>
+          <p style="font-size: 0.9375rem; opacity: 0.9; margin-bottom: 1rem;">
+            Get updates on our programs and impact.
+          </p>
+          <form class="email-form" id="footer-email-form" data-testid="form-footer-newsletter">
+            <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-footer-email">
+            <button type="submit" class="btn btn-accent" data-testid="button-footer-subscribe">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p class="footer-copyright" id="footer-copyright" data-testid="text-footer-copyright"></p>
+        <p class="footer-nonprofit" id="footer-nonprofit" data-testid="text-footer-nonprofit"></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

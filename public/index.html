@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rising Promise - Everyone deserves a fighting chance. We empower vulnerable populations through workforce training, wraparound support, and community investment.">
+  <meta property="og:title" content="Rising Promise - Everyone Deserves a Fighting Chance">
+  <meta property="og:description" content="Empowering vulnerable populations through workforce training and support. Join us in building futures.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1200&q=80">
+  
+  <title>Rising Promise - Everyone Deserves a Fighting Chance</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================================
+       NAVIGATION HEADER
+       ============================================================================ -->
+  <header class="site-header" id="site-header">
+    <nav class="container nav-container">
+      <a href="index.html" class="site-logo" data-testid="link-home">Rising Promise</a>
+      
+      <!-- Desktop Navigation -->
+      <div class="nav-menu" id="nav-menu" data-testid="nav-desktop">
+        <!-- Navigation items will be populated by JavaScript from config.js -->
+      </div>
+      
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu" data-testid="button-mobile-menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobile-menu" data-testid="nav-mobile">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu" data-testid="button-close-mobile-menu">
+      <i class="fas fa-times"></i>
+    </button>
+    <!-- Mobile menu items will be populated by JavaScript -->
+  </div>
+
+  <!-- ============================================================================
+       HERO SECTION
+       ============================================================================ -->
+  <section class="hero-section" id="hero" data-testid="section-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content fade-in">
+      <h1 class="hero-headline" id="hero-headline" data-testid="text-hero-headline">
+        <!-- Content from config.js -->
+      </h1>
+      <p class="hero-subheadline" id="hero-subheadline" data-testid="text-hero-subheadline">
+        <!-- Content from config.js -->
+      </p>
+      <div class="hero-buttons" id="hero-buttons">
+        <!-- Buttons from config.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       STORY SECTION
+       ============================================================================ -->
+  <section class="content-section" id="story" data-testid="section-story">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="story-headline" data-testid="text-story-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <div class="story-content">
+        <div id="story-paragraphs">
+          <!-- Paragraphs from config.js -->
+        </div>
+        <p class="story-closing fade-in" id="story-closing" data-testid="text-story-closing">
+          <!-- Content from config.js -->
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       WHO WE SEE SECTION
+       ============================================================================ -->
+  <section class="content-section bg-gray" id="who-we-see" data-testid="section-who-we-see">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="who-headline" data-testid="text-who-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <div class="who-we-see-content">
+        <div id="who-paragraphs">
+          <!-- Paragraphs from config.js -->
+        </div>
+        <div class="who-closing fade-in" id="who-closing" data-testid="text-who-closing">
+          <!-- Content from config.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       WHAT WE DO SECTION
+       ============================================================================ -->
+  <section class="content-section" id="what-we-do" data-testid="section-what-we-do">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="what-headline" data-testid="text-what-headline">
+        <!-- Content from config.js -->
+      </h2>
+      
+      <div class="features-grid" id="features-grid">
+        <!-- Feature cards from config.js -->
+      </div>
+      
+      <div class="feature-promise fade-in" id="feature-promise" data-testid="text-promise">
+        <!-- Content from config.js -->
+      </div>
+      
+      <div class="text-center fade-in">
+        <a href="#" class="btn btn-primary btn-large" id="programs-button" data-testid="button-explore-programs">
+          <!-- Content from config.js -->
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       IMPACT SECTION
+       ============================================================================ -->
+  <section class="content-section bg-navy" id="impact" data-testid="section-impact">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="impact-headline" data-testid="text-impact-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <p class="section-intro fade-in" id="impact-intro" data-testid="text-impact-intro">
+        <!-- Content from config.js -->
+      </p>
+      
+      <div class="stats-grid" id="stats-grid">
+        <!-- Stats from config.js -->
+      </div>
+      
+      <p class="impact-closing fade-in" id="impact-closing" data-testid="text-impact-closing">
+        <!-- Content from config.js -->
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       TEAM SECTION
+       ============================================================================ -->
+  <section class="content-section" id="team" data-testid="section-team">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="team-headline" data-testid="text-team-headline">
+        <!-- Content from config.js -->
+      </h2>
+      <p class="section-intro fade-in" id="team-intro" data-testid="text-team-intro">
+        <!-- Content from config.js -->
+      </p>
+      
+      <div class="team-grid" id="team-grid">
+        <!-- Team members from config.js -->
+      </div>
+      
+      <p class="team-closing fade-in" id="team-closing" data-testid="text-team-closing">
+        <!-- Content from config.js -->
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       JOIN US SECTION
+       ============================================================================ -->
+  <section class="content-section bg-gray" id="join-us" data-testid="section-join-us">
+    <div class="container">
+      <h2 class="section-headline fade-in" id="join-headline" data-testid="text-join-headline">
+        <!-- Content from config.js -->
+      </h2>
+      
+      <div class="join-us-grid">
+        <!-- Left Column: For People Who Need Us -->
+        <div class="join-column fade-in">
+          <h3 class="join-column-headline" id="need-headline" data-testid="text-need-headline">
+            <!-- Content from config.js -->
+          </h3>
+          <p class="join-column-text" id="need-text" data-testid="text-need-description">
+            <!-- Content from config.js -->
+          </p>
+          
+          <form class="email-form" id="need-email-form" data-testid="form-need-updates">
+            <input type="text" class="form-input" placeholder="Your Name" required data-testid="input-need-name">
+            <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-need-email">
+            <button type="submit" class="btn btn-primary" data-testid="button-need-submit">Get Updates</button>
+            <p class="form-note" id="need-note" data-testid="text-need-note">
+              <!-- Content from config.js -->
+            </p>
+          </form>
+        </div>
+        
+        <!-- Right Column: For Supporters -->
+        <div class="join-column fade-in">
+          <h3 class="join-column-headline" id="believe-headline" data-testid="text-believe-headline">
+            <!-- Content from config.js -->
+          </h3>
+          <p class="join-column-text" id="believe-text" data-testid="text-believe-description">
+            <!-- Content from config.js -->
+          </p>
+          
+          <div class="action-buttons" id="action-buttons">
+            <!-- Action buttons from config.js -->
+          </div>
+          
+          <p class="join-closing" id="join-closing" data-testid="text-join-closing">
+            <!-- Content from config.js -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================================
+       FOOTER
+       ============================================================================ -->
+  <footer class="site-footer" id="footer" data-testid="section-footer">
+    <div class="container">
+      <div class="footer-content">
+        <!-- Organization Info -->
+        <div class="footer-section">
+          <h4 id="footer-org-name" data-testid="text-footer-org">Rising Promise</h4>
+          <p class="footer-tagline" id="footer-tagline" data-testid="text-footer-tagline">
+            <!-- Content from config.js -->
+          </p>
+          <div class="social-links" id="social-links">
+            <!-- Social links from config.js -->
+          </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links" id="footer-quick-links">
+            <!-- Links from config.js -->
+          </ul>
+        </div>
+        
+        <!-- Contact Info -->
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <div class="footer-contact" id="footer-contact">
+            <!-- Contact info from config.js -->
+          </div>
+        </div>
+        
+        <!-- Newsletter (Optional) -->
+        <div class="footer-section">
+          <h4>Stay Connected</h4>
+          <p style="font-size: 0.9375rem; opacity: 0.9; margin-bottom: 1rem;">
+            Get updates on our programs and impact.
+          </p>
+          <form class="email-form" id="footer-email-form" data-testid="form-footer-newsletter">
+            <input type="email" class="form-input" placeholder="Your Email" required data-testid="input-footer-email">
+            <button type="submit" class="btn btn-accent" data-testid="button-footer-subscribe">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p class="footer-copyright" id="footer-copyright" data-testid="text-footer-copyright">
+          <!-- Content from config.js -->
+        </p>
+        <p class="footer-nonprofit" id="footer-nonprofit" data-testid="text-footer-nonprofit">
+          <!-- Content from config.js -->
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================================
+       SCRIPTS
+       ============================================================================ -->
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
