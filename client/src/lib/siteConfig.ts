@@ -24,10 +24,10 @@ export const siteConfig: SiteConfig = {
    */
   features: {
     raffleActive: false,          // Set to true when raffle is ready to launch
-    programsActive: false,         // Set to true when programs are ready
-    cnaApplicationOpen: false,     // Set to true to allow CNA applications
-    itApplicationOpen: false,      // Set to true to allow IT applications
-    showRaffleInNav: false,        // Set to true to show "Raffle" in navigation menu
+    programsActive: true,          // Set to true when programs are ready
+    cnaApplicationOpen: true,      // Set to true to allow CNA applications
+    itApplicationOpen: true,       // Set to true to allow IT applications
+    showRaffleInNav: true,         // Set to true to show "Raffle" in navigation menu
   },
 
   /**

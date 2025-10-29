@@ -32,7 +32,7 @@ export default function Programs() {
 
   const applicationMutation = useMutation({
     mutationFn: async (data: any) =>
-      apiRequest("/api/programs/apply", "POST", data),
+      apiRequest("POST", "/api/programs/apply", data),
     onSuccess: () => {
       toast({
         title: "Application Submitted!",

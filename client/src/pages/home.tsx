@@ -24,7 +24,7 @@ export default function Home() {
 
   const newsletterMutation = useMutation({
     mutationFn: async (data: { email: string; name?: string; source: string }) =>
-      apiRequest("/api/newsletter/signup", "POST", data),
+      apiRequest("POST", "/api/newsletter/signup", data),
     onSuccess: () => {
       toast({
         title: "Success!",
