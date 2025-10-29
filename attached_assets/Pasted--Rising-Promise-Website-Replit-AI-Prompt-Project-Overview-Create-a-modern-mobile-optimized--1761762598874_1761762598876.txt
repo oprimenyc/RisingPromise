@@ -1,0 +1,375 @@
+# Rising Promise Website - Replit AI Prompt
+
+## Project Overview
+
+Create a modern, mobile-optimized multi-page nonprofit website for “Rising Promise” with an easy content management system.
+
+-----
+
+## PURPOSE
+
+Rising Promise is a mission-driven nonprofit empowering vulnerable populations through workforce training, wraparound support, and community investment. We serve individuals experiencing homelessness, women rebuilding their lives, veterans, foster youth aging out of care, and families seeking stability.
+
+-----
+
+## SITE STRUCTURE
+
+Main site (index.html) + separate pages for Raffle and Programs that can be activated later
+
+-----
+
+## CRITICAL REQUIREMENT - EASY EDITING
+
+Create a simple config.js file that contains ALL editable content (text, links, images) so I can update the site without touching HTML/CSS. Include clear comments explaining what each section does.
+
+Example structure:
+
+```javascript
+const siteContent = {
+  hero: {
+    headline: "Everyone Deserves a Fighting Chance",
+    subheadline: "We believe potential isn't determined...",
+    buttonText: "Learn Our Story",
+    backgroundImage: "images/hero.jpg"
+  },
+  // etc.
+}
+```
+
+-----
+
+## DESIGN REQUIREMENTS
+
+- Clean, emotional, trustworthy nonprofit aesthetic
+- Mission-first storytelling approach (not corporate)
+- Colors: Deep navy (#0D1B2A), vibrant sky blue (#1B9CE5), warm white (#FFFFFF), accent gold (#F4A300)
+- Typography: Modern sans-serif for headers, readable sans-serif for body text
+- Powerful imagery (hope, forward movement, NOT sad/desperate)
+- Clear, action-oriented CTA buttons throughout
+- Smooth scrolling navigation with sticky header
+- Mobile-first responsive design
+
+-----
+
+## PAGE 1: INDEX.HTML (MAIN HOMEPAGE)
+
+### NAVIGATION BAR (Sticky)
+
+- Logo/Name: “Rising Promise”
+- Menu Items: Our Story | Our Team | Programs | Get Involved | Contact
+- [Add “Raffle” link when ready to activate]
+
+### 1. HERO SECTION
+
+- Headline: “Everyone Deserves a Fighting Chance”
+- Subheadline: “We believe potential isn’t determined by your past — it’s unlocked by your future.”
+- Two buttons: “Learn Our Story” (scroll to #story) | “Get Updates” (#join-us section)
+- Full-width background image with dark overlay for readability
+
+### 2. THE WHY / STORY SECTION (#story)
+
+- Headline: “It Started With a Simple Question: Why Not?”
+- Body copy (4 paragraphs):
+  - “Why do some people get endless chances while others get none?”
+  - “Why does where you’re born, who raised you, or one bad break determine the rest of your life?”
+  - “We didn’t have a good answer. So we built one.”
+  - Rising Promise mission statement about access to training, support, community
+- Closing: “We’re here to change that.”
+
+### 3. WHO WE SEE SECTION (#who-we-see)
+
+- Headline: “We See You”
+- 4 paragraphs starting with “We see…” (single mom, veteran, foster youth, homeless individual)
+- Empowering closing: “You’re not a statistic. You’re not broken. You’re not ‘at-risk.’ You’re someone with a story that’s still being written.”
+
+### 4. WHAT WE DO SECTION (#what-we-do)
+
+- Headline: “We Don’t Just Train People. We Invest in Them.”
+- 3 feature cards (icon + headline + description):
+  - **Career Training** — “Real skills for real jobs in healthcare, technology, and beyond”
+  - **Wraparound Support** — “Because success isn’t just about what you know. It’s about having someone in your corner”
+  - **A Community** — “You’re not doing this alone. We walk with you from day one to day one hundred”
+- Promise statement: “Our Promise: If you’re ready to fight for your future, we’ll fight with you.”
+- Button: “Explore Our Programs” (links to programs.html when ready, disabled/coming soon for now)
+
+### 5. IMPACT SECTION (#impact)
+
+- Headline: “This Is What Change Looks Like”
+- Opening text: “One person trained is one family lifted. One career started is one community strengthened.”
+- 3 stat cards with large numbers:
+  - 125+ students trained (Year 1 Goal)
+  - 85+ placed into jobs
+  - $3.2M+ in graduate earnings
+- Closing: “We’re not waiting for permission to make a difference. We’re building it. Right now.”
+
+### 6. OUR TEAM SECTION (#team)
+
+- Headline: “Built by People Who’ve Been There”
+- Intro text: “This isn’t theory. This is personal.”
+- 4 team member cards (photo + name + title + quote):
+
+**Jason Pilgrim, Founder**
+“I’ve spent my life building things — businesses, systems, solutions. But the most important thing I’ve ever built is opportunity for people who were told they didn’t deserve one.”
+
+**Shawn J. Wright, FNP — Program Director**
+“I became a nurse because I wanted to help people heal. Now I help them build futures.”
+
+**Melissa Meeham, MPA — Finance & Administration**
+“Twenty years in nonprofit finance taught me one thing: sustainability isn’t about money. It’s about mission.”
+
+**Kenya Roberts, CFRE — Development & Fundraising**
+“I’ve raised millions for causes. But this one? This one’s personal.”
+
+- Closing: “We’re not saviors. We’re partners.”
+
+### 7. JOIN US SECTION (#join-us)
+
+- Headline: “Be Part of the Promise”
+- Two-column layout:
+
+**LEFT COLUMN - “If You Need Us”:**
+
+- Text: “You’re not alone anymore. We’re building something for you.”
+- Email signup form: Name + Email + “Get Updates” button
+- Note: “Be the first to know when programs launch”
+
+**RIGHT COLUMN - “If You Believe in Us”:**
+
+- Text: “Help us keep this promise.”
+- 4 action buttons:
+  - 🎟️ Enter the Raffle (coming soon badge - links to raffle.html when ready)
+  - 💝 Donate Now
+  - 🤝 Partner With Us (opens contact form)
+  - 📣 Share Our Story (social share buttons)
+- Closing: “This isn’t charity. It’s investment in people who are ready to invest in themselves.”
+
+### 8. FOOTER
+
+- Organization: “Rising Promise”
+- Tagline: “Everyone deserves a fighting chance. We’re here to make sure they get it.”
+- Quick links: Our Story | The Team | Programs | Donate | Contact
+- Contact info: info@risingpromise.org | [Phone] | [Address]
+- Social media icons (Facebook, Instagram, LinkedIn, Twitter)
+- Legal: © 2025 Rising Promise. All rights reserved. | 501(c)(3) nonprofit (status pending)
+
+-----
+
+## PAGE 2: RAFFLE.HTML (SEPARATE PAGE - READY TO ACTIVATE)
+
+Structure this page but include “COMING SOON” overlay that can be easily removed when raffle is ready.
+
+### NAVIGATION
+
+Same as main site
+
+### HERO SECTION
+
+- Headline: “Help Us Launch — And Win a Getaway”
+- Subheadline: “Support our first students. Enter to win.”
+- Background image of destination (placeholder for now)
+
+### RAFFLE DETAILS SECTION
+
+- Prize description: “Win a 3-day, 2-night escape to [DESTINATION]”
+- Note: “Accommodations included — airfare not included”
+- Ticket pricing cards:
+  - $25 — Single Entry
+  - $100 — 5 Entries (Best Value badge)
+  - $175 — 10 Entries
+- Drawing date: [DATE - editable in config]
+- Winner announcement: [DATE - editable in config]
+
+### WHERE YOUR MONEY GOES
+
+- Visual breakdown with icons:
+  - Training materials for first students
+  - Support services (childcare, transportation)
+  - Job placement resources
+  - Program launch costs
+- “Generously sponsored by: [SPONSOR NAME/LOGO]”
+
+### BUY TICKETS SECTION
+
+- Large CTA button: “Buy Tickets Now”
+- Alternative: “Can’t enter but want to help? Donate Instead”
+- Trust badges: Secure payment | 501(c)(3) tax-deductible | All proceeds support our mission
+
+### LEGAL/FINE PRINT
+
+- Official raffle rules link
+- Eligibility requirements
+- Drawing details
+- Winner notification process
+
+### FOOTER
+
+Same as main site
+
+-----
+
+## PAGE 3: PROGRAMS.HTML (SEPARATE PAGE - READY TO ACTIVATE)
+
+Structure this page but include “PROGRAMS LAUNCHING SOON” message that can be easily updated.
+
+### NAVIGATION
+
+Same as main site
+
+### HERO SECTION
+
+- Headline: “Real Training. Real Jobs. Real Change.”
+- Subheadline: “Government-funded career training in high-demand fields — no experience required”
+
+### PROGRAMS OVERVIEW
+
+Introduction text about tuition-free training, job placement support, wraparound services
+
+### PROGRAM CARDS (Can be hidden/shown individually via config)
+
+**CARD 1 - CNA (Certified Nursing Assistant):**
+
+- Icon/image
+- Program length: 6-12 weeks
+- Format: Online classroom + hands-on clinical training
+- Starting salary: $32K-$38K/year
+- “Apply Now” button (can be disabled until ready)
+- “Learn More” expandable section with:
+  - Curriculum overview
+  - Requirements
+  - Career pathways
+  - Success stories (when available)
+
+**CARD 2 - CompTIA IT Certification:**
+
+- Icon/image
+- Program length: 4-6 months (self-paced)
+- Format: 100% online
+- Starting salary: $45K-$55K/year
+- Certifications: A+, Network+, Security+
+- “Apply Now” button (can be disabled until ready)
+- “Learn More” expandable section
+
+**CARD 3 - Coming Soon Programs:**
+
+- Placeholder for future programs (Phlebotomy, Medical Assistant, etc.)
+- “Stay Updated” email capture
+
+### HOW IT WORKS SECTION
+
+Three-step process:
+
+1. **APPLY** — Quick application, we handle funding paperwork
+1. **TRAIN** — Online + hands-on learning with expert instructors
+1. **WORK** — Job placement support + career coaching
+
+### ELIGIBILITY SECTION
+
+- Who qualifies for funding
+- No cost to qualified students
+- Support services available
+- “Check Your Eligibility” button
+
+### APPLICATION SECTION
+
+- Embedded application form (name, email, phone, program interest, brief background)
+- Or link to external application when ready
+
+### FOOTER
+
+Same as main site
+
+-----
+
+## TECHNICAL REQUIREMENTS
+
+### FILE STRUCTURE
+
+```
+/rising-promise/
+  index.html
+  raffle.html (with coming-soon overlay)
+  programs.html (with launching-soon message)
+  /css/
+    styles.css
+  /js/
+    config.js (ALL EDITABLE CONTENT HERE)
+    main.js (functionality)
+  /images/
+    (placeholder images)
+  README.md (editing instructions)
+```
+
+### EDITING SYSTEM
+
+- config.js contains ALL text, links, images in clearly labeled objects
+- Include toggle flags for showing/hiding sections:
+
+```javascript
+const siteConfig = {
+  features: {
+    raffleActive: false,
+    programsActive: false,
+    cnaApplicationOpen: false,
+    itApplicationOpen: false
+  }
+}
+```
+
+- Clear comments explaining how to edit each section
+- No need to touch HTML/CSS for content updates
+
+### CODE QUALITY
+
+- Clean, well-commented code
+- Mobile-first responsive design
+- Fast-loading optimized images
+- Smooth scroll navigation
+- Sticky header that shrinks on scroll
+- Subtle fade-in animations on scroll
+- Contact form with basic validation (no backend yet)
+- Social share functionality
+- Accessible (WCAG AA compliant)
+
+### ASSETS
+
+- Use https://picsum.photos for placeholders
+- Hero images: 1920x1080
+- Team photos: 400x400 (circular)
+- Icons: Use Font Awesome or similar
+- Suggested free fonts: Montserrat (headers) + Open Sans (body)
+
+-----
+
+## DOCUMENTATION
+
+Create detailed README.md with:
+
+1. How to edit content (config.js walkthrough)
+1. How to activate raffle page (remove overlay, update dates)
+1. How to activate programs page (flip toggle, add application links)
+1. How to replace images
+1. How to change colors/fonts
+1. How to add new sections
+1. Recommended next steps (add backend, payment processing, etc.)
+
+-----
+
+## TONE & STYLE
+
+- Personal, emotional, direct (NOT corporate)
+- Empowering and hopeful (NOT pitying)
+- Action-oriented (NOT passive)
+- “We’re in this together” NOT “We’re helping you”
+- Avoid nonprofit clichés
+
+-----
+
+## OUTPUT PRIORITIES
+
+1. Make content editing brain-dead simple
+1. Build flexibility for future growth
+1. Professional but warm aesthetic
+1. Fast, mobile-optimized performance
+1. Clear path to activate raffle/programs when ready
+
+**Provide complete code with clear instructions for a non-technical user to manage content updates.**
