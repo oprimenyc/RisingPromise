@@ -118,7 +118,7 @@ export const siteConfig: SiteConfig = {
       },
       {
         icon: "Users",
-        title: "Wraparound Support",
+        title: "Holistic Support",
         description: "Because success isn't just about what you know. It's about having someone in your corner",
       },
       {
