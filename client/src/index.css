@@ -400,6 +400,7 @@
 
   /* Minimal button hover - opacity only */
   .btn-minimal-hover {
+    opacity: 1;
     transition: opacity 0.2s ease;
   }
 

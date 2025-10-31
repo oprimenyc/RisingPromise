@@ -183,7 +183,7 @@ export default function Home() {
             <Button 
               onClick={() => scrollToSection(siteConfig.hero.primaryButtonHref)} 
               size="lg" 
-              className="text-lg px-8 py-6 btn-minimal-hover"
+              className="text-lg px-8 py-6 no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
               data-testid="button-hero-primary"
             >
               {siteConfig.hero.primaryButtonText}
@@ -192,7 +192,7 @@ export default function Home() {
               variant="outline" 
               onClick={() => scrollToSection(siteConfig.hero.secondaryButtonHref)} 
               size="lg" 
-              className="text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-white text-white btn-minimal-hover"
+              className="text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-white text-white no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
               data-testid="button-hero-secondary"
             >
               {siteConfig.hero.secondaryButtonText}
@@ -286,7 +286,7 @@ export default function Home() {
           <div className="text-center">
             <Button 
               size="lg" 
-              className="text-lg px-8 py-6 btn-minimal-hover" 
+              className="text-lg px-8 py-6 no-default-hover-elevate no-default-active-elevate btn-minimal-hover" 
               disabled={siteConfig.whatWeDo.buttonComingSoon}
               data-testid="button-explore-programs"
             >
@@ -419,7 +419,7 @@ export default function Home() {
                 />
                 <Button 
                   type="submit" 
-                  className="w-full btn-minimal-hover" 
+                  className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover" 
                   disabled={newsletterMutation.isPending}
                   data-testid="button-need-submit"
                 >
@@ -444,7 +444,7 @@ export default function Home() {
                   <Button 
                     key={i} 
                     variant="outline" 
-                    className="flex items-center justify-center gap-2 h-auto py-4 btn-minimal-hover"
+                    className="flex items-center justify-center gap-2 h-auto py-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
                     disabled={action.comingSoon}
                     data-testid={`button-action-${i}`}
                   >
@@ -531,7 +531,7 @@ export default function Home() {
                 <Button 
                   type="submit"
                   variant="secondary" 
-                  className="w-full bg-accent btn-minimal-hover"
+                  className="w-full bg-accent no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
                   disabled={newsletterMutation.isPending}
                   data-testid="button-footer-subscribe"
                 >

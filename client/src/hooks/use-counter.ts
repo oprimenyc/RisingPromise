@@ -28,7 +28,7 @@ export function useCounter(
       
       // Easing function for smooth animation
       const easeOutQuad = (t: number) => t * (2 - t);
-      const currentCount = Math.floor(easeOutQuad(progress) * end);
+      const currentCount = easeOutQuad(progress) * end;
       
       countRef.current = currentCount;
       setCount(currentCount);
