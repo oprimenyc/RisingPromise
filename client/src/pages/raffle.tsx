@@ -3,10 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { Trophy, Ticket, Calendar, Info, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import { useState, useEffect } from "react";
 
 export default function Raffle() {
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const prizesRef = useScrollReveal();
+  const pricingRef = useScrollReveal();
+  const detailsRef = useScrollReveal();
+  const faqRef = useScrollReveal();
+
+  useEffect(() => {
+    setPageLoaded(true);
+  }, []);
+
   if (!siteConfig.features.raffleActive) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -23,7 +35,7 @@ export default function Raffle() {
             Sign up for our newsletter on the homepage to be the first to know when tickets go on sale.
           </p>
           <Link href="/">
-            <Button size="lg" data-testid="button-back-home">
+            <Button size="lg" className="no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="button-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Homepage
             </Button>
@@ -34,12 +46,12 @@ export default function Raffle() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${pageLoaded ? 'animate-hero-fade' : ''}`}>
       {/* Header */}
       <header className="bg-gradient-to-r from-primary to-accent text-white py-16">
         <div className="container mx-auto px-6">
           <Link href="/">
-            <Button variant="ghost" className="text-white mb-4" data-testid="link-back-home">
+            <Button variant="ghost" className="text-white mb-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="link-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Homepage
             </Button>
@@ -56,10 +68,10 @@ export default function Raffle() {
       {/* Prizes Section */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-6">
-          <h2 className="font-heading text-4xl font-bold text-center mb-12" data-testid="text-prizes-headline">
+          <h2 ref={prizesRef.ref as any} className="font-heading text-4xl font-bold text-center mb-12 scroll-reveal" data-testid="text-prizes-headline">
             What You Can Win
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto card-stagger scroll-reveal">
             {siteConfig.raffle.prizes.map((prize, i) => (
               <Card key={i} className="p-8 text-center relative" data-testid={`card-prize-${i}`}>
                 {prize.badge && (
@@ -84,10 +96,10 @@ export default function Raffle() {
       {/* Ticket Pricing Section */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          <h2 className="font-heading text-4xl font-bold text-center mb-12" data-testid="text-pricing-headline">
+          <h2 ref={pricingRef.ref as any} className="font-heading text-4xl font-bold text-center mb-12 scroll-reveal" data-testid="text-pricing-headline">
             Choose Your Entries
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto card-stagger scroll-reveal">
             {siteConfig.raffle.ticketPricing.map((option, i) => (
               <Card key={i} className="p-8 text-center relative hover-elevate" data-testid={`card-pricing-${i}`}>
                 {option.badge && (
@@ -103,7 +115,7 @@ export default function Raffle() {
                 <div className="text-sm text-muted-foreground mb-6" data-testid={`text-price-desc-${i}`}>
                   {option.description}
                 </div>
-                <Button className="w-full" disabled data-testid={`button-buy-${i}`}>
+                <Button className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover" disabled data-testid={`button-buy-${i}`}>
                   Buy Tickets
                   <span className="ml-2 text-xs">(Coming Soon)</span>
                 </Button>
@@ -115,8 +127,8 @@ export default function Raffle() {
 
       {/* Details Section */}
       <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-6 max-w-4xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div ref={detailsRef.ref as any} className="container mx-auto px-6 max-w-4xl scroll-reveal">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 card-stagger">
             <Card className="p-6">
               <Calendar className="w-8 h-8 text-primary mb-4" />
               <h3 className="font-heading text-xl font-bold mb-2">Draw Date</h3>
@@ -156,7 +168,7 @@ export default function Raffle() {
           </Card>
 
           {/* FAQ Section */}
-          <div>
+          <div ref={faqRef.ref as any} className="scroll-reveal">
             <h2 className="font-heading text-3xl font-bold mb-6 text-center" data-testid="text-faq-headline">
               Frequently Asked Questions
             </h2>
@@ -183,7 +195,7 @@ export default function Raffle() {
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
             Buy your raffle tickets today. Win big. Change lives.
           </p>
-          <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" disabled data-testid="button-buy-cta">
+          <Button size="lg" variant="secondary" className="bg-white text-primary no-default-hover-elevate no-default-active-elevate btn-minimal-hover" disabled data-testid="button-buy-cta">
             Get Your Tickets (Coming Soon)
           </Button>
         </div>

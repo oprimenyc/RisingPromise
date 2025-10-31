@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { Heart, Laptop, Check, Clock, DollarSign, Award, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
@@ -28,7 +29,14 @@ export default function Programs() {
     hasTransportation: "",
     motivationStatement: "",
   });
+  const [pageLoaded, setPageLoaded] = useState(false);
   const { toast } = useToast();
+  const headlineRef = useScrollReveal();
+  const programsRef = useScrollReveal();
+
+  useEffect(() => {
+    setPageLoaded(true);
+  }, []);
 
   const applicationMutation = useMutation({
     mutationFn: async (data: any) =>
@@ -92,7 +100,7 @@ export default function Programs() {
             Our training programs are launching soon. Check back or sign up on our homepage to be notified when applications open.
           </p>
           <Link href="/">
-            <Button data-testid="button-back-home">
+            <Button className="no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="button-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Homepage
             </Button>
@@ -114,7 +122,7 @@ export default function Programs() {
             <p className="text-muted-foreground mb-6">
               Applications for this program are currently closed. Check back soon or sign up for updates on our homepage.
             </p>
-            <Button onClick={() => setSelectedProgram(null)} data-testid="button-back-programs">
+            <Button onClick={() => setSelectedProgram(null)} className="no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="button-back-programs">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Programs
             </Button>
@@ -130,7 +138,7 @@ export default function Programs() {
             <Button 
               variant="ghost" 
               onClick={() => setSelectedProgram(null)}
-              className="text-white mb-4"
+              className="text-white mb-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
               data-testid="button-back-programs-header"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -255,7 +263,7 @@ export default function Programs() {
             <Button 
               type="submit" 
               size="lg" 
-              className="w-full"
+              className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
               disabled={applicationMutation.isPending}
               data-testid="button-submit-application"
             >
@@ -268,16 +276,16 @@ export default function Programs() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${pageLoaded ? 'animate-hero-fade' : ''}`}>
       <header className="bg-secondary text-white py-16">
         <div className="container mx-auto px-6">
           <Link href="/">
-            <Button variant="ghost" className="text-white mb-4" data-testid="link-back-home">
+            <Button variant="ghost" className="text-white mb-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="link-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Homepage
             </Button>
           </Link>
-          <h1 className="font-heading text-5xl font-bold mb-4" data-testid="text-programs-headline">Our Training Programs</h1>
+          <h1 ref={headlineRef.ref as any} className="font-heading text-5xl font-bold mb-4 scroll-reveal" data-testid="text-programs-headline">Our Training Programs</h1>
           <p className="text-xl opacity-90 max-w-3xl" data-testid="text-programs-intro">
             Real skills. Real jobs. Real change. Choose your path to a better future.
           </p>
@@ -285,7 +293,7 @@ export default function Programs() {
       </header>
 
       <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div ref={programsRef.ref as any} className="grid grid-cols-1 lg:grid-cols-2 gap-8 card-stagger scroll-reveal">
           {programs.map(({ key, data }) => {
             const Icon = iconMap[data.icon] || Heart;
             const isOpen = key === "cna" ? siteConfig.features.cnaApplicationOpen : siteConfig.features.itApplicationOpen;
@@ -354,7 +362,7 @@ export default function Programs() {
                   </div>
 
                   <Button
-                    className="w-full"
+                    className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
                     onClick={() => setSelectedProgram(key)}
                     disabled={!isOpen}
                     data-testid={`button-apply-${key}`}
