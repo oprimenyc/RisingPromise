@@ -2,6 +2,8 @@ import { siteConfig } from "@/lib/siteConfig";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { StatCounter } from "@/components/StatCounter";
@@ -17,12 +19,19 @@ const iconMap: Record<string, any> = {
   "Heart": Heart,
 };
 
+const PRESET_AMOUNTS = [25, 50, 100, 250, 500];
+
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [joinUsName, setJoinUsName] = useState("");
   const [joinUsEmail, setJoinUsEmail] = useState("");
   const [footerEmail, setFooterEmail] = useState("");
+  const [donationDialogOpen, setDonationDialogOpen] = useState(false);
+  const [donationAmount, setDonationAmount] = useState<number | "">(50);
+  const [customAmount, setCustomAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
   const { toast } = useToast();
 
   // Scroll reveal hooks for sections
@@ -50,6 +59,53 @@ export default function Home() {
       });
     },
   });
+
+  const donationMutation = useMutation({
+    mutationFn: async (data: { amount: number; donorName?: string; donorEmail: string }) => {
+      const response = await apiRequest("POST", "/api/donations/create-checkout-session", data);
+      return response.json();
+    },
+    onSuccess: (data: { url: string }) => {
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to initiate donation. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDonationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const finalAmount = customAmount ? parseFloat(customAmount) : donationAmount;
+    if (!finalAmount || finalAmount < 1) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter an amount of at least $1.00",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!donorEmail) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address for the receipt",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    donationMutation.mutate({
+      amount: Math.round(finalAmount * 100), // Convert to cents
+      donorName: donorName || undefined,
+      donorEmail,
+    });
+  };
 
   const handleJoinUsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -448,6 +504,11 @@ export default function Home() {
                     variant="outline" 
                     className="flex items-center justify-center gap-2 h-auto py-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
                     disabled={action.comingSoon}
+                    onClick={() => {
+                      if (action.text === "Donate Now" && !action.comingSoon) {
+                        setDonationDialogOpen(true);
+                      }
+                    }}
                     data-testid={`button-action-${i}`}
                   >
                     <span>{action.text}</span>
@@ -464,6 +525,97 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Donation Dialog */}
+      <Dialog open={donationDialogOpen} onOpenChange={setDonationDialogOpen}>
+        <DialogContent className="sm:max-w-md" data-testid="dialog-donation">
+          <DialogHeader>
+            <DialogTitle>Make a Donation</DialogTitle>
+            <DialogDescription>
+              Your donation helps us provide workforce training and support to those who need it most.
+              We are currently awaiting 501(c)(3) status.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleDonationSubmit} className="space-y-6">
+            <div>
+              <Label className="mb-3 block">Select Amount</Label>
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                {PRESET_AMOUNTS.map((amount) => (
+                  <Button
+                    key={amount}
+                    type="button"
+                    variant={donationAmount === amount && !customAmount ? "default" : "outline"}
+                    onClick={() => {
+                      setDonationAmount(amount);
+                      setCustomAmount("");
+                    }}
+                    className="no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
+                    data-testid={`button-amount-${amount}`}
+                  >
+                    ${amount}
+                  </Button>
+                ))}
+              </div>
+              <div>
+                <Label htmlFor="customAmount">Or enter custom amount</Label>
+                <Input
+                  id="customAmount"
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  placeholder="Enter amount"
+                  value={customAmount}
+                  onChange={(e) => {
+                    setCustomAmount(e.target.value);
+                    setDonationAmount("");
+                  }}
+                  data-testid="input-custom-amount"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="donorName">Name (Optional)</Label>
+              <Input
+                id="donorName"
+                placeholder="Your Name"
+                value={donorName}
+                onChange={(e) => setDonorName(e.target.value)}
+                data-testid="input-donor-name"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="donorEmail">Email *</Label>
+              <Input
+                id="donorEmail"
+                type="email"
+                placeholder="your@email.com"
+                value={donorEmail}
+                onChange={(e) => setDonorEmail(e.target.value)}
+                required
+                data-testid="input-donor-email"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Required for your tax receipt
+              </p>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
+              disabled={donationMutation.isPending}
+              data-testid="button-donate-submit"
+            >
+              {donationMutation.isPending ? "Processing..." : "Continue to Payment"}
+            </Button>
+
+            <p className="text-xs text-center text-muted-foreground">
+              You'll be redirected to Stripe's secure checkout to complete your donation.
+            </p>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer id="footer" className="bg-secondary text-white py-16" data-testid="section-footer">
