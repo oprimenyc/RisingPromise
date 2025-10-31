@@ -1,0 +1,1019 @@
+# Rising Promise Website - Complete Replit AI Prompt (With Animations)
+
+## Project Overview
+
+Create a modern, mobile-optimized multi-page nonprofit website for “Rising Promise” with easy content management and subtle, purposeful animations that reinforce the mission of hope and forward movement.
+
+-----
+
+## PURPOSE
+
+Rising Promise is a mission-driven nonprofit empowering vulnerable populations through workforce training, wraparound support, and community investment. We serve individuals experiencing homelessness, women rebuilding their lives, veterans, foster youth aging out of care, and families seeking stability.
+
+-----
+
+## SITE STRUCTURE
+
+Main site (index.html) + separate pages for Raffle and Programs that can be activated later
+
+-----
+
+## CRITICAL REQUIREMENT - EASY EDITING
+
+Create a simple config.js file that contains ALL editable content (text, links, images) so I can update the site without touching HTML/CSS. Include clear comments explaining what each section does.
+
+Example structure:
+
+```javascript
+const siteContent = {
+  hero: {
+    headline: "Everyone Deserves a Fighting Chance",
+    subheadline: "We believe potential isn't determined...",
+    buttonText: "Learn Our Story",
+    backgroundImage: "images/hero.jpg"
+  },
+  // etc.
+}
+```
+
+-----
+
+## DESIGN REQUIREMENTS
+
+- Clean, emotional, trustworthy nonprofit aesthetic
+- Mission-first storytelling approach (not corporate)
+- Colors: Deep navy (#0D1B2A), vibrant sky blue (#1B9CE5), warm white (#FFFFFF), accent gold (#F4A300)
+- Typography: Modern sans-serif for headers, readable sans-serif for body text
+- Powerful imagery (hope, forward movement, NOT sad/desperate)
+- Clear, action-oriented CTA buttons throughout
+- Smooth scrolling navigation with sticky header
+- Mobile-first responsive design
+
+-----
+
+## ANIMATION REQUIREMENTS (CSS Only - Performance Optimized)
+
+Add subtle, meaningful animations that reinforce the mission of “rising” and forward movement:
+
+### 1. Hero Section Animation
+
+- Fade in from opacity 0 to 1 over 1 second on page load
+- Elements slide up 20px during fade-in
+- Use CSS @keyframes named “fadeInUp”
+- Apply to hero headline, subheadline, and CTA buttons
+
+### 2. Scroll-Triggered Section Reveals
+
+- Apply to: section headings, “What We Do” cards, “Team” cards, “Impact” stats
+- Use Intersection Observer API to add “visible” class when element is 15% into viewport
+- Fade from opacity 0 to 1 over 0.8 seconds
+- Slight upward movement (15px) during fade
+- Include fallback for browsers without Intersection Observer support
+
+### 3. Button Hover Effects
+
+- Scale to 1.05x on hover
+- Add subtle box-shadow glow (0 4px 20px rgba(27, 156, 229, 0.4))
+- Smooth color transition on hover (sky blue to slightly darker)
+- Transition duration: 0.3s
+- Use CSS transform for performance (not top/left positioning)
+
+### 4. Card Stagger Animation
+
+- When card containers become visible, stagger child cards by 0.15s each
+- Maximum 4 cards staggered per section
+- Use CSS animation-delay with nth-child selectors
+- Cards in “What We Do”, “Team”, and “Programs” sections
+
+### 5. Accessibility & Performance
+
+- Respect prefers-reduced-motion media query (disable animations if set)
+- Use only transform and opacity for animations (GPU accelerated)
+- No JavaScript animation libraries needed
+- Smooth 60fps performance on mobile devices
+
+### 6. Implementation Notes
+
+- Include clear CSS comments showing how to disable specific animations
+- Add “no-animations” class option to body tag for easy global disable
+- Ensure animations don’t block or delay content rendering
+- Subtle and purposeful, never flashy or distracting
+
+-----
+
+## PAGE 1: INDEX.HTML (MAIN HOMEPAGE)
+
+### NAVIGATION BAR (Sticky)
+
+- Logo/Name: “Rising Promise”
+- Menu Items: Our Story | Our Team | Programs | Get Involved | Contact
+- [Add “Raffle” link when ready to activate]
+- Smooth scroll to anchor sections
+- Shrinks slightly on scroll (from 80px to 60px height)
+- Background blur effect when scrolled
+
+### 1. HERO SECTION
+
+- **Animated on load with fadeInUp**
+- Headline: “Everyone Deserves a Fighting Chance”
+- Subheadline: “We believe potential isn’t determined by your past — it’s unlocked by your future.”
+- Two buttons: “Learn Our Story” (scroll to #story) | “Get Updates” (#join-us section)
+- Full-width background image with dark overlay for readability
+- Minimum height: 100vh on desktop, 70vh on mobile
+
+### 2. THE WHY / STORY SECTION (#story)
+
+- **Section header fades in on scroll**
+- Headline: “It Started With a Simple Question: Why Not?”
+- Body copy (4 paragraphs):
+  - “Why do some people get endless chances while others get none?”
+  - “Why does where you’re born, who raised you, or one bad break determine the rest of your life?”
+  - “We didn’t have a good answer. So we built one.”
+  - Rising Promise was founded on a single belief: people don’t lack potential — they lack access. Access to training that leads somewhere. Access to support when life gets hard. Access to a community that believes in second, third, and hundredth chances.
+- Closing: “We’re here to change that.”
+- Two-column layout on desktop, single column on mobile
+
+### 3. WHO WE SEE SECTION (#who-we-see)
+
+- **Section header fades in on scroll**
+- Headline: “We See You”
+- 4 paragraphs in grid layout (2x2 on desktop, 1 column on mobile):
+  - “We see the single mom working two jobs who dreams of a career, not just a paycheck.”
+  - “We see the veteran who served this country and now needs this country to serve them back.”
+  - “We see the foster kid who aged out of the system but refuses to age out of hope.”
+  - “We see the person experiencing homelessness who just needs one real opportunity.”
+- Empowering closing (larger text, centered): “You’re not a statistic. You’re not broken. You’re not ‘at-risk.’ You’re someone with a story that’s still being written.”
+
+### 4. WHAT WE DO SECTION (#what-we-do)
+
+- **Section header fades in, cards stagger on scroll**
+- Headline: “We Don’t Just Train People. We Invest in Them.”
+- 3 feature cards with icons (icon + headline + description):
+  - **Career Training** — “Real skills for real jobs in healthcare, technology, and beyond”
+  - **Wraparound Support** — “Because success isn’t just about what you know. It’s about having someone in your corner”
+  - **A Community** — “You’re not doing this alone. We walk with you from day one to day one hundred”
+- Cards should have subtle hover effect (slight lift + shadow increase)
+- Promise statement below cards: “Our Promise: If you’re ready to fight for your future, we’ll fight with you.”
+- Button: “Explore Our Programs” (links to programs.html when ready, shows “Coming Soon” badge for now)
+
+### 5. IMPACT SECTION (#impact)
+
+- **Stats animate/count up when scrolled into view**
+- Headline: “This Is What Change Looks Like”
+- Opening text: “One person trained is one family lifted. One career started is one community strengthened.”
+- 3 stat cards with large numbers in gold accent color:
+  - **125+** students trained (Year 1 Goal)
+  - **85+** placed into jobs
+  - **$3.2M+** in graduate earnings
+- Numbers should count up from 0 when visible (simple JavaScript counter)
+- Closing: “We’re not waiting for permission to make a difference. We’re building it. Right now.”
+
+### 6. OUR TEAM SECTION (#team)
+
+- **Section header fades in, team cards stagger on scroll**
+- Headline: “Built by People Who’ve Been There”
+- Intro text: “This isn’t theory. This is personal.”
+- 4 team member cards in grid (2x2 on desktop, 1 column on mobile):
+  - Photo (circular, 200px diameter)
+  - Name in bold
+  - Title in sky blue
+  - Personal quote in quotes
+
+**Jason Pilgrim, Founder**
+“I’ve spent my life building things — businesses, systems, solutions. But the most important thing I’ve ever built is opportunity for people who were told they didn’t deserve one.”
+
+**Shawn J. Wright, FNP — Program Director**
+“I became a nurse because I wanted to help people heal. Now I help them build futures.”
+
+**Melissa Meeham, MPA — Finance & Administration**
+“Twenty years in nonprofit finance taught me one thing: sustainability isn’t about money. It’s about mission.”
+
+**Kenya Roberts, CFRE — Development & Fundraising**
+“I’ve raised millions for causes. But this one? This one’s personal.”
+
+- Cards have subtle hover effect (slight scale + shadow)
+- Closing: “We’re not saviors. We’re partners.”
+
+### 7. JOIN US SECTION (#join-us)
+
+- **Fades in from bottom on scroll**
+- Headline: “Be Part of the Promise”
+- Two-column layout:
+
+**LEFT COLUMN - “If You Need Us”:**
+
+- Text: “You’re not alone anymore. We’re building something for you.”
+- Email signup form with name and email fields
+- Large “Get Updates” button (with hover animation)
+- Small text below: “Be the first to know when programs launch”
+
+**RIGHT COLUMN - “If You Believe in Us”:**
+
+- Text: “Help us keep this promise.”
+- 4 action buttons with icons (stacked vertically on mobile):
+  - 🎟️ **Enter the Raffle** (shows “Coming Soon” badge - links to raffle.html when ready)
+  - 💝 **Donate Now** (primary button styling)
+  - 🤝 **Partner With Us** (opens contact form or scrolls to contact section)
+  - 📣 **Share Our Story** (opens social share modal with Facebook, Twitter, LinkedIn, Email options)
+- Closing text (centered, below columns): “This isn’t charity. It’s investment in people who are ready to invest in themselves.”
+
+### 8. FOOTER
+
+- Dark navy background (#0D1B2A)
+- Organization name “Rising Promise” in large text
+- Tagline: “Everyone deserves a fighting chance. We’re here to make sure they get it.”
+- Three columns (stack on mobile):
+  - **Quick Links:** Our Story | The Team | Programs | Donate | Contact
+  - **Contact:** info@risingpromise.org | [Phone] | [Address with Google Maps link]
+  - **Connect:** Social media icons (Facebook, Instagram, LinkedIn, Twitter) - open in new tabs
+- Bottom bar with legal:
+  - © 2025 Rising Promise. All rights reserved.
+  - 501(c)(3) nonprofit (status pending)
+  - Privacy Policy | Terms of Use (placeholder links)
+
+-----
+
+## PAGE 2: RAFFLE.HTML (SEPARATE PAGE - READY TO ACTIVATE)
+
+Structure this complete page but include “COMING SOON” overlay that can be easily removed when raffle is ready.
+
+### NAVIGATION
+
+Same sticky header as main site with “Raffle” menu item highlighted
+
+### HERO SECTION
+
+- **Animated on load**
+- Headline: “Help Us Launch — And Win a Getaway”
+- Subheadline: “Support our first students. Enter to win.”
+- Full-width background image of vacation destination (placeholder for now)
+- Dark overlay for text readability
+
+### RAFFLE DETAILS SECTION
+
+- **Cards stagger in on scroll**
+- Large centered prize image/graphic
+- Prize description in large text: “Win a 3-day, 2-night escape to [DESTINATION]”
+- Important note: “Accommodations included — airfare not included”
+- 3 ticket pricing cards (side by side on desktop, stacked on mobile):
+  
+  **CARD 1:**
+  - $25
+  - Single Entry
+  - “Buy Now” button
+  
+  **CARD 2 (Highlighted as “Best Value”):**
+  - $100
+  - 5 Entries
+  - “Best Value” badge
+  - Save $25 text
+  - “Buy Now” button (larger, accent color)
+  
+  **CARD 3:**
+  - $175
+  - 10 Entries
+  - Save $75 text
+  - “Buy Now” button
+- Drawing date: [DATE - editable in config]
+- Winner announcement: [DATE - editable in config]
+- Countdown timer to drawing date (JavaScript)
+
+### WHERE YOUR MONEY GOES SECTION
+
+- **Animates in on scroll**
+- Headline: “Every Dollar Makes a Difference”
+- Visual breakdown with 4 icons and descriptions:
+  - 📚 Training materials for first students
+  - 🚗 Support services (childcare, transportation)
+  - 💼 Job placement resources
+  - 🚀 Program launch costs
+- Large sponsor section: “Generously sponsored by: [SPONSOR NAME/LOGO]”
+- Sponsor logo placeholder (can be easily updated in config)
+
+### TRUST & TRANSPARENCY SECTION
+
+- Security badges and trust signals
+- “100% of proceeds support our mission” in large text
+- “501(c)(3) tax-deductible” badge
+- “Secure payment processing” badge
+- Brief text about how funds will be used
+
+### BUY TICKETS SECTION (Duplicate CTA)
+
+- Large, prominent “Buy Tickets Now” button
+- Alternative text link: “Can’t enter but want to help? Donate Instead”
+- Social sharing buttons: “Share this raffle with friends”
+
+### FAQ SECTION
+
+- Accordion-style expandable questions:
+  - How do I enter?
+  - When is the drawing?
+  - How will I know if I won?
+  - Can I enter if I live outside [state]?
+  - Are tickets tax-deductible?
+  - What if I can’t use the prize dates?
+
+### LEGAL/FINE PRINT SECTION
+
+- Small text at bottom
+- Link to official raffle rules (opens modal or PDF)
+- Eligibility requirements summary
+- Drawing details and odds disclosure
+- Winner notification process
+- Void where prohibited statement
+
+### FOOTER
+
+Same as main site
+
+### COMING SOON OVERLAY (Removable)
+
+- Semi-transparent overlay covering entire page
+- Centered message:
+  - “Raffle Coming Soon!”
+  - “We’re finalizing an amazing prize. Enter your email to be notified when tickets go on sale.”
+  - Email capture form
+  - “Notify Me” button
+- Easy to remove: add class “raffle-active” to body tag to hide overlay
+
+-----
+
+## PAGE 3: PROGRAMS.HTML (SEPARATE PAGE - READY TO ACTIVATE)
+
+Structure this complete page but include “PROGRAMS LAUNCHING SOON” message that can be easily updated.
+
+### NAVIGATION
+
+Same sticky header with “Programs” menu item highlighted
+
+### HERO SECTION
+
+- **Animated on load**
+- Headline: “Real Training. Real Jobs. Real Change.”
+- Subheadline: “Government-funded career training in high-demand fields — no experience required”
+- Background image of students learning
+- Stats overlay: “100% Tuition-Free | Job Placement Support | Wraparound Services”
+
+### PROGRAMS OVERVIEW SECTION
+
+- **Fades in on scroll**
+- Intro paragraph:
+  “Rising Promise partners with government workforce programs to provide tuition-free training in high-demand careers. If you qualify, your training costs nothing — and we support you every step of the way from enrollment to employment.”
+- 3 key benefits with icons:
+  - 💰 **Zero Cost** — Fully funded for qualified students
+  - 🎯 **Real Credentials** — Industry-recognized certifications
+  - 🤝 **Full Support** — Career coaching, job placement, wraparound services
+
+### PROGRAM CARDS SECTION (Can be hidden/shown individually via config)
+
+**Each card has:**
+
+- Can be toggled visible/hidden in config.js
+- “Apply Now” button can be enabled/disabled
+- “Coming Soon” badge displays when application disabled
+
+**CARD 1 - CNA (Certified Nursing Assistant):**
+
+- **Staggered animation on scroll**
+- Healthcare icon
+- Badge: “Now Enrolling” or “Coming Soon” (config controlled)
+- Program highlights:
+  - **Program Length:** 6-12 weeks
+  - **Format:** Online classroom + hands-on clinical training
+  - **Starting Salary:** $32K-$38K/year
+  - **Job Outlook:** High demand, stable employment
+- “Apply Now” button (can be disabled in config)
+- “Learn More” expandable section (accordion):
+  - **What You’ll Learn:**
+    - Patient care fundamentals
+    - Vital signs monitoring
+    - Infection control procedures
+    - Communication with healthcare teams
+  - **Requirements:**
+    - 18+ years old
+    - High school diploma or GED
+    - Pass background check
+    - Qualify for WIOA or other funding
+  - **Career Pathways:**
+    - Nursing homes & assisted living
+    - Hospitals & clinics
+    - Home healthcare
+    - Pathway to LVN/RN programs
+  - **Success Stories:** (Placeholder for testimonials when available)
+
+**CARD 2 - CompTIA IT Certification:**
+
+- **Staggered animation on scroll**
+- Technology icon
+- Badge: “Launching Soon” or “Now Enrolling” (config controlled)
+- Program highlights:
+  - **Program Length:** 4-6 months (self-paced)
+  - **Format:** 100% online
+  - **Starting Salary:** $45K-$55K/year
+  - **Certifications:** A+, Network+, Security+ track
+- “Apply Now” button (can be disabled in config)
+- “Learn More” expandable section:
+  - **What You’ll Learn:**
+    - Computer hardware & software fundamentals
+    - Network configuration & troubleshooting
+    - Cybersecurity basics
+    - IT support best practices
+  - **Requirements:**
+    - 18+ years old
+    - High school diploma or GED
+    - Basic computer literacy
+    - Qualify for WIOA or other funding
+  - **Career Pathways:**
+    - Help desk technician
+    - Network administrator
+    - IT support specialist
+    - Cybersecurity analyst
+  - **Success Stories:** (Placeholder for testimonials)
+
+**CARD 3 - Additional Programs (Coming Soon):**
+
+- **Staggered animation on scroll**
+- Icon placeholder
+- “More Programs Coming Soon” headline
+- Brief description:
+  “We’re expanding our offerings to include additional high-demand career paths. Programs in development include:”
+  - Phlebotomy Technician
+  - Medical Assistant
+  - HVAC Technician
+  - And more…
+- Email capture: “Get notified when new programs launch”
+- “Stay Updated” button
+
+### HOW IT WORKS SECTION
+
+- **Animates in on scroll**
+- Headline: “Your Path to a New Career”
+- Three large steps with connecting line/arrow between them:
+
+**STEP 1: APPLY**
+
+- Icon: Document/form
+- “Quick application process”
+- “We handle all funding paperwork”
+- “Eligibility check in 48 hours”
+
+**STEP 2: TRAIN**
+
+- Icon: Graduation cap
+- “Learn from expert instructors”
+- “Mix of online and hands-on training”
+- “Flexible scheduling options”
+
+**STEP 3: WORK**
+
+- Icon: Briefcase
+- “Job placement assistance”
+- “Career coaching & interview prep”
+- “Ongoing support after graduation”
+- Below steps: “Start earning in as little as 6-12 weeks”
+
+### ELIGIBILITY SECTION
+
+- **Fades in on scroll**
+- Headline: “Do You Qualify?”
+- Two-column layout:
+
+**LEFT: Who Qualifies**
+
+- Unemployed or underemployed
+- Low to moderate income
+- Dislocated workers
+- Veterans & military spouses
+- Foster youth (current or former)
+- Justice-involved individuals
+
+**RIGHT: What’s Covered**
+
+- 100% tuition costs
+- Books & materials
+- Certification exam fees
+- Support services may include:
+  - Childcare assistance
+  - Transportation stipends
+  - Basic supplies
+- Large CTA button: “Check Your Eligibility”
+
+### STUDENT SUPPORT SERVICES SECTION
+
+- Headline: “We’re With You Every Step”
+- 4 support categories with icons:
+  - **Academic Support** — Tutoring, study groups, extra help
+  - **Career Services** — Resume help, interview prep, job placement
+  - **Financial Assistance** — Help with transportation, childcare, emergencies
+  - **Personal Support** — Case management, resource navigation, encouragement
+
+### APPLICATION SECTION
+
+- **Animates in on scroll**
+- Headline: “Ready to Start Your New Career?”
+- Two options:
+
+**OPTION 1: Quick Interest Form** (Always available)
+
+- Simple form embedded on page:
+  - Full Name
+  - Email
+  - Phone
+  - Program Interest (dropdown)
+  - Brief message: “Tell us about yourself” (textarea)
+- “Submit Application” button
+- Note: “We’ll contact you within 2 business days”
+
+**OPTION 2: Full Application** (When programs active)
+
+- Button linking to external application platform
+- Or more detailed multi-step form
+- Can be toggled on/off in config
+
+### TESTIMONIALS SECTION (When available)
+
+- **Cards stagger in on scroll**
+- Headline: “Success Stories”
+- 2-3 graduate testimonials with:
+  - Photo
+  - Quote
+  - Name & program completed
+  - Current job title
+- Placeholder content until real testimonials available
+
+### FOOTER
+
+Same as main site
+
+### LAUNCHING SOON BANNER (Removable)
+
+- Prominent banner at top of page (below nav)
+- “Programs Launching [Month/Year]”
+- “Enter your email to be first to apply”
+- Email capture form
+- Easy to remove: set “programsLaunched: true” in config.js
+
+-----
+
+## TECHNICAL REQUIREMENTS
+
+### FILE STRUCTURE
+
+```
+/rising-promise/
+  index.html
+  raffle.html
+  programs.html
+  /css/
+    styles.css
+    animations.css (separate file for all animation code)
+  /js/
+    config.js (ALL EDITABLE CONTENT)
+    main.js (functionality)
+    animations.js (Intersection Observer & animation logic)
+  /images/
+    /hero/
+    /team/
+    /icons/
+    /programs/
+  README.md (editing instructions)
+  ANIMATIONS-README.md (how to customize/disable animations)
+```
+
+### CONFIG.JS STRUCTURE
+
+Must include clearly organized sections:
+
+```javascript
+const siteConfig = {
+  // Feature Toggles
+  features: {
+    raffleActive: false,
+    programsActive: false,
+    cnaApplicationOpen: false,
+    itApplicationOpen: false,
+    animationsEnabled: true, // Master animation toggle
+  },
+  
+  // Hero Section
+  hero: {
+    headline: "Everyone Deserves a Fighting Chance",
+    subheadline: "We believe potential isn't determined by your past...",
+    ctaButton1Text: "Learn Our Story",
+    ctaButton1Link: "#story",
+    ctaButton2Text: "Get Updates",
+    ctaButton2Link: "#join-us",
+    backgroundImage: "images/hero/main-hero.jpg"
+  },
+  
+  // Story Section
+  story: {
+    headline: "It Started With a Simple Question: Why Not?",
+    paragraphs: [
+      "Why do some people get endless chances...",
+      "Why does where you're born...",
+      // etc.
+    ]
+  },
+  
+  // Team Members
+  team: [
+    {
+      name: "Jason Pilgrim",
+      title: "Founder",
+      photo: "images/team/jason.jpg",
+      quote: "I've spent my life building things..."
+    },
+    // etc.
+  ],
+  
+  // Contact Information
+  contact: {
+    email: "info@risingpromise.org",
+    phone: "(XXX) XXX-XXXX",
+    address: "123 Main St, City, State ZIP",
+    socialMedia: {
+      facebook: "https://facebook.com/risingpromise",
+      instagram: "https://instagram.com/risingpromise",
+      linkedin: "https://linkedin.com/company/risingpromise",
+      twitter: "https://twitter.com/risingpromise"
+    }
+  },
+  
+  // Raffle Configuration
+  raffle: {
+    destination: "Miami Beach, Florida",
+    drawingDate: "2025-12-31",
+    ticketPrices: [25, 100, 175],
+    sponsorName: "Local Business Name",
+    sponsorLogo: "images/raffle/sponsor-logo.png"
+  }
+}
+```
+
+### ANIMATION IMPLEMENTATION
+
+**animations.css should include:**
+
+```css
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Hero Animations (on page load) */
+.hero-content {
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero-content h1 {
+  animation-delay: 0.2s;
+}
+
+.hero-content p {
+  animation-delay: 0.4s;
+}
+
+.hero-content .cta-buttons {
+  animation-delay: 0.6s;
+}
+
+/* Scroll-triggered animations */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered card animations */
+.card-container.visible .card:nth-child(1) { animation-delay: 0s; }
+.card-container.visible .card:nth-child(2) { animation-delay: 0.15s; }
+.card-container.visible .card:nth-child(3) { animation-delay: 0.3s; }
+.card-container.visible .card:nth-child(4) { animation-delay: 0.45s; }
+
+/* Button hover effects */
+.cta-button {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(27, 156, 229, 0.4);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* No animations class for easy disable */
+body.no-animations * {
+  animation: none !important;
+  transition: none !important;
+}
+```
+
+**animations.js should include:**
+
+```javascript
+// Intersection Observer for scroll animations
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if animations are enabled in config
+  if (!siteConfig.features.animationsEnabled) {
+    document.body.classList.add('no-animations');
+    return;
+  }
+
+  // Intersection Observer options
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  // Callback function
+  const observerCallback = (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Optionally unobserve after animating once
+        observer.unobserve(entry.target);
+      }
+    });
+  };
+
+  // Create observer
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+  // Observe all elements with fade-in class
+  document.querySelectorAll('.fade-in-section, .card-container').forEach(el => {
+    observer.observe(el);
+  });
+});
+
+// Number counter animation for stats
+function animateNumber(element, target) {
+  const duration = 2000;
+  const start = 0;
+  const increment = target / (duration / 16);
+  let current = start;
+
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      element.textContent = formatNumber(target);
+      clearInterval(timer);
+    } else {
+      element.textContent = formatNumber(Math.floor(current));
+    }
+  }, 16);
+}
+
+function formatNumber(num) {
+  if (num >= 1000000) {
+    return '$' + (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(0) + 'K';
+  }
+  return num.toString();
+}
+
+// Trigger number animations when stats section is visible
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.stat-number').forEach(stat => {
+        const target = parseInt(stat.dataset.target);
+        animateNumber(stat, target);
+      });
+      statsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+const statsSection = document.querySelector('#impact');
+if (statsSection) {
+  statsObserver.observe(statsSection);
+}
+```
+
+### CODE QUALITY STANDARDS
+
+- Clean, well-commented HTML/CSS/JavaScript
+- Mobile-first responsive design (breakpoints: 320px, 768px, 1024px, 1440px)
+- Fast-loading optimized images (use lazy loading)
+- Smooth 60fps scroll performance
+- Semantic HTML5 elements
+- Accessible (WCAG AA compliant):
+  - Proper heading hierarchy
+  - Alt text for all images
+  - ARIA labels where needed
+  - Keyboard navigation support
+  - Sufficient color contrast ratios
+- Cross-browser compatible (Chrome, Firefox, Safari, Edge)
+- SEO-friendly:
+  - Meta descriptions
+  - Open Graph tags
+  - Structured data (Schema.org for Organization)
+
+### FORM HANDLING
+
+- Contact form with basic client-side validation
+- Email signup forms throughout site
+- No backend required initially (forms can POST to mailto: or show success message)
+- Clear error states and success messages
+- Honeypot field for spam protection
+- Include placeholder for future integration with email service (Mailchimp, etc.)
+
+### ASSETS & MEDIA
+
+**Placeholder Images:**
+
+- Use https://picsum.photos for temporary images
+- Hero background: 1920x1080
+- Team photos: 400x400 (circular crop)
+- Section backgrounds: 1920x600
+- Card images: 600x400
+- Icons: Use Font Awesome 6 (free version) or similar icon library
+
+**Typography:**
+
+- Suggested Google Fonts:
+  - Headers: Montserrat (weights: 600, 700, 800)
+  - Body: Open Sans (weights: 400, 600)
+- Fallback: system sans-serif stack
+
+**Loading Performance:**
+
+- Lazy load images below the fold
+- Minimize CSS/JS file sizes
+- Use CSS sprites for icons if not using icon font
+- Target < 3 second load time on 3G
+
+-----
+
+## DOCUMENTATION REQUIREMENTS
+
+### README.md Must Include:
+
+1. **Quick Start Guide**
+- How to open and edit the site
+- Where to find editable content (config.js)
+- How to preview changes locally
+1. **Content Editing Guide**
+- Step-by-step instructions for updating text
+- How to change images
+- How to update team member info
+- How to modify contact details
+- How to update raffle information
+1. **Feature Activation Guide**
+- How to activate raffle page (remove overlay)
+- How to activate programs page
+- How to enable CNA/IT applications
+- How to toggle individual features
+1. **Design Customization**
+- How to change colors (CSS variables)
+- How to change fonts
+- How to adjust spacing/sizing
+- Where to find and modify animations
+1. **Adding New Sections**
+- How to duplicate existing sections
+- How to add new pages
+- How to add new menu items
+1. **Animation Controls**
+- How to disable all animations
+- How to disable specific animations
+- How to adjust animation timing
+- How to add animations to new sections
+1. **Technical Next Steps**
+- How to add backend for forms
+- How to integrate payment processing for raffle
+- How to add CMS (Netlify CMS, etc.)
+- How to deploy to hosting (Netlify, Vercel, etc.)
+1. **Troubleshooting**
+- Common issues and solutions
+- Browser compatibility notes
+- Mobile testing tips
+
+### ANIMATIONS-README.md Must Include:
+
+1. **Animation Overview**
+- What animations are included
+- Why each animation was chosen
+- Performance considerations
+1. **How to Disable Animations**
+- Global disable in config.js
+- Individual animation disable in CSS
+- Accessibility considerations
+1. **How to Customize Animations**
+- Adjusting timing/duration
+- Changing animation style
+- Adding new animations
+1. **Testing Animations**
+- How to test on different devices
+- Performance testing tips
+- Accessibility testing
+
+-----
+
+## TONE & STYLE GUIDELINES
+
+**Voice:**
+
+- Personal, emotional, direct (NOT corporate or institutional)
+- Empowering and hopeful (NOT pitying or condescending)
+- Action-oriented (NOT passive or academic)
+- Conversational yet professional
+- “We’re in this together” NOT “We’re helping you”
+
+**Avoid:**
+
+- Nonprofit clichés (“changing lives one person at a time”, “making a difference”)
+- Sad, desperate, or pitying imagery/language
+- Corporate jargon or overly formal language
+- Passive voice
+- Long, complicated sentences
+
+**Embrace:**
+
+- Real stories and personal quotes
+- Forward-looking, aspirational language
+- Clear, direct calls to action
+- Authentic emotion without manipulation
+- Simple, powerful statements
+
+-----
+
+## OUTPUT PRIORITIES (In Order)
+
+1. **Content editing must be brain-dead simple** — Any non-technical person should be able to update text, images, and basic settings
+1. **Flexibility for future growth** — Easy to add programs, activate pages, expand features
+1. **Professional but warm aesthetic** — Trustworthy nonprofit look with emotional resonance
+1. **Fast, smooth performance** — Especially on mobile devices, animations shouldn’t lag
+1. **Clear documentation** — Step-by-step instructions for common tasks
+1. **Accessibility** — Works for everyone, including those using assistive technologies
+1. **Mobile-first design** — Most users will visit on phones
+1. **Animation polish** — Subtle, purposeful animations that reinforce mission without distraction
+
+-----
+
+## FINAL DELIVERY CHECKLIST
+
+Please provide:
+
+- [ ] Complete HTML files (index.html, raffle.html, programs.html)
+- [ ] Complete CSS files (styles.css, animations.css)
+- [ ] Complete JavaScript files (config.js, main.js, animations.js)
+- [ ] README.md with comprehensive editing instructions
+- [ ] ANIMATIONS-README.md with animation documentation
+- [ ] File structure diagram showing organization
+- [ ] Comments throughout code explaining functionality
+- [ ] Example values in config.js showing how to update content
+- [ ] Instructions for replacing placeholder images
+- [ ] Instructions for activating raffle and programs pages
+- [ ] Notes on recommended next steps (backend, payments, deployment)
+
+-----
+
+## SUCCESS CRITERIA
+
+The delivered website should:
+
+- ✅ Load in under 3 seconds on 3G mobile connection
+- ✅ Work perfectly on iPhone SE through iPhone 15 Pro Max
+- ✅ Display correctly in Chrome, Safari, Firefox, and Edge
+- ✅ Score 90+ on Google Lighthouse (Performance, Accessibility, Best Practices)
+- ✅ Allow content updates by editing config.js only (no HTML/CSS knowledge needed)
+- ✅ Include subtle, smooth animations that enhance (not distract from) content
+- ✅ Respect user preferences for reduced motion
+- ✅ Have clear, actionable CTAs throughout
+- ✅ Feel professional, modern, and emotionally resonant
+- ✅ Be ready to go live immediately with placeholder content
+- ✅ Be easily expandable when programs launch
+
+-----
+
+**Provide complete, production-ready code with clear instructions for a non-technical user to manage and grow the website.**
