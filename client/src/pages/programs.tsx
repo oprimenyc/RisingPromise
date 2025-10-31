@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import logoImage from "@assets/logo.png";
 
 const iconMap: Record<string, any> = {
   "Heart": Heart,
@@ -135,6 +136,10 @@ export default function Programs() {
       <div className="min-h-screen bg-background">
         <header className="bg-secondary text-white py-6">
           <div className="container mx-auto px-6">
+            <div className="flex items-center gap-3 mb-4">
+              <img src={logoImage} alt="Rising Promise Logo" className="h-12" />
+              <span className="font-heading text-2xl font-bold">{siteConfig.organization.name}</span>
+            </div>
             <Button 
               variant="ghost" 
               onClick={() => setSelectedProgram(null)}
@@ -279,6 +284,10 @@ export default function Programs() {
     <div className={`min-h-screen bg-background ${pageLoaded ? 'animate-hero-fade' : ''}`}>
       <header className="bg-secondary text-white py-16">
         <div className="container mx-auto px-6">
+          <div className="flex items-center gap-3 mb-6">
+            <img src={logoImage} alt="Rising Promise Logo" className="h-14" />
+            <span className="font-heading text-2xl font-bold">{siteConfig.organization.name}</span>
+          </div>
           <Link href="/">
             <Button variant="ghost" className="text-white mb-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="link-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />

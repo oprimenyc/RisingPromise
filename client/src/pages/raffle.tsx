@@ -7,6 +7,7 @@ import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { Trophy, Ticket, Calendar, Info, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
+import logoImage from "@assets/logo.png";
 
 export default function Raffle() {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -50,6 +51,10 @@ export default function Raffle() {
       {/* Header */}
       <header className="bg-gradient-to-r from-primary to-accent text-white py-16">
         <div className="container mx-auto px-6">
+          <div className="flex items-center gap-3 mb-6">
+            <img src={logoImage} alt="Rising Promise Logo" className="h-14" />
+            <span className="font-heading text-2xl font-bold">{siteConfig.organization.name}</span>
+          </div>
           <Link href="/">
             <Button variant="ghost" className="text-white mb-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="link-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />
