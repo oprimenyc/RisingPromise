@@ -90,7 +90,7 @@ export const siteConfig: SiteConfig = {
       "Why do some people get endless chances while others get none?",
       "Why does where you're born, who raised you, or one bad break determine the rest of your life?",
       "We didn't have a good answer. So we built one.",
-      "Rising Promise exists to give people access to the training, support, and community they need to build the future they deserve — no matter where they're starting from.",
+      "Rising Promise was founded on a single belief: people don't lack potential — they lack access. Access to training that leads somewhere. Access to support when life gets hard. Access to a community that believes in second, third, and hundredth chances.",
     ],
     closing: "We're here to change that.",
   },
@@ -99,10 +99,10 @@ export const siteConfig: SiteConfig = {
   whoWeSee: {
     headline: "We See You",
     paragraphs: [
-      "We see the single mom working two jobs who wants more than survival for her kids.",
-      "We see the veteran who served their country and now needs their country to serve them back.",
-      "We see the young person aging out of foster care, looking for a place to belong.",
-      "We see the person experiencing homelessness who just needs one real shot.",
+      "We see the single mom working two jobs who dreams of a career, not just a paycheck.",
+      "We see the veteran who served this country and now needs this country to serve them back.",
+      "We see the foster kid who aged out of the system but refuses to age out of hope.",
+      "We see the person experiencing homelessness who just needs one real opportunity.",
     ],
     closing: "You're not a statistic. You're not broken. You're not 'at-risk.' You're someone with a story that's still being written.",
   },

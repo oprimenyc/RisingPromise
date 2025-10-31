@@ -355,4 +355,67 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* ============================================================================
+   * MINIMAL ANIMATIONS - Subtle polish only
+   * ============================================================================ */
+
+  /* Hero fade-in on page load */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-hero-fade {
+    animation: fadeIn 1s ease-out forwards;
+  }
+
+  /* Scroll-triggered fade-in for sections */
+  .scroll-reveal {
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+  }
+
+  .scroll-reveal.is-visible {
+    opacity: 1;
+  }
+
+  /* Card stagger animation */
+  .card-stagger > *:nth-child(1) {
+    transition-delay: 0s;
+  }
+  .card-stagger > *:nth-child(2) {
+    transition-delay: 0.15s;
+  }
+  .card-stagger > *:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+  .card-stagger > *:nth-child(4) {
+    transition-delay: 0.45s;
+  }
+
+  /* Minimal button hover - opacity only */
+  .btn-minimal-hover {
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-minimal-hover:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-hero-fade,
+    .scroll-reveal,
+    .card-stagger > *,
+    .btn-minimal-hover {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+    }
+  }
 }

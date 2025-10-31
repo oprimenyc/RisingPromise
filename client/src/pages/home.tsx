@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import { StatCounter } from "@/components/StatCounter";
 import { GraduationCap, Users, Heart, Facebook, Instagram, Linkedin, Twitter, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -21,6 +23,14 @@ export default function Home() {
   const [joinUsEmail, setJoinUsEmail] = useState("");
   const [footerEmail, setFooterEmail] = useState("");
   const { toast } = useToast();
+
+  // Scroll reveal hooks for sections
+  const storyReveal = useScrollReveal();
+  const whoWeSeeReveal = useScrollReveal();
+  const whatWeDoReveal = useScrollReveal();
+  const impactReveal = useScrollReveal();
+  const teamReveal = useScrollReveal();
+  const joinUsReveal = useScrollReveal();
 
   const newsletterMutation = useMutation({
     mutationFn: async (data: { email: string; name?: string; source: string }) =>
@@ -84,7 +94,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background font-sans">
       {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${isScrolled ? 'bg-secondary/95 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-6'}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-secondary/95 shadow-md h-16' : 'bg-transparent h-20'}`}>
         <div className="container mx-auto px-6 flex items-center justify-between">
           <a href="/" className="font-heading text-2xl font-bold text-white" data-testid="link-home">
             {siteConfig.organization.name}
@@ -152,7 +162,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <section 
-        className="relative min-h-screen flex items-center justify-center"
+        className="relative min-h-screen flex items-center justify-center animate-hero-fade"
         style={{
           backgroundImage: `url('${siteConfig.hero.backgroundImage}')`,
           backgroundSize: 'cover',
@@ -173,7 +183,7 @@ export default function Home() {
             <Button 
               onClick={() => scrollToSection(siteConfig.hero.primaryButtonHref)} 
               size="lg" 
-              className="text-lg px-8 py-6"
+              className="text-lg px-8 py-6 btn-minimal-hover"
               data-testid="button-hero-primary"
             >
               {siteConfig.hero.primaryButtonText}
@@ -182,7 +192,7 @@ export default function Home() {
               variant="outline" 
               onClick={() => scrollToSection(siteConfig.hero.secondaryButtonHref)} 
               size="lg" 
-              className="text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-secondary"
+              className="text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-white text-white btn-minimal-hover"
               data-testid="button-hero-secondary"
             >
               {siteConfig.hero.secondaryButtonText}
@@ -194,7 +204,11 @@ export default function Home() {
       {/* Story Section */}
       <section id="story" className="py-20 md:py-32" data-testid="section-story">
         <div className="container mx-auto px-6 max-w-4xl">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-center mb-12" data-testid="text-story-headline">
+          <h2 
+            ref={storyReveal.ref as any}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-12 scroll-reveal ${storyReveal.isVisible ? 'is-visible' : ''}`} 
+            data-testid="text-story-headline"
+          >
             {siteConfig.story.headline}
           </h2>
           <div className="space-y-6">
@@ -213,7 +227,11 @@ export default function Home() {
       {/* Who We See Section */}
       <section id="who-we-see" className="py-20 md:py-32 bg-muted/30" data-testid="section-who-we-see">
         <div className="container mx-auto px-6 max-w-5xl">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-center mb-12" data-testid="text-who-headline">
+          <h2 
+            ref={whoWeSeeReveal.ref as any}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-12 scroll-reveal ${whoWeSeeReveal.isVisible ? 'is-visible' : ''}`}
+            data-testid="text-who-headline"
+          >
             {siteConfig.whoWeSee.headline}
           </h2>
           <div className="space-y-8">
@@ -234,15 +252,19 @@ export default function Home() {
       {/* What We Do Section */}
       <section id="what-we-do" className="py-20 md:py-32" data-testid="section-what-we-do">
         <div className="container mx-auto px-6">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-center mb-12" data-testid="text-what-headline">
+          <h2 
+            ref={whatWeDoReveal.ref as any}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-12 scroll-reveal ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}
+            data-testid="text-what-headline"
+          >
             {siteConfig.whatWeDo.headline}
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto">
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto card-stagger ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}>
             {siteConfig.whatWeDo.features.map((feature, i) => {
               const Icon = iconMap[feature.icon] || GraduationCap;
               return (
-                <Card key={i} className="p-8 text-center hover-elevate active-elevate-2 transition-all duration-200" data-testid={`card-feature-${i}`}>
+                <Card key={i} className="p-8 text-center scroll-reveal hover-elevate active-elevate-2" data-testid={`card-feature-${i}`}>
                   <Icon className="w-16 h-16 mx-auto mb-6 text-primary" />
                   <h3 className="font-heading text-2xl font-bold mb-4" data-testid={`text-feature-title-${i}`}>
                     {feature.title}
@@ -264,7 +286,7 @@ export default function Home() {
           <div className="text-center">
             <Button 
               size="lg" 
-              className="text-lg px-8 py-6" 
+              className="text-lg px-8 py-6 btn-minimal-hover" 
               disabled={siteConfig.whatWeDo.buttonComingSoon}
               data-testid="button-explore-programs"
             >
@@ -280,7 +302,11 @@ export default function Home() {
       {/* Impact Section */}
       <section id="impact" className="py-20 md:py-32 bg-secondary text-white" data-testid="section-impact">
         <div className="container mx-auto px-6">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-center mb-8" data-testid="text-impact-headline">
+          <h2 
+            ref={impactReveal.ref as any}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-8 scroll-reveal ${impactReveal.isVisible ? 'is-visible' : ''}`}
+            data-testid="text-impact-headline"
+          >
             {siteConfig.impact.headline}
           </h2>
           <p className="text-xl md:text-2xl text-center max-w-4xl mx-auto mb-16 text-white/90" data-testid="text-impact-intro">
@@ -290,9 +316,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             {siteConfig.impact.stats.map((stat, i) => (
               <div key={i} className="text-center" data-testid={`card-stat-${i}`}>
-                <div className="font-heading text-6xl md:text-7xl font-bold text-primary mb-4" data-testid={`text-stat-number-${i}`}>
-                  {stat.number}
-                </div>
+                <StatCounter
+                  value={stat.number}
+                  isVisible={impactReveal.isVisible}
+                  className="font-heading text-6xl md:text-7xl font-bold text-primary mb-4 block"
+                  testId={`text-stat-number-${i}`}
+                />
                 <div className="text-xl font-semibold mb-2" data-testid={`text-stat-label-${i}`}>
                   {stat.label}
                 </div>
@@ -314,16 +343,20 @@ export default function Home() {
       {/* Team Section */}
       <section id="team" className="py-20 md:py-32" data-testid="section-team">
         <div className="container mx-auto px-6">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-center mb-8" data-testid="text-team-headline">
+          <h2 
+            ref={teamReveal.ref as any}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-8 scroll-reveal ${teamReveal.isVisible ? 'is-visible' : ''}`}
+            data-testid="text-team-headline"
+          >
             {siteConfig.team.headline}
           </h2>
           <p className="text-xl text-center max-w-3xl mx-auto mb-16 text-muted-foreground" data-testid="text-team-intro">
             {siteConfig.team.introText}
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 card-stagger ${teamReveal.isVisible ? 'is-visible' : ''}`}>
             {siteConfig.team.members.map((member, i) => (
-              <div key={i} className="text-center" data-testid={`card-team-${i}`}>
+              <div key={i} className="text-center scroll-reveal" data-testid={`card-team-${i}`}>
                 <img 
                   src={member.photo} 
                   alt={member.name} 
@@ -352,7 +385,11 @@ export default function Home() {
       {/* Join Us Section */}
       <section id="join-us" className="py-20 md:py-32 bg-muted/30" data-testid="section-join-us">
         <div className="container mx-auto px-6">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-center mb-16" data-testid="text-join-headline">
+          <h2 
+            ref={joinUsReveal.ref as any}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-16 scroll-reveal ${joinUsReveal.isVisible ? 'is-visible' : ''}`}
+            data-testid="text-join-headline"
+          >
             {siteConfig.joinUs.headline}
           </h2>
           
@@ -382,7 +419,7 @@ export default function Home() {
                 />
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full btn-minimal-hover" 
                   disabled={newsletterMutation.isPending}
                   data-testid="button-need-submit"
                 >
@@ -407,7 +444,7 @@ export default function Home() {
                   <Button 
                     key={i} 
                     variant="outline" 
-                    className="flex items-center justify-center gap-2 h-auto py-4"
+                    className="flex items-center justify-center gap-2 h-auto py-4 btn-minimal-hover"
                     disabled={action.comingSoon}
                     data-testid={`button-action-${i}`}
                   >
@@ -494,7 +531,7 @@ export default function Home() {
                 <Button 
                   type="submit"
                   variant="secondary" 
-                  className="w-full bg-accent hover:bg-accent/90"
+                  className="w-full bg-accent btn-minimal-hover"
                   disabled={newsletterMutation.isPending}
                   data-testid="button-footer-subscribe"
                 >
