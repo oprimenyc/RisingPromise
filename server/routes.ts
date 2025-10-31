@@ -160,12 +160,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: "Stripe is not configured" });
       }
 
-      // In production, verify the webhook signature
-      // const sig = req.headers['stripe-signature'];
-      // const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      const sig = req.headers['stripe-signature'];
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-      // For now, accept the event directly (development mode)
-      const event = req.body;
+      if (!sig) {
+        console.error("Missing stripe-signature header");
+        return res.status(400).json({ error: "Missing signature" });
+      }
+
+      if (!webhookSecret) {
+        console.error("STRIPE_WEBHOOK_SECRET not configured");
+        return res.status(500).json({ error: "Webhook secret not configured" });
+      }
+
+      // Verify the webhook signature
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.rawBody as Buffer,
+          sig,
+          webhookSecret
+        );
+      } catch (err: any) {
+        console.error("Webhook signature verification failed:", err.message);
+        return res.status(400).json({ error: `Webhook signature verification failed: ${err.message}` });
+      }
 
       // Handle the checkout.session.completed event
       if (event.type === 'checkout.session.completed') {
@@ -179,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
 
         // TODO: Send confirmation email with tax receipt
-        // This will be implemented next
+        // This will be implemented when email service is integrated
         console.log(`✅ Donation completed: ${session.id}`);
       }
 
