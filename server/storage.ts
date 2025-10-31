@@ -2,9 +2,11 @@ import type {
   InsertNewsletterSignup, 
   NewsletterSignup,
   InsertProgramApplication,
-  ProgramApplication 
+  ProgramApplication,
+  InsertDonation,
+  Donation
 } from "@shared/schema";
-import { newsletterSignups, programApplications } from "@shared/schema";
+import { newsletterSignups, programApplications, donations } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -20,6 +22,13 @@ export interface IStorage {
   getAllProgramApplications(): Promise<ProgramApplication[]>;
   getProgramApplicationsByType(programType: string): Promise<ProgramApplication[]>;
   updateProgramApplicationStatus(id: number, status: string): Promise<ProgramApplication | undefined>;
+
+  // Donation operations
+  createDonation(donation: InsertDonation): Promise<Donation>;
+  getDonationBySessionId(sessionId: string): Promise<Donation | undefined>;
+  updateDonationPaymentStatus(sessionId: string, paymentIntentId: string, status: string): Promise<Donation | undefined>;
+  markReceiptSent(id: number): Promise<Donation | undefined>;
+  getAllDonations(): Promise<Donation[]>;
 }
 
 export class DbStorage implements IStorage {
@@ -64,6 +73,42 @@ export class DbStorage implements IStorage {
       .where(eq(programApplications.id, id))
       .returning();
     return result;
+  }
+
+  // Donation operations
+  async createDonation(donation: InsertDonation): Promise<Donation> {
+    const [result] = await db.insert(donations).values(donation).returning();
+    return result;
+  }
+
+  async getDonationBySessionId(sessionId: string): Promise<Donation | undefined> {
+    const [result] = await db.select().from(donations).where(eq(donations.stripeSessionId, sessionId));
+    return result;
+  }
+
+  async updateDonationPaymentStatus(sessionId: string, paymentIntentId: string, status: string): Promise<Donation | undefined> {
+    const [result] = await db
+      .update(donations)
+      .set({ 
+        stripePaymentIntentId: paymentIntentId,
+        stripePaymentStatus: status 
+      })
+      .where(eq(donations.stripeSessionId, sessionId))
+      .returning();
+    return result;
+  }
+
+  async markReceiptSent(id: number): Promise<Donation | undefined> {
+    const [result] = await db
+      .update(donations)
+      .set({ receiptSent: new Date() })
+      .where(eq(donations.id, id))
+      .returning();
+    return result;
+  }
+
+  async getAllDonations(): Promise<Donation[]> {
+    return await db.select().from(donations);
   }
 }
 

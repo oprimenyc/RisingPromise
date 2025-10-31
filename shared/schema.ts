@@ -281,3 +281,34 @@ export const insertProgramApplicationSchema = createInsertSchema(programApplicat
 
 export type InsertProgramApplication = z.infer<typeof insertProgramApplicationSchema>;
 export type ProgramApplication = typeof programApplications.$inferSelect;
+
+// Donations Table
+export const donations = pgTable("donations", {
+  id: serial("id").primaryKey(),
+  
+  // Donor Info
+  donorName: text("donor_name"),
+  donorEmail: text("donor_email").notNull(),
+  
+  // Payment Info
+  amount: integer("amount").notNull(), // Amount in cents
+  currency: text("currency").notNull().default("usd"),
+  
+  // Stripe Info
+  stripeSessionId: text("stripe_session_id").notNull().unique(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripePaymentStatus: text("stripe_payment_status").notNull(), // 'pending', 'succeeded', 'failed'
+  
+  // Metadata
+  donatedAt: timestamp("donated_at").defaultNow().notNull(),
+  receiptSent: timestamp("receipt_sent"),
+});
+
+export const insertDonationSchema = createInsertSchema(donations).omit({
+  id: true,
+  donatedAt: true,
+  receiptSent: true,
+});
+
+export type InsertDonation = z.infer<typeof insertDonationSchema>;
+export type Donation = typeof donations.$inferSelect;
