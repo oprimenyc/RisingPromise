@@ -8,6 +8,35 @@ Rising Promise is a nonprofit website designed to empower vulnerable populations
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### Donation System Implementation (October 31, 2025)
+- **Stripe Integration**: Configured Stripe payment processing for nonprofit donations
+  - Installed Stripe packages and blueprint integration
+  - Requires three environment secrets: `STRIPE_SECRET_KEY`, `VITE_STRIPE_PUBLIC_KEY`, `STRIPE_WEBHOOK_SECRET`
+  
+- **Database Schema**: Added `donations` table to track all donation transactions
+  - Fields: donorName, donorEmail, amount, currency, stripeSessionId, stripePaymentIntentId, stripePaymentStatus
+  - Status tracking: pending → succeeded (via webhook confirmation)
+  
+- **Backend API Endpoints**:
+  - `POST /api/donations/create-checkout-session`: Creates Stripe Checkout session and redirects to hosted payment page
+  - `POST /api/webhooks/stripe`: Receives Stripe webhook events with signature verification (security-critical)
+  
+- **Frontend Features**:
+  - Donation dialog with preset amounts ($25, $50, $100, $250, $500) and custom amount option
+  - Donor name (optional) and email (required for tax receipt) collection
+  - Integration with "Donate Now" button in Join Us section
+  - Redirects to Stripe Checkout for secure payment processing
+  
+- **Security**: 
+  - Webhook signature verification using `stripe.webhooks.constructEvent` to prevent forged payment confirmations
+  - Raw body preservation in Express middleware for signature validation
+  
+- **Future Enhancements**:
+  - Email confirmation with tax receipt (requires email service integration like SendGrid or Resend)
+  - 501(c)(3) status disclosure included in donation dialog
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -73,6 +102,10 @@ Preferred communication style: Simple, everyday language.
 - Note: Database may not be actively used yet; Drizzle setup is infrastructure-ready
 
 **Third-Party Services & APIs**
+- **Stripe** - Payment processing for donations (v17.4.0)
+  - Stripe Checkout for hosted payment pages
+  - Webhook signature verification for secure payment confirmations
+  - Test mode configured for development (requires STRIPE_SECRET_KEY, VITE_STRIPE_PUBLIC_KEY, STRIPE_WEBHOOK_SECRET)
 - **Google Fonts CDN** - Montserrat and Open Sans typography
 - **Unsplash** - Stock photography for hero images and backgrounds
 - **Font Awesome** - Icon library (referenced in static HTML files in `public/`)
