@@ -322,7 +322,7 @@ export default function Home() {
             {siteConfig.whatWeDo.features.map((feature, i) => {
               const Icon = iconMap[feature.icon] || GraduationCap;
               return (
-                <Card key={i} className="p-8 text-center scroll-reveal hover-elevate active-elevate-2" data-testid={`card-feature-${i}`}>
+                <Card key={i} className="p-8 text-center hover-elevate active-elevate-2" data-testid={`card-feature-${i}`}>
                   <Icon className="w-16 h-16 mx-auto mb-6 text-primary" />
                   <h3 className="font-heading text-2xl font-bold mb-4" data-testid={`text-feature-title-${i}`}>
                     {feature.title}
@@ -414,7 +414,7 @@ export default function Home() {
           
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 card-stagger ${teamReveal.isVisible ? 'is-visible' : ''}`}>
             {siteConfig.team.members.map((member, i) => (
-              <div key={i} className="text-center scroll-reveal" data-testid={`card-team-${i}`}>
+              <div key={i} className="text-center" data-testid={`card-team-${i}`}>
                 <img 
                   src={member.photo} 
                   alt={member.name} 
