@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import logoImage from "@assets/logo.png";
+import horizontalLogoImage from "@assets/rising_promise_horizontal_logo_final_1762216155922.png";
 
 const iconMap: Record<string, any> = {
   "Graduation Cap": GraduationCap,
@@ -153,9 +154,8 @@ export default function Home() {
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-secondary/95 shadow-md h-16' : 'bg-transparent h-20'}`}>
         <div className="container mx-auto px-6 flex items-center justify-between h-full">
-          <a href="/" className="flex items-center gap-3" data-testid="link-home">
-            <img src={logoImage} alt="Rising Promise Logo" className={`transition-all duration-300 ${isScrolled ? 'h-10' : 'h-14'}`} />
-            <span className="font-heading text-2xl font-bold text-white">{siteConfig.organization.name}</span>
+          <a href="/" className="flex items-center" data-testid="link-home">
+            <img src={horizontalLogoImage} alt="Rising Promise" className={`transition-all duration-300 ${isScrolled ? 'h-8' : 'h-12'}`} />
           </a>
           <nav className="hidden md:flex gap-8" data-testid="nav-desktop">
             {siteConfig.navigation.menuItems.map((item, i) => (
