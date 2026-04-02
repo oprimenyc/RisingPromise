@@ -26,14 +26,13 @@ export default function Raffle() {
         <Card className="max-w-2xl p-12 text-center">
           <Trophy className="w-24 h-24 mx-auto mb-6 text-primary" />
           <h1 className="font-heading text-4xl font-bold mb-4" data-testid="text-raffle-coming-soon">
-            Raffle Coming Soon!
+            Something Big Is Coming
           </h1>
           <p className="text-xl text-muted-foreground mb-6">
-            We're getting ready to launch an exciting raffle that will fund scholarships and training programs. 
-            Every ticket helps build futures.
+            We're launching a raffle to fund scholarships and wraparound support for our first student cohort. Every ticket directly funds a real person's shot at a new career.
           </p>
           <p className="text-lg mb-8">
-            Sign up for our newsletter on the homepage to be the first to know when tickets go on sale.
+            Sign up on our homepage to be the first to know when tickets go on sale — and get an exclusive early-access offer.
           </p>
           <Link href="/">
             <Button size="lg" className="no-default-hover-elevate no-default-active-elevate btn-minimal-hover" data-testid="button-back-home">
@@ -74,7 +73,7 @@ export default function Raffle() {
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-6">
           <h2 ref={prizesRef.ref as any} className="font-heading text-4xl font-bold text-center mb-12 scroll-reveal" data-testid="text-prizes-headline">
-            What You Can Win
+            What You Could Win
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto card-stagger scroll-reveal">
             {siteConfig.raffle.prizes.map((prize, i) => (
@@ -102,7 +101,7 @@ export default function Raffle() {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <h2 ref={pricingRef.ref as any} className="font-heading text-4xl font-bold text-center mb-12 scroll-reveal" data-testid="text-pricing-headline">
-            Choose Your Entries
+            Choose Your Impact
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto card-stagger scroll-reveal">
             {siteConfig.raffle.ticketPricing.map((option, i) => (
@@ -198,7 +197,7 @@ export default function Raffle() {
         <div className="container mx-auto px-6 text-center">
           <h2 className="font-heading text-4xl font-bold mb-4">Ready to Make a Difference?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Buy your raffle tickets today. Win big. Change lives.
+            Buy a ticket. Fund a future. Win big.
           </p>
           <Button size="lg" variant="secondary" className="bg-white text-primary no-default-hover-elevate no-default-active-elevate btn-minimal-hover" disabled data-testid="button-buy-cta">
             Get Your Tickets (Coming Soon)

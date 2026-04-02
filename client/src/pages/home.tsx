@@ -312,11 +312,16 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <h2 
             ref={whatWeDoReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-12 scroll-reveal ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}
+            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-6 scroll-reveal ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}
             data-testid="text-what-headline"
           >
             {siteConfig.whatWeDo.headline}
           </h2>
+          {siteConfig.whatWeDo.introText && (
+            <p className="text-xl text-center max-w-4xl mx-auto mb-12 text-muted-foreground leading-relaxed" data-testid="text-what-intro">
+              {siteConfig.whatWeDo.introText}
+            </p>
+          )}
           
           <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto card-stagger ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}>
             {siteConfig.whatWeDo.features.map((feature, i) => {
@@ -507,6 +512,22 @@ export default function Home() {
                     onClick={() => {
                       if (action.text === "Donate Now" && !action.comingSoon) {
                         setDonationDialogOpen(true);
+                      } else if (action.text === "Partner With Us" && !action.comingSoon) {
+                        window.location.href = "mailto:info@risingpromise.org";
+                      } else if (action.text === "Share Our Story" && !action.comingSoon) {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: "Rising Promise",
+                            text: "Everyone deserves a fighting chance. Rising Promise is building workforce training programs for people who need it most.",
+                            url: window.location.origin,
+                          }).catch(() => {});
+                        } else {
+                          navigator.clipboard.writeText(window.location.origin).then(() => {
+                            toast({ title: "Link copied!", description: "Share link has been copied to your clipboard." });
+                          }).catch(() => {
+                            toast({ title: "Share", description: `Visit us at ${window.location.origin}` });
+                          });
+                        }
                       }
                     }}
                     data-testid={`button-action-${i}`}
@@ -530,10 +551,9 @@ export default function Home() {
       <Dialog open={donationDialogOpen} onOpenChange={setDonationDialogOpen}>
         <DialogContent className="sm:max-w-md" data-testid="dialog-donation">
           <DialogHeader>
-            <DialogTitle>Make a Donation</DialogTitle>
+            <DialogTitle>Make a Donation to Rising Promise</DialogTitle>
             <DialogDescription>
-              Your donation helps us provide workforce training and support to those who need it most.
-              We are currently awaiting 501(c)(3) status.
+              Your donation directly funds workforce training, wraparound support, and job placement for people rebuilding their lives. Rising Promise is a registered 501(c)(3) nonprofit — your gift is tax-deductible.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleDonationSubmit} className="space-y-6">
@@ -557,7 +577,7 @@ export default function Home() {
                 ))}
               </div>
               <div>
-                <Label htmlFor="customAmount">Or enter custom amount</Label>
+                <Label htmlFor="customAmount">Or enter a custom amount</Label>
                 <Input
                   id="customAmount"
                   type="number"
@@ -586,7 +606,7 @@ export default function Home() {
             </div>
 
             <div>
-              <Label htmlFor="donorEmail">Email *</Label>
+              <Label htmlFor="donorEmail">Email Address *</Label>
               <Input
                 id="donorEmail"
                 type="email"
@@ -607,11 +627,11 @@ export default function Home() {
               disabled={donationMutation.isPending}
               data-testid="button-donate-submit"
             >
-              {donationMutation.isPending ? "Processing..." : "Continue to Payment"}
+              {donationMutation.isPending ? "Processing..." : "Continue to Secure Payment"}
             </Button>
 
             <p className="text-xs text-center text-muted-foreground">
-              You'll be redirected to Stripe's secure checkout to complete your donation.
+              You'll be redirected to Stripe's secure checkout. Rising Promise is a 501(c)(3) nonprofit. EIN available upon request.
             </p>
           </form>
         </DialogContent>
@@ -671,11 +691,12 @@ export default function Home() {
             </div>
             
             <div>
-              <h4 className="font-heading font-bold mb-4">Stay Connected</h4>
+              <h4 className="font-heading font-bold mb-2">Stay Connected</h4>
+              <p className="text-sm opacity-80 mb-3">Get program updates, impact stories, and ways to get involved.</p>
               <form className="space-y-2" onSubmit={handleFooterSubmit} data-testid="form-footer-newsletter">
                 <Input 
                   type="email"
-                  placeholder="Your Email" 
+                  placeholder="Your Email Address" 
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
                   value={footerEmail}
                   onChange={(e) => setFooterEmail(e.target.value)}
@@ -697,7 +718,7 @@ export default function Home() {
           
           <div className="border-t border-white/10 pt-8 text-center text-sm">
             <p className="opacity-80 mb-2" data-testid="text-footer-copyright">
-              © 2025 {siteConfig.organization.name}. All rights reserved.
+              © 2026 {siteConfig.organization.name}. All rights reserved.
             </p>
             <p className="opacity-70" data-testid="text-footer-nonprofit">
               {siteConfig.organization.nonprofitStatus}

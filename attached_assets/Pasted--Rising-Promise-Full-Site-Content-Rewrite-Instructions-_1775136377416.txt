@@ -1,0 +1,313 @@
+# Rising Promise — Full Site Content Rewrite
+
+## Instructions for Replit AI
+
+You are updating the content across the entire Rising Promise website. This covers all three pages: `home.tsx`, `programs.tsx`, and `raffle.tsx`, plus the footer and donation dialog. Do NOT change any layouts, animations, component structures, color schemes, or feature flags. Only update the text content, labels, and copy exactly as specified below.
+
+-----
+
+## CRITICAL FIXES — Apply These First
+
+1. **501(c)(3) status:** Remove all instances of “status pending” — replace with “501(c)(3) nonprofit”
+1. **Phone number:** Replace `(555) 123-4567` with `[PHONE — TO BE ADDED]` as a visible placeholder
+1. **Address:** Replace `123 Hope Street, Your City, ST 12345` with `Texas-Based. Serving Communities Nationwide.`
+1. **Copyright year:** Update to `© 2026 Rising Promise. All rights reserved.`
+1. **Raffle draw date:** Remove `June 15, 2025` — replace with `Date To Be Announced`
+1. **“Partner With Us” button:** Wire to scroll to `#footer` or open a mailto: `info@risingpromise.org`
+1. **“Share Our Story” button:** Wire to open native share dialog using `navigator.share()` — fallback to copying the URL
+
+-----
+
+## PAGE 1: HOME (home.tsx)
+
+### HERO SECTION
+
+- **Headline:** Everyone Deserves a Fighting Chance
+- **Subheadline:** We believe potential isn’t determined by your past — it’s unlocked by your future.
+- **Primary Button:** Learn Our Story → scrolls to #story
+- **Secondary Button:** Get Involved → scrolls to #join-us
+
+-----
+
+### STORY SECTION
+
+- **Headline:** It Started With a Simple Question: Why Not?
+- **Paragraph 1:** Why do some people get endless chances while others get none?
+- **Paragraph 2:** Why does where you’re born, who raised you, or one bad break determine the rest of your life?
+- **Paragraph 3:** We didn’t have a good answer. So we built one.
+- **Paragraph 4:** Rising Promise was founded on a single belief: people don’t lack potential — they lack access. Access to training that leads somewhere. Access to support when life gets hard. Access to a community that believes in second, third, and hundredth chances.
+- **Closing:** We’re here to change that.
+
+-----
+
+### WHO WE SEE SECTION
+
+- **Headline:** We See You
+- **Line 1:** We see the single mom working two jobs who dreams of a career, not just a paycheck.
+- **Line 2:** We see the veteran who served this country and now needs this country to serve them back.
+- **Line 3:** We see the foster kid who aged out of the system but refuses to age out of hope.
+- **Line 4:** We see the person experiencing homelessness who just needs one real opportunity.
+- **Highlighted Box:** You’re not a statistic. You’re not broken. You’re not a label. You’re someone with a story that’s still being written — and we’re here to help you write the next chapter.
+
+-----
+
+### WHAT WE DO SECTION
+
+- **Headline:** We Don’t Just Train People. We Invest in Them.
+- **Intro (add above cards):** Rising Promise is a government-registered, 501(c)(3) nonprofit building workforce pipelines in healthcare and technology for people who need it most. Every program we run is designed to lead directly to employment — not just a certificate.
+
+**Card 1:**
+
+- Icon: GraduationCap
+- Title: Career Certification Training
+- Description: Industry-recognized credentials in healthcare (CNA) and technology (CompTIA IT). Programs designed for people with no prior experience — built to get you hired.
+
+**Card 2:**
+
+- Icon: Users
+- Title: Wraparound Support
+- Description: Job placement assistance, progress coaching, and connections to housing and childcare resources. We remove the barriers that get in the way of finishing what you started.
+
+**Card 3:**
+
+- Icon: Heart
+- Title: A Community Built on Investment
+- Description: Employers partner with us because our graduates are ready. Funders invest in us because our model works. You belong here because we built this for you.
+- **Promise Box:** Our Promise: If you show up ready to fight for your future, we will fight with you. Every step.
+- **Button:** Explore Our Programs → links to /programs (keep existing Coming Soon badge behavior)
+
+-----
+
+### IMPACT SECTION
+
+- **Headline:** This Is What Change Looks Like
+- **Intro:** One person trained is one family lifted. One career started is one community strengthened.
+
+**Stat Card 1:**
+
+- Number: 125+
+- Label: Lives We’re Built to Serve
+- Sub-label: Year 1 Target
+
+**Stat Card 2:**
+
+- Number: 90%
+- Label: Projected Job Placement Rate
+- Sub-label: Based on program design & industry data
+
+**Stat Card 3:**
+
+- Number: $3.2M+
+- Label: Projected Graduate Earnings
+- Sub-label: Estimated Year 1 Community Impact
+- **Closing:** We are transparent about where we are: these are our Year 1 targets — built on industry data, program design, and an unshakeable commitment to accountability. We’re not waiting for permission to build something that works. We’re building it right now.
+
+-----
+
+### TEAM SECTION
+
+- **Headline:** Built by People Who’ve Been There
+- **Intro:** This isn’t theory. This is personal.
+
+**Team Member 1:**
+
+- Name: Jason Pilgrim
+- Title: Founder & Executive Director
+- Quote: “I’ve spent my life building things — businesses, systems, solutions. But the most important thing I’ve ever built is opportunity for people who were told they didn’t deserve one.”
+
+**Team Member 2:**
+
+- Name: Shawn J. Wright, FNP
+- Title: Program Director
+- Quote: “I became a nurse because I wanted to help people heal. Now I help them build futures.”
+
+**Team Member 3:**
+
+- Name: Melissa Meeham, MPA
+- Title: Finance & Administration
+- Quote: “Twenty years in nonprofit finance taught me one thing: sustainability isn’t about money. It’s about mission.”
+
+**Team Member 4:**
+
+- Name: Kenya Roberts, CFRE
+- Title: Development & Fundraising Director
+- Quote: “I’ve raised millions for causes. But this one? This one’s personal.”
+- **Closing:** We’re not saviors. We’re partners.
+
+-----
+
+### JOIN US SECTION
+
+- **Headline:** Be Part of the Promise
+
+**Left Card — “If You Need Us”:**
+
+- Subheadline: If You Need Us
+- Text: You’re not alone anymore. We’re building something designed specifically for you — and we want you to be first to know when doors open.
+- Form fields: Your Name (placeholder), Your Email (required)
+- Button: Get Updates
+- Note: Be the first to know when programs launch. No spam — ever.
+
+**Right Card — “If You Believe in Us”:**
+
+- Subheadline: If You Believe in Us
+- Text: Help us keep this promise. Whether you give $25 or your company’s partnership, you’re directly funding someone’s shot at a new life.
+- Button 1: Enter the Raffle → /raffle (keep Coming Soon badge)
+- Button 2: Donate Now → opens donation dialog
+- Button 3: Partner With Us → mailto:info@risingpromise.org
+- Button 4: Share Our Story → navigator.share() with fallback
+- **Closing:** This isn’t charity. It’s investment in people who are ready to invest in themselves.
+
+-----
+
+### DONATION DIALOG
+
+- **Title:** Make a Donation to Rising Promise
+- **Description:** Your donation directly funds workforce training, wraparound support, and job placement for people rebuilding their lives. Rising Promise is a registered 501(c)(3) nonprofit — your gift is tax-deductible.
+- **Preset amounts:** $25 / $50 / $100 / $250 / $500
+- **Custom amount label:** Or enter a custom amount
+- **Name field:** Name (Optional)
+- **Email field:** Email Address *
+- **Email note:** Required for your tax receipt
+- **Submit button:** Continue to Secure Payment
+- **Footer note:** You’ll be redirected to Stripe’s secure checkout. Rising Promise is a 501(c)(3) nonprofit. EIN available upon request.
+
+-----
+
+### FOOTER
+
+**Column 1:**
+
+- Name: Rising Promise
+- Tagline: Everyone deserves a fighting chance. We’re here to make sure they get it.
+- Social icons: Facebook, Instagram, LinkedIn, Twitter
+
+**Column 2 — Quick Links:**
+
+- Our Story | Our Team | Programs | Get Involved | Contact
+
+**Column 3 — Contact:**
+
+- Email: info@risingpromise.org
+- Phone: [PHONE — TO BE ADDED]
+- Location: Texas-Based. Serving Communities Nationwide.
+
+**Column 4 — Stay Connected:**
+
+- Heading: Stay Connected
+- Subtext: Get program updates, impact stories, and ways to get involved.
+- Email input placeholder: Your Email Address
+- Button: Subscribe
+
+**Bottom bar:**
+
+- © 2026 Rising Promise. All rights reserved.
+- 501(c)(3) nonprofit | Registered in Texas | SAM.gov Registered
+
+-----
+
+## PAGE 2: PROGRAMS (/programs)
+
+### “Coming Soon” State (programsActive: false) — NO CHANGE NEEDED
+
+### Active State — Update the following:
+
+**Page Header:**
+
+- Headline: Real Skills. Real Jobs. Real Change.
+- Intro: Choose your path. Every program Rising Promise offers is built to lead directly to employment — with job placement support included.
+
+**CNA Program Card:**
+
+- Title: Certified Nursing Assistant (CNA)
+- Duration: 4–6 Weeks
+- Salary: $32,000–$45,000/year starting
+- Format: Hybrid — Online coursework + In-person clinicals
+- Certification: State CNA Certification
+- Description (add below title): Healthcare is one of the fastest-growing fields in America. CNA-certified graduates are in demand nationwide — and we train you from zero experience to job-ready.
+
+**IT Program Card:**
+
+- Title: IT Support Specialist
+- Duration: 8–12 Weeks
+- Salary: $40,000–$60,000/year starting
+- Format: Fully Online with Live Instruction
+- Certification: CompTIA A+ & Network+
+- Description (add below title): Tech jobs are everywhere. You don’t need a degree — you need the right certification and a team behind you. We provide both.
+
+**Application Form — Section Labels:**
+
+- Section 1 heading: Your Information
+- Section 2 heading: Eligibility Questions
+- Section 3 heading: Tell Us Your Story (100–500 words)
+- Motivation label: Why do you want to join this program? What would this mean for your life?
+- Submit button: Submit My Application
+
+-----
+
+## PAGE 3: RAFFLE (/raffle)
+
+### “Coming Soon” State (raffleActive: false) — Currently Active:
+
+- **Headline:** Something Big Is Coming
+- **Text:** We’re launching a raffle to fund scholarships and wraparound support for our first student cohort. Every ticket directly funds a real person’s shot at a new career.
+- **Paragraph:** Sign up on our homepage to be the first to know when tickets go on sale — and get an exclusive early-access offer.
+- **Button:** Back to Homepage
+
+### Active Raffle State (raffleActive: true):
+
+- **Page Headline:** Win Big. Change Lives.
+- **Subheadline:** Every ticket you buy funds workforce training for someone who needs it most. And you might just win $10,000.
+
+**Prizes Section Headline:** What You Could Win
+
+|Place    |Value  |Description     |
+|---------|-------|----------------|
+|1st Prize|$10,000|Cash Grand Prize|
+|2nd Prize|$2,500 |Cash Prize      |
+|3rd Prize|$1,000 |Cash Prize      |
+
+**Pricing Section Headline:** Choose Your Impact
+
+|Price|Entries   |Description                       |
+|-----|----------|----------------------------------|
+|$25  |1 Entry   |One ticket, one chance            |
+|$100 |5 Entries |Best value — 20% bonus entries    |
+|$250 |15 Entries|Maximum impact — 50% bonus entries|
+
+**Details Section:**
+
+- Draw Date: Date To Be Announced
+- Total Tickets Available: 5,000
+- Where Proceeds Go: 100% of net proceeds fund scholarships, training materials, and wraparound support for Rising Promise students.
+
+**FAQ Updates:**
+
+- Q1: How do I know this is legitimate?
+- A1: Rising Promise is a registered 501(c)(3) nonprofit operating under Texas law. All raffle proceeds are tracked, reported, and publicly accountable. We are registered with the Texas Attorney General’s office.
+- Q2: Can I donate my winnings back?
+- A2: Absolutely. Winners can choose to donate all or part of their prize back to Rising Promise as a fully tax-deductible contribution.
+- Q3: What if I don’t win?
+- A3: Your money still builds something real. Every dollar goes directly to training costs, support services, and job placement for people rebuilding their lives.
+
+**CTA Section:**
+
+- Headline: Ready to Make a Difference?
+- Text: Buy a ticket. Fund a future. Win big.
+- Button: Get Your Tickets (Coming Soon) — keep disabled state
+
+-----
+
+## FINAL CHECKLIST FOR REPLIT AI
+
+After making all changes above, verify the following:
+
+- [ ] No instance of “501(c)(3) nonprofit (status pending)” remains anywhere on the site
+- [ ] No fake phone number (555) remains
+- [ ] No fake address remains
+- [ ] No June 2025 date remains on raffle page
+- [ ] “Partner With Us” button has a working action (mailto or scroll)
+- [ ] “Share Our Story” button has a working action (navigator.share)
+- [ ] Footer year reads 2026
+- [ ] Donation dialog no longer says “awaiting 501(c)(3) status”
+- [ ] All other layouts, animations, colors, and feature flags remain untouched

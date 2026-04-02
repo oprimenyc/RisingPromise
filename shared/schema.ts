@@ -64,6 +64,7 @@ export const featureSchema = z.object({
 
 export const whatWeDoSchema = z.object({
   headline: z.string(),
+  introText: z.string().optional(),
   features: z.array(featureSchema),
   promise: z.string(),
   buttonText: z.string(),
@@ -142,6 +143,7 @@ export type JoinUs = z.infer<typeof joinUsSchema>;
 export const programSchema = z.object({
   visible: z.boolean(),
   title: z.string(),
+  description: z.string().optional(),
   icon: z.string(),
   image: z.string(),
   duration: z.string(),

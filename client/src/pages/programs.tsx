@@ -157,7 +157,7 @@ export default function Programs() {
         <div className="container mx-auto px-6 py-12 max-w-3xl">
           <form onSubmit={handleSubmit} className="space-y-6" data-testid="form-program-application">
             <Card className="p-6">
-              <h3 className="font-heading text-xl font-bold mb-4">Personal Information</h3>
+              <h3 className="font-heading text-xl font-bold mb-4">Your Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name *</Label>
@@ -207,7 +207,7 @@ export default function Programs() {
             </Card>
 
             <Card className="p-6">
-              <h3 className="font-heading text-xl font-bold mb-4">Eligibility</h3>
+              <h3 className="font-heading text-xl font-bold mb-4">Eligibility Questions</h3>
               
               <div className="mb-4">
                 <Label className="mb-2 block">Do you have a high school diploma or GED? *</Label>
@@ -247,8 +247,8 @@ export default function Programs() {
             </Card>
 
             <Card className="p-6">
-              <h3 className="font-heading text-xl font-bold mb-4">Motivation Statement</h3>
-              <Label htmlFor="motivation">Why do you want to join this program? * (100-500 words)</Label>
+              <h3 className="font-heading text-xl font-bold mb-4">Tell Us Your Story (100–500 words)</h3>
+              <Label htmlFor="motivation">Why do you want to join this program? What would this mean for your life?</Label>
               <Textarea
                 id="motivation"
                 required
@@ -272,7 +272,7 @@ export default function Programs() {
               disabled={applicationMutation.isPending}
               data-testid="button-submit-application"
             >
-              {applicationMutation.isPending ? "Submitting..." : "Submit Application"}
+              {applicationMutation.isPending ? "Submitting..." : "Submit My Application"}
             </Button>
           </form>
         </div>
@@ -294,9 +294,9 @@ export default function Programs() {
               Back to Homepage
             </Button>
           </Link>
-          <h1 ref={headlineRef.ref as any} className="font-heading text-5xl font-bold mb-4 scroll-reveal" data-testid="text-programs-headline">Our Training Programs</h1>
+          <h1 ref={headlineRef.ref as any} className="font-heading text-5xl font-bold mb-4 scroll-reveal" data-testid="text-programs-headline">Real Skills. Real Jobs. Real Change.</h1>
           <p className="text-xl opacity-90 max-w-3xl" data-testid="text-programs-intro">
-            Real skills. Real jobs. Real change. Choose your path to a better future.
+            Choose your path. Every program Rising Promise offers is built to lead directly to employment — with job placement support included.
           </p>
         </div>
       </header>
@@ -322,6 +322,11 @@ export default function Programs() {
                       {data.title}
                     </h2>
                   </div>
+                  {data.description && (
+                    <p className="text-muted-foreground mb-4 leading-relaxed" data-testid={`text-program-desc-${key}`}>
+                      {data.description}
+                    </p>
+                  )}
 
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="flex items-center gap-2">

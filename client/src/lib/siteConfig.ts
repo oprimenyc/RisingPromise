@@ -38,9 +38,9 @@ export const siteConfig: SiteConfig = {
     name: "Rising Promise",
     tagline: "Everyone deserves a fighting chance. We're here to make sure they get it.",
     email: "info@risingpromise.org",
-    phone: "(555) 123-4567",
-    address: "123 Hope Street, Your City, ST 12345",
-    nonprofitStatus: "501(c)(3) nonprofit (status pending)",
+    phone: "[PHONE — TO BE ADDED]",
+    address: "Texas-Based. Serving Communities Nationwide.",
+    nonprofitStatus: "501(c)(3) nonprofit | Registered in Texas | SAM.gov Registered",
   },
 
   /**
@@ -78,7 +78,7 @@ export const siteConfig: SiteConfig = {
     subheadline: "We believe potential isn't determined by your past — it's unlocked by your future.",
     primaryButtonText: "Learn Our Story",
     primaryButtonHref: "#story",
-    secondaryButtonText: "Get Updates",
+    secondaryButtonText: "Get Involved",
     secondaryButtonHref: "#join-us",
     backgroundImage: "https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1920&q=80",
   },
@@ -104,30 +104,31 @@ export const siteConfig: SiteConfig = {
       "We see the foster kid who aged out of the system but refuses to age out of hope.",
       "We see the person experiencing homelessness who just needs one real opportunity.",
     ],
-    closing: "You're not a statistic. You're not broken. You're not 'at-risk.' You're someone with a story that's still being written.",
+    closing: "You're not a statistic. You're not broken. You're not a label. You're someone with a story that's still being written — and we're here to help you write the next chapter.",
   },
 
   // WHAT WE DO SECTION
   whatWeDo: {
     headline: "We Don't Just Train People. We Invest in Them.",
+    introText: "Rising Promise is a government-registered, 501(c)(3) nonprofit building workforce pipelines in healthcare and technology for people who need it most. Every program we run is designed to lead directly to employment — not just a certificate.",
     features: [
       {
         icon: "Graduation Cap",
-        title: "Career Training",
-        description: "Real skills for real jobs in healthcare, technology, and beyond",
+        title: "Career Certification Training",
+        description: "Industry-recognized credentials in healthcare (CNA) and technology (CompTIA IT). Programs designed for people with no prior experience — built to get you hired.",
       },
       {
         icon: "Users",
-        title: "Holistic Support",
-        description: "Because success isn't just about what you know. It's about having someone in your corner",
+        title: "Wraparound Support",
+        description: "Job placement assistance, progress coaching, and connections to housing and childcare resources. We remove the barriers that get in the way of finishing what you started.",
       },
       {
         icon: "Heart",
-        title: "A Community",
-        description: "You're not doing this alone. We walk with you from day one to day one hundred",
+        title: "A Community Built on Investment",
+        description: "Employers partner with us because our graduates are ready. Funders invest in us because our model works. You belong here because we built this for you.",
       },
     ],
-    promise: "Our Promise: If you're ready to fight for your future, we'll fight with you.",
+    promise: "Our Promise: If you show up ready to fight for your future, we will fight with you. Every step.",
     buttonText: "Explore Our Programs",
     buttonHref: "/programs",
     buttonComingSoon: true,
@@ -138,11 +139,11 @@ export const siteConfig: SiteConfig = {
     headline: "This Is What Change Looks Like",
     introText: "One person trained is one family lifted. One career started is one community strengthened.",
     stats: [
-      { number: "125+", label: "Students Trained", sublabel: "(Year 1 Goal)" },
-      { number: "85+", label: "Placed Into Jobs", sublabel: "" },
-      { number: "$3.2M+", label: "In Graduate Earnings", sublabel: "" },
+      { number: "125+", label: "Lives We're Built to Serve", sublabel: "Year 1 Target" },
+      { number: "90%", label: "Projected Job Placement Rate", sublabel: "Based on program design & industry data" },
+      { number: "$3.2M+", label: "Projected Graduate Earnings", sublabel: "Estimated Year 1 Community Impact" },
     ],
-    closing: "We're not waiting for permission to make a difference. We're building it. Right now.",
+    closing: "We are transparent about where we are: these are our Year 1 targets — built on industry data, program design, and an unshakeable commitment to accountability. We're not waiting for permission to build something that works. We're building it right now.",
   },
 
   // TEAM SECTION
@@ -152,7 +153,7 @@ export const siteConfig: SiteConfig = {
     members: [
       {
         name: "Jason Pilgrim",
-        title: "Founder",
+        title: "Founder & Executive Director",
         photo: "https://i.pravatar.cc/400?img=12",
         quote: "I've spent my life building things — businesses, systems, solutions. But the most important thing I've ever built is opportunity for people who were told they didn't deserve one.",
       },
@@ -170,7 +171,7 @@ export const siteConfig: SiteConfig = {
       },
       {
         name: "Kenya Roberts, CFRE",
-        title: "Development & Fundraising",
+        title: "Development & Fundraising Director",
         photo: "https://i.pravatar.cc/400?img=27",
         quote: "I've raised millions for causes. But this one? This one's personal.",
       },
@@ -184,16 +185,16 @@ export const siteConfig: SiteConfig = {
     
     needUs: {
       headline: "If You Need Us",
-      text: "You're not alone anymore. We're building something for you.",
+      text: "You're not alone anymore. We're building something designed specifically for you — and we want you to be first to know when doors open.",
       formPlaceholderName: "Your Name",
       formPlaceholderEmail: "Your Email",
       buttonText: "Get Updates",
-      note: "Be the first to know when programs launch",
+      note: "Be the first to know when programs launch. No spam — ever.",
     },
     
     believeInUs: {
       headline: "If You Believe in Us",
-      text: "Help us keep this promise.",
+      text: "Help us keep this promise. Whether you give $25 or your company's partnership, you're directly funding someone's shot at a new life.",
       actions: [
         {
           icon: "Ticket",
@@ -210,7 +211,7 @@ export const siteConfig: SiteConfig = {
         {
           icon: "Handshake",
           text: "Partner With Us",
-          href: "#contact",
+          href: "mailto:info@risingpromise.org",
           comingSoon: false,
         },
         {
@@ -231,11 +232,12 @@ export const siteConfig: SiteConfig = {
     cna: {
       visible: true,
       title: "Certified Nursing Assistant (CNA)",
+      description: "Healthcare is one of the fastest-growing fields in America. CNA-certified graduates are in demand nationwide — and we train you from zero experience to job-ready.",
       icon: "Heart",
       image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
-      duration: "4-6 weeks",
-      format: "Hybrid (online + in-person clinicals)",
-      salary: "$32,000-$45,000/year",
+      duration: "4–6 Weeks",
+      format: "Hybrid — Online coursework + In-person clinicals",
+      salary: "$32,000–$45,000/year starting",
       certifications: "State CNA Certification",
       curriculum: [
         "Patient care fundamentals",
@@ -263,11 +265,12 @@ export const siteConfig: SiteConfig = {
     it: {
       visible: true,
       title: "IT Support Specialist",
+      description: "Tech jobs are everywhere. You don't need a degree — you need the right certification and a team behind you. We provide both.",
       icon: "Laptop",
       image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
-      duration: "8-12 weeks",
-      format: "Fully online with live instruction",
-      salary: "$40,000-$60,000/year",
+      duration: "8–12 Weeks",
+      format: "Fully Online with Live Instruction",
+      salary: "$40,000–$60,000/year starting",
       certifications: "CompTIA A+ & Network+",
       curriculum: [
         "Computer hardware and software",
@@ -298,8 +301,8 @@ export const siteConfig: SiteConfig = {
    * RAFFLE PAGE
    */
   raffle: {
-    headline: "Win Big, Change Lives",
-    subheadline: "Every ticket you buy helps fund our workforce training programs. Everyone wins.",
+    headline: "Win Big. Change Lives.",
+    subheadline: "Every ticket you buy funds workforce training for someone who needs it most. And you might just win $10,000.",
     
     prizes: [
       {
@@ -326,27 +329,27 @@ export const siteConfig: SiteConfig = {
       {
         price: "$25",
         entries: "1 Entry",
-        description: "Single ticket",
+        description: "One ticket, one chance",
         badge: false
       },
       {
         price: "$100",
         entries: "5 Entries",
-        description: "Best value - 20% bonus!",
+        description: "Best value — 20% bonus entries",
         badge: true
       },
       {
         price: "$250",
         entries: "15 Entries",
-        description: "Maximum impact - 50% bonus!",
+        description: "Maximum impact — 50% bonus entries",
         badge: false
       }
     ],
 
     details: {
-      drawDate: "June 15, 2025",
+      drawDate: "Date To Be Announced",
       totalTickets: "5,000",
-      whereMoneyGoes: "100% of proceeds fund scholarships and wraparound support for our training programs.",
+      whereMoneyGoes: "100% of net proceeds fund scholarships, training materials, and wraparound support for Rising Promise students.",
       rules: [
         "Must be 18 or older to enter",
         "No purchase necessary (see official rules)",
@@ -358,15 +361,15 @@ export const siteConfig: SiteConfig = {
     faq: [
       {
         question: "How do I know this is legitimate?",
-        answer: "Rising Promise is a registered 501(c)(3) nonprofit. All raffle proceeds are tracked and reported according to state gaming regulations."
+        answer: "Rising Promise is a registered 501(c)(3) nonprofit operating under Texas law. All raffle proceeds are tracked, reported, and publicly accountable. We are registered with the Texas Attorney General's office."
       },
       {
         question: "Can I donate my winnings back?",
-        answer: "Absolutely! Winners can choose to donate all or part of their prize back to Rising Promise as a tax-deductible donation."
+        answer: "Absolutely. Winners can choose to donate all or part of their prize back to Rising Promise as a fully tax-deductible contribution."
       },
       {
         question: "What if I don't win?",
-        answer: "Your money still makes a difference. Every dollar funds real training for real people building real futures."
+        answer: "Your money still builds something real. Every dollar goes directly to training costs, support services, and job placement for people rebuilding their lives."
       }
     ]
   },
