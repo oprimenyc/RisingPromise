@@ -10,6 +10,30 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Visual & Cosmetic Revamp (April 2026)
+- **Fonts**: Switched to DM Serif Display (headings) + DM Sans (body) from Google Fonts
+- **Color System**: Full palette update
+  - Primary: #1A56DB (deep electric blue)
+  - Secondary/dark sections: #0B1F3A (near-black navy)
+  - Accent: #E8A020 (warm amber/gold)
+  - Background: #FAFAF9 (warm white), Surface-alt: #F4F4F2
+- **Border Radius**: 8px cards (lg), 4px buttons (md), 2px (sm) — no pill shapes
+- **Framer Motion Animations**: Replaced useScrollReveal hook with Framer Motion
+  - Hero: staggered fade+rise on page load
+  - Sections: `whileInView` with `viewport={{ once: true }}`
+  - Cards: staggered children with 0.1s delay between
+  - Respects `prefers-reduced-motion`
+- **Hero Section**: Left-aligned layout, dark gradient background, hero image at 15% opacity as texture, noise overlay, amber label + accent bar above headline, sharp-edge buttons
+- **Section Watermarks**: Large faint numerals (01, 02, 03) behind Story, What We Do, Team sections
+- **Navigation**: Always-dark (#0B1F3A) header, amber hover underline on links, shadow added on scroll
+- **Who We See**: Now a dark section with amber left-borders on each paragraph, amber highlighted box
+- **What We Do Cards**: White cards with 3px blue top accent bar, icon in amber-light square, hover shadow
+- **Impact Section**: Dark bg, stat numbers in amber at 4rem DM Serif, vertical dividers, italic closing paragraph
+- **Team Cards**: Amber ring on photos, decorative quote mark in amber
+- **Join Us**: Left card has blue top accent, right card has amber top accent; action buttons are text-style with arrow (except "Donate Now" which stays filled)
+- **Footer**: Social icons amber on hover, all text white/muted
+- **StatCounter**: Added `style` prop support for arbitrary inline styles
+
 ### Donation System Implementation (October 31, 2025)
 - **Stripe Integration**: Configured Stripe payment processing for nonprofit donations
   - Installed Stripe packages and blueprint integration

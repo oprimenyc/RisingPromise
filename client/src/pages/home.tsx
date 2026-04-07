@@ -1,17 +1,14 @@
 import { siteConfig } from "@/lib/siteConfig";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { StatCounter } from "@/components/StatCounter";
-import { GraduationCap, Users, Heart, Facebook, Instagram, Linkedin, Twitter, Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { GraduationCap, Users, Heart, Facebook, Instagram, Linkedin, Twitter, Menu, X, ArrowRight } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import logoImage from "@assets/logo.png";
+import { motion, useReducedMotion, useInView } from "framer-motion";
 import horizontalLogoImage from "@assets/B28D20D5-0010-4244-BD10-703159C6EA2A_1762216606634.jpeg";
 
 const iconMap: Record<string, any> = {
@@ -21,6 +18,22 @@ const iconMap: Record<string, any> = {
 };
 
 const PRESET_AMOUNTS = [25, 50, 100, 250, 500];
+const EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -34,30 +47,19 @@ export default function Home() {
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
   const { toast } = useToast();
+  const shouldReduceMotion = useReducedMotion();
 
-  // Scroll reveal hooks for sections
-  const storyReveal = useScrollReveal();
-  const whoWeSeeReveal = useScrollReveal();
-  const whatWeDoReveal = useScrollReveal();
-  const impactReveal = useScrollReveal();
-  const teamReveal = useScrollReveal();
-  const joinUsReveal = useScrollReveal();
+  const impactRef = useRef(null);
+  const impactInView = useInView(impactRef, { once: true, margin: "-100px" });
 
   const newsletterMutation = useMutation({
     mutationFn: async (data: { email: string; name?: string; source: string }) =>
       apiRequest("POST", "/api/newsletter/signup", data),
     onSuccess: () => {
-      toast({
-        title: "Success!",
-        description: "You've been subscribed to our newsletter.",
-      });
+      toast({ title: "Success!", description: "You've been subscribed to our newsletter." });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to subscribe. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message || "Failed to subscribe. Please try again.", variant: "destructive" });
     },
   });
 
@@ -66,72 +68,41 @@ export default function Home() {
       const response = await apiRequest("POST", "/api/donations/create-checkout-session", data);
       return response.json();
     },
-    onSuccess: (data: { url: string }) => {
-      // Redirect to Stripe Checkout
-      window.location.href = data.url;
-    },
+    onSuccess: (data: { url: string }) => { window.location.href = data.url; },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to initiate donation. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message || "Failed to initiate donation. Please try again.", variant: "destructive" });
     },
   });
 
   const handleDonationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     const finalAmount = customAmount ? parseFloat(customAmount) : donationAmount;
     if (!finalAmount || finalAmount < 1) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter an amount of at least $1.00",
-        variant: "destructive",
-      });
+      toast({ title: "Invalid Amount", description: "Please enter an amount of at least $1.00", variant: "destructive" });
       return;
     }
-
     if (!donorEmail) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address for the receipt",
-        variant: "destructive",
-      });
+      toast({ title: "Email Required", description: "Please enter your email address for the receipt", variant: "destructive" });
       return;
     }
-
-    donationMutation.mutate({
-      amount: Math.round(finalAmount * 100), // Convert to cents
-      donorName: donorName || undefined,
-      donorEmail,
-    });
+    donationMutation.mutate({ amount: Math.round(finalAmount * 100), donorName: donorName || undefined, donorEmail });
   };
 
   const handleJoinUsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    newsletterMutation.mutate({
-      email: joinUsEmail,
-      name: joinUsName || undefined,
-      source: "homepage",
-    });
+    newsletterMutation.mutate({ email: joinUsEmail, name: joinUsName || undefined, source: "homepage" });
     setJoinUsName("");
     setJoinUsEmail("");
   };
 
   const handleFooterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    newsletterMutation.mutate({
-      email: footerEmail,
-      source: "footer",
-    });
+    newsletterMutation.mutate({ email: footerEmail, source: "footer" });
     setFooterEmail("");
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 60);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -140,42 +111,65 @@ export default function Home() {
     if (href.startsWith('#')) {
       const element = document.querySelector(href);
       if (element) {
-        const offset = 80;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 64;
         window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
         setMobileMenuOpen(false);
       }
     }
   };
 
+  const mv = (delay = 0, duration = 0.6, y = 24) =>
+    shouldReduceMotion
+      ? {}
+      : { variants: fadeUp, initial: "hidden", whileInView: "visible", viewport: { once: true }, transition: { duration, delay, ease: EASE } };
+
+  const mfade = (delay = 0, duration = 0.5) =>
+    shouldReduceMotion
+      ? {}
+      : { variants: fadeIn, initial: "hidden", whileInView: "visible", viewport: { once: true }, transition: { duration, delay, ease: EASE } };
+
+  const heroAnim = (delay: number, duration = 0.6) =>
+    shouldReduceMotion
+      ? {}
+      : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration, delay, ease: EASE } };
+
   return (
-    <div className="min-h-screen bg-background font-sans">
-      {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-secondary/95 shadow-md h-16' : 'bg-transparent h-20'}`}>
-        <div className="container mx-auto px-6 flex items-center justify-between h-full">
+    <div className="min-h-screen font-sans" style={{ background: '#FAFAF9', color: '#0B1F3A' }}>
+
+      {/* ─── NAVIGATION ─── */}
+      <header
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={{
+          background: '#0B1F3A',
+          height: isScrolled ? '56px' : '64px',
+          boxShadow: isScrolled ? '0 2px 20px rgba(0,0,0,0.15)' : 'none',
+        }}
+        data-testid="header-nav"
+      >
+        <div className="mx-auto px-6 flex items-center justify-between h-full" style={{ maxWidth: '1100px' }}>
           <a href="/" className="flex items-center" data-testid="link-home">
-            <img src={horizontalLogoImage} alt="Rising Promise" className={`transition-all duration-300 ${isScrolled ? 'h-8' : 'h-12'}`} />
+            <img
+              src={horizontalLogoImage}
+              alt="Rising Promise"
+              className="transition-all duration-300"
+              style={{ height: isScrolled ? '28px' : '34px' }}
+            />
           </a>
-          <nav className="hidden md:flex gap-8" data-testid="nav-desktop">
+          <nav className="hidden md:flex items-center gap-8" data-testid="nav-desktop">
             {siteConfig.navigation.menuItems.map((item, i) => (
               <a
                 key={i}
                 href={item.href}
-                onClick={(e) => {
-                  if (item.href.startsWith('#')) {
-                    e.preventDefault();
-                    scrollToSection(item.href);
-                  }
-                }}
-                className="text-white font-semibold text-sm uppercase tracking-wide hover:text-primary transition-colors"
+                onClick={(e) => { if (item.href.startsWith('#')) { e.preventDefault(); scrollToSection(item.href); } }}
+                className="font-sans text-white/80 hover:text-accent transition-colors"
+                style={{ fontSize: '0.9rem', letterSpacing: '0.03em', textDecoration: 'none' }}
                 data-testid={`link-nav-${item.text.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {item.text}
               </a>
             ))}
           </nav>
-          <button 
+          <button
             className="md:hidden text-white"
             onClick={() => setMobileMenuOpen(true)}
             data-testid="button-mobile-menu"
@@ -186,11 +180,11 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[60] bg-secondary" data-testid="nav-mobile">
+        <div className="fixed inset-0 z-[60]" style={{ background: '#0B1F3A' }} data-testid="nav-mobile">
           <div className="flex flex-col items-center justify-center h-full gap-8">
-            <button 
+            <button
               className="absolute top-6 right-6 text-white"
               onClick={() => setMobileMenuOpen(false)}
               data-testid="button-close-mobile-menu"
@@ -202,13 +196,8 @@ export default function Home() {
               <a
                 key={i}
                 href={item.href}
-                onClick={(e) => {
-                  if (item.href.startsWith('#')) {
-                    e.preventDefault();
-                    scrollToSection(item.href);
-                  }
-                }}
-                className="text-white font-semibold text-2xl uppercase tracking-wide hover:text-primary transition-colors"
+                onClick={(e) => { if (item.href.startsWith('#')) { e.preventDefault(); scrollToSection(item.href); } }}
+                className="font-sans text-white hover:text-accent transition-colors uppercase tracking-wide text-2xl"
                 data-testid={`link-nav-mobile-${item.text.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {item.text}
@@ -218,366 +207,607 @@ export default function Home() {
         </div>
       )}
 
-      {/* Hero Section */}
-      <section 
-        className="relative min-h-screen flex items-center justify-center animate-hero-fade"
-        style={{
-          backgroundImage: `url('${siteConfig.hero.backgroundImage}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        }}
+      {/* ─── HERO ─── */}
+      <section
+        className="relative overflow-hidden flex items-center"
+        style={{ minHeight: '100vh', paddingTop: '140px', paddingBottom: '120px', background: 'linear-gradient(135deg, #0B1F3A 0%, #0D2845 60%, #0B1F3A 100%)' }}
         data-testid="section-hero"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary/85 to-secondary/60" />
-        <div className="relative z-10 text-center max-w-4xl px-6">
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-6 leading-tight" data-testid="text-hero-headline">
+        {/* Background image as subtle texture */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url('${siteConfig.hero.backgroundImage}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.15,
+          }}
+        />
+        {/* Noise texture */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '200px 200px',
+            opacity: 0.04,
+          }}
+        />
+        <div className="relative z-10 mx-auto px-6 w-full" style={{ maxWidth: '1100px' }}>
+          <motion.p
+            {...heroAnim(0, 0.4)}
+            className="font-sans font-medium uppercase mb-5"
+            style={{ color: '#E8A020', fontSize: '0.7rem', letterSpacing: '0.12em' }}
+          >
+            Nonprofit Workforce Training
+          </motion.p>
+          <motion.div
+            {...heroAnim(0.1, 0.5)}
+            style={{ width: '48px', height: '3px', background: '#E8A020', marginBottom: '24px' }}
+          />
+          <motion.h1
+            {...heroAnim(0.15, 0.7)}
+            className="font-heading text-white"
+            style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', letterSpacing: '-0.02em', lineHeight: '1.1', maxWidth: '680px', marginBottom: '24px' }}
+            data-testid="text-hero-headline"
+          >
             {siteConfig.hero.headline}
-          </h1>
-          <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-3xl mx-auto leading-relaxed" data-testid="text-hero-subheadline">
+          </motion.h1>
+          <motion.p
+            {...heroAnim(0.35, 0.6)}
+            className="font-sans"
+            style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.25rem', lineHeight: '1.6', maxWidth: '560px', marginBottom: '40px' }}
+            data-testid="text-hero-subheadline"
+          >
             {siteConfig.hero.subheadline}
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button 
-              onClick={() => scrollToSection(siteConfig.hero.primaryButtonHref)} 
-              size="lg" 
-              className="text-lg px-8 py-6 no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
+          </motion.p>
+          <motion.div {...heroAnim(0.5, 0.5)} className="flex flex-wrap gap-4">
+            <button
+              onClick={() => scrollToSection(siteConfig.hero.primaryButtonHref)}
+              className="font-sans font-medium text-white transition-colors"
+              style={{ padding: '14px 32px', borderRadius: '4px', fontSize: '1rem', border: 'none', cursor: 'pointer', background: '#1A56DB' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#1447C0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#1A56DB')}
               data-testid="button-hero-primary"
             >
               {siteConfig.hero.primaryButtonText}
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => scrollToSection(siteConfig.hero.secondaryButtonHref)} 
-              size="lg" 
-              className="text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-white text-white no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
+            </button>
+            <button
+              onClick={() => scrollToSection(siteConfig.hero.secondaryButtonHref)}
+              className="font-sans font-medium text-white transition-colors"
+              style={{ padding: '14px 32px', borderRadius: '4px', fontSize: '1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.6)', cursor: 'pointer' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               data-testid="button-hero-secondary"
             >
               {siteConfig.hero.secondaryButtonText}
-            </Button>
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── STORY ─── */}
+      <section
+        id="story"
+        className="relative overflow-hidden"
+        style={{ padding: '96px 0', background: '#FAFAF9' }}
+        data-testid="section-story"
+      >
+        <div className="absolute top-0 right-0 font-heading select-none pointer-events-none" style={{ fontSize: '20rem', color: '#0B1F3A', opacity: 0.03, lineHeight: 1, transform: 'translateY(-10%)' }}>01</div>
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <div style={{ maxWidth: '720px' }}>
+            <motion.p {...mfade(0)} className="font-sans font-medium uppercase mb-3" style={{ fontSize: '0.75rem', letterSpacing: '0.08em', color: '#E8A020' }}>
+              Our Story
+            </motion.p>
+            <motion.h2
+              {...mv(0.05)}
+              className="font-heading mb-10"
+              style={{ fontSize: '2.75rem', color: '#0B1F3A', lineHeight: '1.15' }}
+              data-testid="text-story-headline"
+            >
+              {siteConfig.story.headline}
+            </motion.h2>
+            <motion.div {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })} className="space-y-5">
+              {siteConfig.story.paragraphs.map((p, i) => (
+                <motion.p
+                  key={i}
+                  {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.08, ease: EASE } })}
+                  className="font-sans leading-[1.7]"
+                  style={{
+                    fontSize: '1rem',
+                    color: '#4A5568',
+                    ...(i === 0 ? { paddingLeft: '20px', borderLeft: '3px solid #E8A020' } : {}),
+                  }}
+                  data-testid={`text-story-p${i + 1}`}
+                >
+                  {p}
+                </motion.p>
+              ))}
+            </motion.div>
+            <motion.p
+              {...mv(0.3)}
+              className="font-heading mt-10"
+              style={{ fontSize: '2rem', color: '#0B1F3A' }}
+              data-testid="text-story-closing"
+            >
+              {siteConfig.story.closing}
+            </motion.p>
           </div>
         </div>
       </section>
 
-      {/* Story Section */}
-      <section id="story" className="py-20 md:py-32" data-testid="section-story">
-        <div className="container mx-auto px-6 max-w-4xl">
-          <h2 
-            ref={storyReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-12 scroll-reveal ${storyReveal.isVisible ? 'is-visible' : ''}`} 
-            data-testid="text-story-headline"
-          >
-            {siteConfig.story.headline}
-          </h2>
-          <div className="space-y-6">
-            {siteConfig.story.paragraphs.map((p, i) => (
-              <p key={i} className="text-xl md:text-2xl text-muted-foreground leading-relaxed" data-testid={`text-story-p${i+1}`}>
-                {p}
-              </p>
-            ))}
-          </div>
-          <p className="font-heading text-3xl md:text-4xl font-bold text-center mt-12" data-testid="text-story-closing">
-            {siteConfig.story.closing}
-          </p>
-        </div>
-      </section>
-
-      {/* Who We See Section */}
-      <section id="who-we-see" className="py-20 md:py-32 bg-muted/30" data-testid="section-who-we-see">
-        <div className="container mx-auto px-6 max-w-5xl">
-          <h2 
-            ref={whoWeSeeReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-12 scroll-reveal ${whoWeSeeReveal.isVisible ? 'is-visible' : ''}`}
+      {/* ─── WHO WE SEE ─── */}
+      <section
+        id="who-we-see"
+        className="relative"
+        style={{ padding: '96px 0', background: '#0B1F3A' }}
+        data-testid="section-who-we-see"
+      >
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <motion.p {...mfade(0)} className="font-sans font-medium uppercase mb-3" style={{ fontSize: '0.75rem', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.5)' }}>
+            Who We Serve
+          </motion.p>
+          <motion.h2
+            {...mv(0.05)}
+            className="font-heading text-white mb-10"
+            style={{ fontSize: '2.75rem', lineHeight: '1.15' }}
             data-testid="text-who-headline"
           >
             {siteConfig.whoWeSee.headline}
-          </h2>
-          <div className="space-y-8">
+          </motion.h2>
+          <motion.div
+            {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })}
+            className="space-y-5 mb-10"
+            style={{ maxWidth: '720px' }}
+          >
             {siteConfig.whoWeSee.paragraphs.map((p, i) => (
-              <p key={i} className="text-xl md:text-2xl pl-8 border-l-4 border-primary leading-relaxed" data-testid={`text-who-p${i+1}`}>
+              <motion.p
+                key={i}
+                {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.08, ease: EASE } })}
+                className="font-sans text-white leading-[1.7] pl-4"
+                style={{ borderLeft: '2px solid #E8A020', fontSize: '1.05rem' }}
+                data-testid={`text-who-p${i + 1}`}
+              >
                 {p}
-              </p>
+              </motion.p>
             ))}
-          </div>
-          <div className="mt-12 p-8 bg-primary/10 rounded-xl">
-            <p className="text-xl md:text-2xl font-semibold text-center leading-relaxed" data-testid="text-who-closing">
+          </motion.div>
+          <motion.div
+            {...mv(0.3)}
+            className="rounded-lg p-8"
+            style={{ background: '#E8A020', maxWidth: '720px' }}
+          >
+            <p className="font-sans font-semibold leading-relaxed" style={{ color: '#0B1F3A', fontSize: '1.05rem' }} data-testid="text-who-closing">
               {siteConfig.whoWeSee.closing}
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* What We Do Section */}
-      <section id="what-we-do" className="py-20 md:py-32" data-testid="section-what-we-do">
-        <div className="container mx-auto px-6">
-          <h2 
-            ref={whatWeDoReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-6 scroll-reveal ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}
+      {/* ─── WHAT WE DO ─── */}
+      <section
+        id="what-we-do"
+        className="relative overflow-hidden"
+        style={{ padding: '96px 0', background: '#F4F4F2' }}
+        data-testid="section-what-we-do"
+      >
+        <div className="absolute top-0 right-0 font-heading select-none pointer-events-none" style={{ fontSize: '20rem', color: '#0B1F3A', opacity: 0.03, lineHeight: 1, transform: 'translateY(-10%)' }}>02</div>
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <motion.p {...mfade(0)} className="font-sans font-medium uppercase mb-3" style={{ fontSize: '0.75rem', letterSpacing: '0.08em', color: '#E8A020' }}>
+            What We Do
+          </motion.p>
+          <motion.h2
+            {...mv(0.05)}
+            className="font-heading mb-4"
+            style={{ fontSize: '2.75rem', color: '#0B1F3A', lineHeight: '1.15' }}
             data-testid="text-what-headline"
           >
             {siteConfig.whatWeDo.headline}
-          </h2>
+          </motion.h2>
           {siteConfig.whatWeDo.introText && (
-            <p className="text-xl text-center max-w-4xl mx-auto mb-12 text-muted-foreground leading-relaxed" data-testid="text-what-intro">
+            <motion.p
+              {...mv(0.1)}
+              className="font-sans leading-[1.7] mb-12"
+              style={{ color: '#4A5568', maxWidth: '640px', fontSize: '1rem' }}
+              data-testid="text-what-intro"
+            >
               {siteConfig.whatWeDo.introText}
-            </p>
+            </motion.p>
           )}
-          
-          <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto card-stagger ${whatWeDoReveal.isVisible ? 'is-visible' : ''}`}>
+          <motion.div
+            {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })}
+            className="grid grid-cols-1 md:grid-cols-3 mb-12"
+            style={{ gap: '24px' }}
+          >
             {siteConfig.whatWeDo.features.map((feature, i) => {
               const Icon = iconMap[feature.icon] || GraduationCap;
               return (
-                <Card key={i} className="p-8 text-center hover-elevate active-elevate-2" data-testid={`card-feature-${i}`}>
-                  <Icon className="w-16 h-16 mx-auto mb-6 text-primary" />
-                  <h3 className="font-heading text-2xl font-bold mb-4" data-testid={`text-feature-title-${i}`}>
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed" data-testid={`text-feature-desc-${i}`}>
-                    {feature.description}
-                  </p>
-                </Card>
+                <motion.div
+                  key={i}
+                  {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.1, ease: EASE } })}
+                  className="bg-white rounded-lg overflow-hidden"
+                  style={{ border: '1px solid #E2E6EA', boxShadow: 'none', transition: 'box-shadow 0.2s ease' }}
+                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)')}
+                  onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
+                  data-testid={`card-feature-${i}`}
+                >
+                  <div style={{ height: '3px', background: '#1A56DB' }} />
+                  <div className="p-8">
+                    <div
+                      className="mb-5 inline-flex items-center justify-center"
+                      style={{ width: '40px', height: '40px', background: '#FEF3DC', borderRadius: '8px' }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: '#1A56DB' }} />
+                    </div>
+                    <h3 className="font-sans font-semibold mb-3" style={{ fontSize: '1.1rem', color: '#0B1F3A' }} data-testid={`text-feature-title-${i}`}>
+                      {feature.title}
+                    </h3>
+                    <p className="font-sans leading-[1.7]" style={{ color: '#4A5568', fontSize: '0.95rem' }} data-testid={`text-feature-desc-${i}`}>
+                      {feature.description}
+                    </p>
+                  </div>
+                </motion.div>
               );
             })}
-          </div>
-          
-          <div className="max-w-4xl mx-auto p-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl mb-8">
-            <p className="font-heading text-2xl md:text-3xl font-bold text-center" data-testid="text-promise">
+          </motion.div>
+          <motion.div
+            {...mv(0.2)}
+            className="rounded-lg mb-8 p-6"
+            style={{ background: '#0B1F3A', borderLeft: '4px solid #E8A020' }}
+          >
+            <p className="font-sans font-semibold text-white" style={{ fontSize: '1.05rem' }} data-testid="text-promise">
               {siteConfig.whatWeDo.promise}
             </p>
-          </div>
-          
-          <div className="text-center">
-            <Button 
-              size="lg" 
-              className="text-lg px-8 py-6 no-default-hover-elevate no-default-active-elevate btn-minimal-hover" 
+          </motion.div>
+          <motion.div {...mfade(0.25)}>
+            <button
+              className="font-sans font-medium text-white transition-colors"
+              style={{
+                padding: '14px 32px', borderRadius: '4px', fontSize: '1rem', border: 'none', cursor: siteConfig.whatWeDo.buttonComingSoon ? 'default' : 'pointer',
+                background: '#1A56DB', opacity: siteConfig.whatWeDo.buttonComingSoon ? 0.5 : 1,
+              }}
               disabled={siteConfig.whatWeDo.buttonComingSoon}
               data-testid="button-explore-programs"
             >
               {siteConfig.whatWeDo.buttonText}
               {siteConfig.whatWeDo.buttonComingSoon && (
-                <span className="ml-2 px-2 py-1 bg-accent text-accent-foreground text-xs rounded">Coming Soon</span>
+                <span className="ml-2 font-sans" style={{ fontSize: '0.7rem', background: '#E8A020', color: '#0B1F3A', padding: '2px 8px', borderRadius: '4px' }}>
+                  Coming Soon
+                </span>
               )}
-            </Button>
-          </div>
+            </button>
+          </motion.div>
         </div>
       </section>
 
-      {/* Impact Section */}
-      <section id="impact" className="py-20 md:py-32 bg-secondary text-white" data-testid="section-impact">
-        <div className="container mx-auto px-6">
-          <h2 
-            ref={impactReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-8 scroll-reveal ${impactReveal.isVisible ? 'is-visible' : ''}`}
+      {/* ─── IMPACT ─── */}
+      <section
+        id="impact"
+        className="relative"
+        style={{ padding: '96px 0', background: '#0B1F3A' }}
+        ref={impactRef}
+        data-testid="section-impact"
+      >
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <motion.h2
+            {...mv()}
+            className="font-heading text-white text-center mb-4"
+            style={{ fontSize: '2.75rem', lineHeight: '1.15' }}
             data-testid="text-impact-headline"
           >
             {siteConfig.impact.headline}
-          </h2>
-          <p className="text-xl md:text-2xl text-center max-w-4xl mx-auto mb-16 text-white/90" data-testid="text-impact-intro">
+          </motion.h2>
+          <motion.p
+            {...mv(0.1)}
+            className="font-sans text-center mb-16"
+            style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', maxWidth: '640px', margin: '0 auto 4rem' }}
+            data-testid="text-impact-intro"
+          >
             {siteConfig.impact.introText}
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          </motion.p>
+          <motion.div
+            {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })}
+            className="grid grid-cols-1 md:grid-cols-3 mb-12"
+          >
             {siteConfig.impact.stats.map((stat, i) => (
-              <div key={i} className="text-center" data-testid={`card-stat-${i}`}>
+              <motion.div
+                key={i}
+                {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.1, ease: EASE } })}
+                className="text-center py-8"
+                style={i > 0 ? { borderLeft: '1px solid rgba(255,255,255,0.1)' } : {}}
+                data-testid={`card-stat-${i}`}
+              >
                 <StatCounter
                   value={stat.number}
-                  isVisible={impactReveal.isVisible}
-                  className="font-heading text-6xl md:text-7xl font-bold text-primary mb-4 block"
+                  isVisible={impactInView}
+                  className="font-heading block mb-2"
+                  style={{ fontSize: '4rem', color: '#E8A020', lineHeight: '1' }}
                   testId={`text-stat-number-${i}`}
                 />
-                <div className="text-xl font-semibold mb-2" data-testid={`text-stat-label-${i}`}>
+                <div className="font-sans font-medium text-white mb-1" style={{ fontSize: '1rem' }} data-testid={`text-stat-label-${i}`}>
                   {stat.label}
                 </div>
                 {stat.sublabel && (
-                  <div className="text-sm text-white/70" data-testid={`text-stat-sublabel-${i}`}>
+                  <div className="font-sans uppercase" style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', letterSpacing: '0.06em' }} data-testid={`text-stat-sublabel-${i}`}>
                     {stat.sublabel}
                   </div>
                 )}
-              </div>
+              </motion.div>
             ))}
-          </div>
-          
-          <p className="text-xl font-semibold text-center" data-testid="text-impact-closing">
+          </motion.div>
+          <motion.p
+            {...mv(0.2)}
+            className="font-sans italic text-center"
+            style={{ color: 'rgba(255,255,255,0.8)', maxWidth: '640px', margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '32px' }}
+            data-testid="text-impact-closing"
+          >
             {siteConfig.impact.closing}
-          </p>
+          </motion.p>
         </div>
       </section>
 
-      {/* Team Section */}
-      <section id="team" className="py-20 md:py-32" data-testid="section-team">
-        <div className="container mx-auto px-6">
-          <h2 
-            ref={teamReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-8 scroll-reveal ${teamReveal.isVisible ? 'is-visible' : ''}`}
+      {/* ─── TEAM ─── */}
+      <section
+        id="team"
+        className="relative overflow-hidden"
+        style={{ padding: '96px 0', background: '#FAFAF9' }}
+        data-testid="section-team"
+      >
+        <div className="absolute top-0 right-0 font-heading select-none pointer-events-none" style={{ fontSize: '20rem', color: '#0B1F3A', opacity: 0.03, lineHeight: 1, transform: 'translateY(-10%)' }}>03</div>
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <motion.h2
+            {...mv()}
+            className="font-heading text-center mb-3"
+            style={{ fontSize: '2.75rem', color: '#0B1F3A', lineHeight: '1.15' }}
             data-testid="text-team-headline"
           >
             {siteConfig.team.headline}
-          </h2>
-          <p className="text-xl text-center max-w-3xl mx-auto mb-16 text-muted-foreground" data-testid="text-team-intro">
+          </motion.h2>
+          <motion.p
+            {...mv(0.1)}
+            className="font-sans text-center mb-14"
+            style={{ color: '#4A5568', fontSize: '1rem', maxWidth: '640px', margin: '0 auto 3.5rem' }}
+            data-testid="text-team-intro"
+          >
             {siteConfig.team.introText}
-          </p>
-          
-          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 card-stagger ${teamReveal.isVisible ? 'is-visible' : ''}`}>
+          </motion.p>
+          <motion.div
+            {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12"
+            style={{ gap: '24px' }}
+          >
             {siteConfig.team.members.map((member, i) => (
-              <div key={i} className="text-center" data-testid={`card-team-${i}`}>
-                <img 
-                  src={member.photo} 
-                  alt={member.name} 
-                  className="w-48 h-48 rounded-full mx-auto mb-6 object-cover border-4 border-primary"
+              <motion.div
+                key={i}
+                {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.1, ease: EASE } })}
+                className="bg-white rounded-lg p-6 text-center"
+                style={{ border: '1px solid #E2E6EA' }}
+                data-testid={`card-team-${i}`}
+              >
+                <img
+                  src={member.photo}
+                  alt={member.name}
+                  className="mx-auto mb-4 object-cover"
+                  style={{ width: '88px', height: '88px', borderRadius: '50%', border: '2px solid #E8A020' }}
                   data-testid={`img-team-${i}`}
                 />
-                <h3 className="font-heading text-xl font-bold mb-2" data-testid={`text-team-name-${i}`}>
+                <h3 className="font-sans font-semibold mb-1" style={{ fontSize: '1rem', color: '#0B1F3A' }} data-testid={`text-team-name-${i}`}>
                   {member.name}
                 </h3>
-                <p className="text-sm text-primary font-semibold uppercase tracking-wide mb-4" data-testid={`text-team-title-${i}`}>
+                <p className="font-sans mb-4" style={{ color: '#4A5568', fontSize: '0.875rem' }} data-testid={`text-team-title-${i}`}>
                   {member.title}
                 </p>
-                <p className="text-sm italic text-muted-foreground leading-relaxed" data-testid={`text-team-quote-${i}`}>
-                  "{member.quote}"
-                </p>
-              </div>
+                <div className="relative text-left">
+                  <span className="font-heading absolute pointer-events-none" style={{ fontSize: '3rem', color: '#E8A020', lineHeight: '1', top: '-8px', left: '-4px' }}>"</span>
+                  <p className="font-heading italic pt-5 pl-2 leading-relaxed" style={{ color: '#0B1F3A', fontSize: '0.9rem', lineHeight: '1.6' }} data-testid={`text-team-quote-${i}`}>
+                    {member.quote}
+                  </p>
+                </div>
+              </motion.div>
             ))}
-          </div>
-          
-          <p className="font-heading text-3xl font-bold text-center" data-testid="text-team-closing">
+          </motion.div>
+          <motion.p
+            {...mv(0.2)}
+            className="font-heading text-center"
+            style={{ fontSize: '2rem', color: '#0B1F3A' }}
+            data-testid="text-team-closing"
+          >
             {siteConfig.team.closing}
-          </p>
+          </motion.p>
         </div>
       </section>
 
-      {/* Join Us Section */}
-      <section id="join-us" className="py-20 md:py-32 bg-muted/30" data-testid="section-join-us">
-        <div className="container mx-auto px-6">
-          <h2 
-            ref={joinUsReveal.ref as any}
-            className={`font-heading text-4xl md:text-5xl font-bold text-center mb-16 scroll-reveal ${joinUsReveal.isVisible ? 'is-visible' : ''}`}
+      {/* ─── JOIN US ─── */}
+      <section
+        id="join-us"
+        className="relative"
+        style={{ padding: '96px 0', background: '#F4F4F2' }}
+        data-testid="section-join-us"
+      >
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <motion.h2
+            {...mv()}
+            className="font-heading text-center mb-14"
+            style={{ fontSize: '2.75rem', color: '#0B1F3A', lineHeight: '1.15' }}
             data-testid="text-join-headline"
           >
             {siteConfig.joinUs.headline}
-          </h2>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {/* Need Us Column */}
-            <Card className="p-8">
-              <h3 className="font-heading text-2xl font-bold mb-4" data-testid="text-need-headline">
-                {siteConfig.joinUs.needUs.headline}
-              </h3>
-              <p className="text-lg mb-6 text-muted-foreground" data-testid="text-need-description">
-                {siteConfig.joinUs.needUs.text}
-              </p>
-              <form className="space-y-4" onSubmit={handleJoinUsSubmit} data-testid="form-need-updates">
-                <Input 
-                  placeholder={siteConfig.joinUs.needUs.formPlaceholderName} 
-                  value={joinUsName}
-                  onChange={(e) => setJoinUsName(e.target.value)}
-                  data-testid="input-need-name" 
-                />
-                <Input 
-                  type="email" 
-                  placeholder={siteConfig.joinUs.needUs.formPlaceholderEmail}
-                  value={joinUsEmail}
-                  onChange={(e) => setJoinUsEmail(e.target.value)}
-                  required
-                  data-testid="input-need-email" 
-                />
-                <Button 
-                  type="submit" 
-                  className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover" 
-                  disabled={newsletterMutation.isPending}
-                  data-testid="button-need-submit"
-                >
-                  {newsletterMutation.isPending ? "Subscribing..." : siteConfig.joinUs.needUs.buttonText}
-                </Button>
-                <p className="text-sm text-center text-muted-foreground" data-testid="text-need-note">
-                  {siteConfig.joinUs.needUs.note}
+          </motion.h2>
+          <motion.div
+            {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })}
+            className="grid grid-cols-1 lg:grid-cols-2 mx-auto"
+            style={{ gap: '24px', maxWidth: '900px' }}
+          >
+            {/* Need Us card */}
+            <motion.div
+              {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, ease: EASE } })}
+              className="bg-white rounded-lg overflow-hidden"
+              style={{ border: '1px solid #E2E6EA' }}
+            >
+              <div style={{ height: '3px', background: '#1A56DB' }} />
+              <div style={{ padding: '40px' }}>
+                <h3 className="font-sans font-semibold mb-3" style={{ fontSize: '1.25rem', color: '#0B1F3A' }} data-testid="text-need-headline">
+                  {siteConfig.joinUs.needUs.headline}
+                </h3>
+                <p className="font-sans mb-6 leading-[1.7]" style={{ color: '#4A5568', fontSize: '0.95rem' }} data-testid="text-need-description">
+                  {siteConfig.joinUs.needUs.text}
                 </p>
-              </form>
-            </Card>
-
-            {/* Believe In Us Column */}
-            <Card className="p-8">
-              <h3 className="font-heading text-2xl font-bold mb-4" data-testid="text-believe-headline">
-                {siteConfig.joinUs.believeInUs.headline}
-              </h3>
-              <p className="text-lg mb-6 text-muted-foreground" data-testid="text-believe-description">
-                {siteConfig.joinUs.believeInUs.text}
-              </p>
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                {siteConfig.joinUs.believeInUs.actions.map((action, i) => (
-                  <Button 
-                    key={i} 
-                    variant="outline" 
-                    className="flex items-center justify-center gap-2 h-auto py-4 no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
-                    disabled={action.comingSoon}
-                    onClick={() => {
-                      if (action.text === "Donate Now" && !action.comingSoon) {
-                        setDonationDialogOpen(true);
-                      } else if (action.text === "Partner With Us" && !action.comingSoon) {
-                        window.location.href = "mailto:info@risingpromise.org";
-                      } else if (action.text === "Share Our Story" && !action.comingSoon) {
-                        if (navigator.share) {
-                          navigator.share({
-                            title: "Rising Promise",
-                            text: "Everyone deserves a fighting chance. Rising Promise is building workforce training programs for people who need it most.",
-                            url: window.location.origin,
-                          }).catch(() => {});
-                        } else {
-                          navigator.clipboard.writeText(window.location.origin).then(() => {
-                            toast({ title: "Link copied!", description: "Share link has been copied to your clipboard." });
-                          }).catch(() => {
-                            toast({ title: "Share", description: `Visit us at ${window.location.origin}` });
-                          });
-                        }
-                      }
-                    }}
-                    data-testid={`button-action-${i}`}
+                <form className="space-y-3" onSubmit={handleJoinUsSubmit} data-testid="form-need-updates">
+                  <Input
+                    placeholder={siteConfig.joinUs.needUs.formPlaceholderName}
+                    value={joinUsName}
+                    onChange={(e) => setJoinUsName(e.target.value)}
+                    data-testid="input-need-name"
+                  />
+                  <Input
+                    type="email"
+                    placeholder={siteConfig.joinUs.needUs.formPlaceholderEmail}
+                    value={joinUsEmail}
+                    onChange={(e) => setJoinUsEmail(e.target.value)}
+                    required
+                    data-testid="input-need-email"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full font-sans font-medium text-white transition-colors"
+                    style={{ padding: '12px 24px', borderRadius: '4px', fontSize: '0.95rem', border: 'none', cursor: 'pointer', background: '#1A56DB' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#1447C0')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#1A56DB')}
+                    disabled={newsletterMutation.isPending}
+                    data-testid="button-need-submit"
                   >
-                    <span>{action.text}</span>
-                    {action.comingSoon && (
-                      <span className="px-2 py-1 bg-accent text-accent-foreground text-xs rounded">Soon</span>
-                    )}
-                  </Button>
-                ))}
+                    {newsletterMutation.isPending ? "Subscribing..." : siteConfig.joinUs.needUs.buttonText}
+                  </button>
+                  <p className="font-sans text-center" style={{ color: '#8A96A3', fontSize: '0.8rem' }} data-testid="text-need-note">
+                    {siteConfig.joinUs.needUs.note}
+                  </p>
+                </form>
               </div>
-              <p className="text-sm font-semibold italic text-muted-foreground" data-testid="text-join-closing">
-                {siteConfig.joinUs.believeInUs.closing}
-              </p>
-            </Card>
-          </div>
+            </motion.div>
+
+            {/* Believe In Us card */}
+            <motion.div
+              {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: 0.1, ease: EASE } })}
+              className="bg-white rounded-lg overflow-hidden"
+              style={{ border: '1px solid #E2E6EA' }}
+            >
+              <div style={{ height: '3px', background: '#E8A020' }} />
+              <div style={{ padding: '40px' }}>
+                <h3 className="font-sans font-semibold mb-3" style={{ fontSize: '1.25rem', color: '#0B1F3A' }} data-testid="text-believe-headline">
+                  {siteConfig.joinUs.believeInUs.headline}
+                </h3>
+                <p className="font-sans mb-6 leading-[1.7]" style={{ color: '#4A5568', fontSize: '0.95rem' }} data-testid="text-believe-description">
+                  {siteConfig.joinUs.believeInUs.text}
+                </p>
+                <div className="mb-6" style={{ borderBottom: '1px solid #E2E6EA' }}>
+                  {siteConfig.joinUs.believeInUs.actions.map((action, i) => {
+                    const isDonate = action.text === "Donate Now";
+                    if (isDonate) {
+                      return (
+                        <div key={i} className="mb-4">
+                          <button
+                            className="w-full font-sans font-medium text-white transition-colors"
+                            style={{ padding: '12px 24px', borderRadius: '4px', fontSize: '0.95rem', border: 'none', cursor: 'pointer', background: '#1A56DB', display: 'block' }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#1447C0')}
+                            onMouseLeave={e => (e.currentTarget.style.background = '#1A56DB')}
+                            onClick={() => setDonationDialogOpen(true)}
+                            data-testid={`button-action-${i}`}
+                          >
+                            {action.text}
+                          </button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <button
+                        key={i}
+                        className="w-full font-sans font-medium flex items-center justify-between group transition-colors"
+                        style={{
+                          padding: '12px 0',
+                          background: 'none',
+                          border: 'none',
+                          borderTop: '1px solid #E2E6EA',
+                          cursor: action.comingSoon ? 'default' : 'pointer',
+                          color: action.comingSoon ? '#8A96A3' : '#0B1F3A',
+                          fontSize: '0.95rem',
+                        }}
+                        disabled={action.comingSoon}
+                        onClick={() => {
+                          if (action.comingSoon) return;
+                          if (action.text === "Partner With Us") {
+                            window.location.href = `mailto:${siteConfig.organization.email}`;
+                          } else if (action.text === "Share Our Story") {
+                            if (navigator.share) {
+                              navigator.share({ title: "Rising Promise", text: "Everyone deserves a fighting chance.", url: window.location.origin }).catch(() => {});
+                            } else {
+                              navigator.clipboard.writeText(window.location.origin).then(() => {
+                                toast({ title: "Link copied!", description: "Share link has been copied to your clipboard." });
+                              }).catch(() => {});
+                            }
+                          }
+                        }}
+                        data-testid={`button-action-${i}`}
+                      >
+                        <span className={!action.comingSoon ? 'group-hover:underline' : ''}>
+                          {action.text}
+                        </span>
+                        {action.comingSoon ? (
+                          <span className="font-sans" style={{ fontSize: '0.7rem', color: '#8A96A3', background: '#F4F4F2', padding: '2px 8px', borderRadius: '4px' }}>Soon</span>
+                        ) : (
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="font-sans italic" style={{ color: '#4A5568', fontSize: '0.875rem' }} data-testid="text-join-closing">
+                  {siteConfig.joinUs.believeInUs.closing}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Donation Dialog */}
+      {/* ─── DONATION DIALOG ─── */}
       <Dialog open={donationDialogOpen} onOpenChange={setDonationDialogOpen}>
         <DialogContent className="sm:max-w-md" data-testid="dialog-donation">
           <DialogHeader>
-            <DialogTitle>Make a Donation to Rising Promise</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="font-heading" style={{ fontSize: '1.5rem' }}>Make a Donation to Rising Promise</DialogTitle>
+            <DialogDescription className="font-sans">
               Your donation directly funds workforce training, wraparound support, and job placement for people rebuilding their lives. Rising Promise is a registered 501(c)(3) nonprofit — your gift is tax-deductible.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleDonationSubmit} className="space-y-6">
             <div>
-              <Label className="mb-3 block">Select Amount</Label>
+              <Label className="mb-3 block font-sans">Select Amount</Label>
               <div className="grid grid-cols-3 gap-2 mb-3">
-                {PRESET_AMOUNTS.map((amount) => (
-                  <Button
-                    key={amount}
-                    type="button"
-                    variant={donationAmount === amount && !customAmount ? "default" : "outline"}
-                    onClick={() => {
-                      setDonationAmount(amount);
-                      setCustomAmount("");
-                    }}
-                    className="no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
-                    data-testid={`button-amount-${amount}`}
-                  >
-                    ${amount}
-                  </Button>
-                ))}
+                {PRESET_AMOUNTS.map((amount) => {
+                  const selected = donationAmount === amount && !customAmount;
+                  return (
+                    <button
+                      key={amount}
+                      type="button"
+                      onClick={() => { setDonationAmount(amount); setCustomAmount(""); }}
+                      className="font-sans font-medium transition-colors"
+                      style={{
+                        padding: '10px',
+                        borderRadius: '4px',
+                        fontSize: '0.95rem',
+                        border: `1px solid ${selected ? '#1A56DB' : '#E2E6EA'}`,
+                        background: selected ? '#1A56DB' : 'transparent',
+                        color: selected ? 'white' : '#0B1F3A',
+                        cursor: 'pointer',
+                      }}
+                      data-testid={`button-amount-${amount}`}
+                    >
+                      ${amount}
+                    </button>
+                  );
+                })}
               </div>
               <div>
-                <Label htmlFor="customAmount">Or enter a custom amount</Label>
+                <Label htmlFor="customAmount" className="font-sans">Or enter a custom amount</Label>
                 <Input
                   id="customAmount"
                   type="number"
@@ -585,93 +815,79 @@ export default function Home() {
                   step="0.01"
                   placeholder="Enter amount"
                   value={customAmount}
-                  onChange={(e) => {
-                    setCustomAmount(e.target.value);
-                    setDonationAmount("");
-                  }}
+                  onChange={(e) => { setCustomAmount(e.target.value); setDonationAmount(""); }}
                   data-testid="input-custom-amount"
                 />
               </div>
             </div>
-
             <div>
-              <Label htmlFor="donorName">Name (Optional)</Label>
-              <Input
-                id="donorName"
-                placeholder="Your Name"
-                value={donorName}
-                onChange={(e) => setDonorName(e.target.value)}
-                data-testid="input-donor-name"
-              />
+              <Label htmlFor="donorName" className="font-sans">Name (Optional)</Label>
+              <Input id="donorName" placeholder="Your Name" value={donorName} onChange={(e) => setDonorName(e.target.value)} data-testid="input-donor-name" />
             </div>
-
             <div>
-              <Label htmlFor="donorEmail">Email Address *</Label>
-              <Input
-                id="donorEmail"
-                type="email"
-                placeholder="your@email.com"
-                value={donorEmail}
-                onChange={(e) => setDonorEmail(e.target.value)}
-                required
-                data-testid="input-donor-email"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Required for your tax receipt
-              </p>
+              <Label htmlFor="donorEmail" className="font-sans">Email Address *</Label>
+              <Input id="donorEmail" type="email" placeholder="your@email.com" value={donorEmail} onChange={(e) => setDonorEmail(e.target.value)} required data-testid="input-donor-email" />
+              <p className="font-sans mt-1" style={{ fontSize: '0.75rem', color: '#8A96A3' }}>Required for your tax receipt</p>
             </div>
-
-            <Button
+            <button
               type="submit"
-              className="w-full no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
+              className="w-full font-sans font-medium text-white transition-colors"
+              style={{ padding: '14px', borderRadius: '4px', fontSize: '1rem', border: 'none', cursor: 'pointer', background: '#1A56DB', opacity: donationMutation.isPending ? 0.7 : 1 }}
+              onMouseEnter={e => { if (!donationMutation.isPending) e.currentTarget.style.background = '#1447C0'; }}
+              onMouseLeave={e => (e.currentTarget.style.background = '#1A56DB')}
               disabled={donationMutation.isPending}
               data-testid="button-donate-submit"
             >
               {donationMutation.isPending ? "Processing..." : "Continue to Secure Payment"}
-            </Button>
-
-            <p className="text-xs text-center text-muted-foreground">
+            </button>
+            <p className="font-sans text-center" style={{ fontSize: '0.75rem', color: '#8A96A3' }}>
               You'll be redirected to Stripe's secure checkout. Rising Promise is a 501(c)(3) nonprofit. EIN available upon request.
             </p>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Footer */}
-      <footer id="footer" className="bg-secondary text-white py-16" data-testid="section-footer">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      {/* ─── FOOTER ─── */}
+      <footer id="footer" style={{ background: '#0B1F3A', paddingTop: '64px', paddingBottom: '48px' }} data-testid="section-footer">
+        <div className="mx-auto px-6" style={{ maxWidth: '1100px' }}>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
             <div>
-              <h4 className="font-heading font-bold mb-4" data-testid="text-footer-org">
+              <h4 className="font-sans font-semibold uppercase mb-4 text-white" style={{ fontSize: '0.75rem', letterSpacing: '0.08em' }} data-testid="text-footer-org">
                 {siteConfig.organization.name}
               </h4>
-              <p className="text-sm opacity-90 mb-4" data-testid="text-footer-tagline">
+              <p className="font-sans mb-5 leading-[1.7]" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }} data-testid="text-footer-tagline">
                 {siteConfig.organization.tagline}
               </p>
               <div className="flex gap-4">
-                <a href={siteConfig.social.facebook} className="hover:text-primary transition-colors" data-testid="link-social-facebook">
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a href={siteConfig.social.instagram} className="hover:text-primary transition-colors" data-testid="link-social-instagram">
-                  <Instagram className="w-5 h-5" />
-                </a>
-                <a href={siteConfig.social.linkedin} className="hover:text-primary transition-colors" data-testid="link-social-linkedin">
-                  <Linkedin className="w-5 h-5" />
-                </a>
-                <a href={siteConfig.social.twitter} className="hover:text-primary transition-colors" data-testid="link-social-twitter">
-                  <Twitter className="w-5 h-5" />
-                </a>
+                {[
+                  { href: siteConfig.social.facebook, Icon: Facebook, testId: "link-social-facebook" },
+                  { href: siteConfig.social.instagram, Icon: Instagram, testId: "link-social-instagram" },
+                  { href: siteConfig.social.linkedin, Icon: Linkedin, testId: "link-social-linkedin" },
+                  { href: siteConfig.social.twitter, Icon: Twitter, testId: "link-social-twitter" },
+                ].map(({ href, Icon, testId }) => (
+                  <a
+                    key={testId}
+                    href={href}
+                    className="transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.5)' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#E8A020')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+                    data-testid={testId}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                ))}
               </div>
             </div>
-            
             <div>
-              <h4 className="font-heading font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-sans font-semibold uppercase mb-4 text-white" style={{ fontSize: '0.75rem', letterSpacing: '0.08em' }}>Quick Links</h4>
+              <ul className="space-y-2">
                 {siteConfig.navigation.menuItems.map((item, i) => (
                   <li key={i}>
-                    <a 
-                      href={item.href} 
-                      className="opacity-80 hover:text-primary transition-colors"
+                    <a
+                      href={item.href}
+                      className="font-sans transition-colors hover:text-white"
+                      style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem', textDecoration: 'none' }}
                       data-testid={`link-footer-${item.text.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       {item.text}
@@ -680,52 +896,55 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            
             <div>
-              <h4 className="font-heading font-bold mb-4">Contact</h4>
-              <div className="space-y-2 text-sm opacity-90">
-                <p>{siteConfig.organization.email}</p>
-                <p>{siteConfig.organization.phone}</p>
-                <p>{siteConfig.organization.address}</p>
+              <h4 className="font-sans font-semibold uppercase mb-4 text-white" style={{ fontSize: '0.75rem', letterSpacing: '0.08em' }}>Contact</h4>
+              <div className="space-y-2 font-sans" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem' }}>
+                <p data-testid="text-footer-email">{siteConfig.organization.email}</p>
+                <p data-testid="text-footer-phone">{siteConfig.organization.phone}</p>
+                <p data-testid="text-footer-address">{siteConfig.organization.address}</p>
               </div>
             </div>
-            
             <div>
-              <h4 className="font-heading font-bold mb-2">Stay Connected</h4>
-              <p className="text-sm opacity-80 mb-3">Get program updates, impact stories, and ways to get involved.</p>
+              <h4 className="font-sans font-semibold uppercase mb-2 text-white" style={{ fontSize: '0.75rem', letterSpacing: '0.08em' }}>Stay Connected</h4>
+              <p className="font-sans mb-3" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>
+                Get program updates, impact stories, and ways to get involved.
+              </p>
               <form className="space-y-2" onSubmit={handleFooterSubmit} data-testid="form-footer-newsletter">
-                <Input 
+                <Input
                   type="email"
-                  placeholder="Your Email Address" 
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+                  placeholder="Your Email Address"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
                   value={footerEmail}
                   onChange={(e) => setFooterEmail(e.target.value)}
                   required
-                  data-testid="input-footer-email" 
+                  data-testid="input-footer-email"
                 />
-                <Button 
+                <button
                   type="submit"
-                  variant="secondary" 
-                  className="w-full bg-accent no-default-hover-elevate no-default-active-elevate btn-minimal-hover"
+                  className="w-full font-sans font-medium text-white transition-colors"
+                  style={{ padding: '10px', borderRadius: '4px', fontSize: '0.875rem', border: 'none', cursor: 'pointer', background: '#1A56DB' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#1447C0')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '#1A56DB')}
                   disabled={newsletterMutation.isPending}
                   data-testid="button-footer-subscribe"
                 >
                   {newsletterMutation.isPending ? "Subscribing..." : "Subscribe"}
-                </Button>
+                </button>
               </form>
             </div>
           </div>
-          
-          <div className="border-t border-white/10 pt-8 text-center text-sm">
-            <p className="opacity-80 mb-2" data-testid="text-footer-copyright">
+          <div className="pt-8 text-center font-sans" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <p className="mb-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }} data-testid="text-footer-copyright">
               © 2026 {siteConfig.organization.name}. All rights reserved.
             </p>
-            <p className="opacity-70" data-testid="text-footer-nonprofit">
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }} data-testid="text-footer-nonprofit">
               {siteConfig.organization.nonprofitStatus}
             </p>
           </div>
         </div>
       </footer>
+
     </div>
   );
 }
+

@@ -1,9 +1,11 @@
+import type { CSSProperties } from "react";
 import { useCounter } from "@/hooks/use-counter";
 
 interface StatCounterProps {
   value: string;
   isVisible: boolean;
   className?: string;
+  style?: CSSProperties;
   testId?: string;
 }
 
@@ -12,7 +14,7 @@ interface StatCounterProps {
  * Extracts number from formatted string and animates it
  * Examples: "125+", "$3.2M+", "85+"
  */
-export function StatCounter({ value, isVisible, className, testId }: StatCounterProps) {
+export function StatCounter({ value, isVisible, className, style, testId }: StatCounterProps) {
   // Parse the number and format from the string
   const parseStatValue = (str: string) => {
     const match = str.match(/(\$)?(\d+\.?\d*)(M|K)?(\+)?/i);
@@ -43,7 +45,7 @@ export function StatCounter({ value, isVisible, className, testId }: StatCounter
   };
 
   return (
-    <span className={className} data-testid={testId}>
+    <span className={className} style={style} data-testid={testId}>
       {prefix}{formatCount(count)}{multiplier}{suffix}
     </span>
   );

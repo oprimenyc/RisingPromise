@@ -1,0 +1,280 @@
+# Rising Promise — Visual & Cosmetic Revamp
+
+## Instructions for Replit AI
+
+You are doing a **cosmetic-only revamp** of the Rising Promise React site.
+
+**DO NOT change:**
+
+- Any copy or text content
+- Any section structure or order
+- Any feature flags or functionality
+- Any form fields or button actions
+- The shadcn/ui component library usage
+
+**ONLY change:**
+
+- Visual design (colors, typography, spacing, depth)
+- Animations and motion
+- Background treatments and textures
+- Button styling (keep actions the same)
+- Card and section styling
+- Overall visual hierarchy and polish
+
+-----
+
+## DESIGN DIRECTION
+
+**Mood:** Powerful + Credible. Premium modern nonprofit. Bold but never loud. The site should feel like serious people doing serious work — with a human heartbeat underneath.
+
+**Reference feeling:** Think ACLU meets Apple. Institutional credibility with genuine warmth. A funder should feel trust immediately. A participant should feel seen.
+
+**One rule above all:** Every design decision should make the mission feel more real — not more corporate, not more decorative.
+
+-----
+
+## TYPOGRAPHY
+
+Replace current fonts with this pairing:
+
+- **Display / Headings:** `DM Serif Display` (Google Fonts) — elegant, weighty, authoritative. Use for all h1, h2 headlines.
+- **Body / UI:** `DM Sans` (Google Fonts) — clean, modern, highly legible. Use for paragraphs, labels, buttons, nav.
+
+**Type scale:**
+
+- Hero h1: 4.5rem / 700 weight / tight letter-spacing (-0.02em)
+- Section h2: 2.75rem / DM Serif Display
+- Card titles: 1.25rem / DM Sans 600
+- Body: 1rem / DM Sans 400 / line-height 1.7
+- Small labels / sub-labels: 0.75rem / DM Sans 500 / uppercase / letter-spacing 0.08em
+
+-----
+
+## COLOR SYSTEM
+
+Replace the current color tokens with this refined palette:
+
+```css
+--primary: #1A56DB;          /* Deep electric blue — main CTAs */
+--primary-hover: #1447C0;    /* Darker on hover */
+--secondary: #0B1F3A;        /* Near-black navy — hero, dark sections */
+--accent: #E8A020;           /* Warm amber/gold — highlights, stat numbers */
+--accent-light: #FEF3DC;     /* Amber tint — backgrounds */
+--background: #FAFAF9;       /* Warm white — slightly off-white, not stark */
+--surface: #FFFFFF;          /* Pure white — cards */
+--surface-alt: #F4F4F2;      /* Light grey — alternating sections */
+--text-primary: #0B1F3A;     /* Navy — main text */
+--text-secondary: #4A5568;   /* Medium grey — supporting text */
+--text-muted: #8A96A3;       /* Light grey — labels, sub-text */
+--border: #E2E6EA;           /* Subtle borders */
+--success: #0E9F6E;          /* Green — used sparingly */
+```
+
+-----
+
+## SECTION-BY-SECTION DESIGN SPECS
+
+### NAVIGATION
+
+- Background: `--secondary` (#0B1F3A) — dark, full width
+- Logo: White text, DM Serif Display
+- Nav links: DM Sans, white, 0.9rem, letter-spacing 0.03em
+- Active/hover: `--accent` (#E8A020) underline, 2px
+- Scrolled state: stays dark, adds subtle `box-shadow: 0 2px 20px rgba(0,0,0,0.15)`
+- Height: 64px default, 56px on scroll
+- No blur effects
+
+-----
+
+### HERO SECTION
+
+This is the most important upgrade. It needs to stop people.
+
+**Background treatment:**
+
+- Full dark background: `--secondary` (#0B1F3A)
+- Add a subtle diagonal gradient overlay: `linear-gradient(135deg, #0B1F3A 0%, #0D2845 60%, #0B1F3A 100%)`
+- Add a very subtle noise/grain texture overlay at 3-4% opacity (CSS generated or SVG filter) — this adds depth and premium feel
+- Keep the existing hero background image but reduce opacity to 15-20% as a texture layer underneath the gradient — it adds visual interest without competing with text
+
+**Text treatment:**
+
+- Headline: DM Serif Display, 4.5rem, white, line-height 1.1
+- Subheadline: DM Sans, 1.25rem, rgba(255,255,255,0.75), line-height 1.6, max-width 560px
+- Add a thin amber accent line (3px wide, 48px long, `--accent` color) above the headline — like an editorial rule
+
+**Buttons:**
+
+- Primary: `--primary` background, white text, DM Sans 500, no border-radius (use 4px only — sharp, modern), padding 14px 32px, no shadow
+- Secondary: transparent, white border (1px), white text, same sizing
+- On hover: primary darkens to `--primary-hover`, secondary fills with white at 10% opacity
+- NO rounded pill buttons. NO box shadows. Clean edges.
+
+**Layout:**
+
+- Content left-aligned, not centered
+- Max-width container, generous padding
+- Vertical padding: 140px top, 120px bottom
+- Small amber label above headline: “NONPROFIT WORKFORCE TRAINING” in DM Sans 500, uppercase, 0.7rem, letter-spacing 0.12em, `--accent` color
+
+-----
+
+### STORY SECTION
+
+- Background: `--background` (#FAFAF9)
+- Add a large, very faint watermark-style numeral “01” in the top right — DM Serif Display, 20rem, opacity 0.03, `--text-primary` color. Repeat this pattern for each major section (02, 03, etc.)
+- Section number label: “OUR STORY” small caps label in `--accent`, above headline
+- Left border accent: 3px solid `--accent` on the left side of the opening paragraph only
+
+-----
+
+### WHO WE SEE SECTION
+
+- Background: `--secondary` (#0B1F3A) — dark section for contrast
+- All text: white
+- The 4 “We see…” lines: each gets a thin left border in `--accent`, 2px, with 16px left padding
+- Highlighted box: `--accent` background (#E8A020), `--secondary` text — flipped for impact. Slightly rounded (8px). No drop shadow.
+- Section label: “WHO WE SERVE” above headline, white, small caps
+
+-----
+
+### WHAT WE DO SECTION
+
+- Background: `--surface-alt` (#F4F4F2)
+- Cards: white background, 1px `--border`, 8px border-radius, no drop shadow by default
+- Card top accent: 3px solid `--primary` at the very top of each card (like a colored header bar)
+- Card icon: `--primary` color, contained in a small `--accent-light` square (40x40px, 8px radius)
+- On hover: card gets `box-shadow: 0 4px 24px rgba(0,0,0,0.08)` — subtle lift
+- Promise box: `--secondary` background, white text, amber left border 4px, 24px padding all sides
+
+-----
+
+### IMPACT SECTION
+
+- Background: `--secondary` (#0B1F3A) — dark
+- Stat numbers: DM Serif Display, 4rem, `--accent` (#E8A020)
+- Stat labels: DM Sans 500, white, 1rem
+- Sub-labels: DM Sans 400, rgba(255,255,255,0.5), 0.75rem, uppercase, letter-spacing 0.06em
+- Dividers between stats: 1px vertical lines at rgba(255,255,255,0.1)
+- Closing paragraph: DM Sans, rgba(255,255,255,0.8), italic, centered, max-width 640px, border-top 1px rgba(255,255,255,0.1) above it
+
+-----
+
+### TEAM SECTION
+
+- Background: `--background`
+- Team cards: white, 1px border, 8px radius
+- Photo containers: circular, 88px diameter, with a 2px `--accent` ring
+- Name: DM Sans 600, `--text-primary`
+- Title: DM Sans 400, `--text-secondary`, 0.875rem
+- Quote: DM Serif Display italic, `--text-primary`, 1rem, line-height 1.6
+- Quote mark: large decorative opening quote in `--accent`, 3rem, DM Serif Display, positioned top-left of quote
+
+-----
+
+### JOIN US SECTION
+
+- Background: `--surface-alt`
+- Two cards: white, 1px border, 8px radius, generous padding (40px)
+- Left card accent: `--primary` top border, 3px
+- Right card accent: `--accent` top border, 3px
+- Action buttons in right card: text-only style with arrow → instead of filled buttons. DM Sans 500. Underline on hover. Each on its own line with generous spacing.
+- Exception: “Donate Now” stays as a filled `--primary` button — it’s the priority action
+
+-----
+
+### FOOTER
+
+- Background: `--secondary`
+- All text: white or rgba(255,255,255,0.6)
+- Section headings: white, DM Sans 600, 0.75rem uppercase, letter-spacing 0.08em
+- Links: rgba(255,255,255,0.6), hover → white, no underline
+- Divider above bottom bar: 1px rgba(255,255,255,0.1)
+- Bottom bar text: rgba(255,255,255,0.4), 0.8rem
+- Social icons: rgba(255,255,255,0.5), hover → `--accent`
+
+-----
+
+## ANIMATION SPECS
+
+Stack: Framer Motion (already installed). Keep all animations subtle and purposeful.
+
+### Rules:
+
+- Use `whileInView` with `viewport={{ once: true }}` — animate once, not every scroll
+- Easing: `[0.25, 0.1, 0.25, 1]` cubic bezier throughout
+- NO scale transforms on hover (except very subtle 1.02 max on cards)
+- NO glowing effects
+- NO color-changing animations
+- Respect `prefers-reduced-motion` — wrap all motion in a check
+
+### Specific animations:
+
+**Hero (on page load):**
+
+```
+- Amber label: fade in, duration 0.4s, delay 0s
+- Headline: fade in + translateY(20px → 0), duration 0.7s, delay 0.15s
+- Subheadline: fade in, duration 0.6s, delay 0.35s
+- Buttons: fade in, duration 0.5s, delay 0.5s
+```
+
+**Section headings (on scroll into view):**
+
+```
+- Fade in + translateY(16px → 0), duration 0.6s
+```
+
+**Cards (staggered on scroll into view):**
+
+```
+- Each card: fade in + translateY(24px → 0)
+- Stagger delay: 0.1s between cards
+- Duration: 0.5s per card
+```
+
+**Stat numbers:**
+
+```
+- Count up from 0 to target value when section enters viewport
+- Duration: 1.5s, easeOut
+```
+
+**Team cards:**
+
+```
+- Same as program cards — staggered fade + slight rise
+```
+
+**NO animations on:**
+
+- Navigation
+- Footer
+- Buttons (hover states are CSS only)
+- Form inputs
+
+-----
+
+## SPACING & LAYOUT
+
+- Section padding: 96px top and bottom (desktop), 64px (mobile)
+- Max content width: 1100px, centered
+- Card grids: `gap: 24px`
+- Text blocks: max-width 640px for readability
+- Mobile breakpoint: 768px — stack all grids to single column
+
+-----
+
+## FINAL QUALITY CHECK
+
+After implementing, verify:
+
+- [ ] No purple gradients anywhere
+- [ ] No pill/rounded buttons (max 4px border-radius on buttons)
+- [ ] No drop shadows heavier than `0 4px 24px rgba(0,0,0,0.08)`
+- [ ] No animations that loop or repeat
+- [ ] Dark sections alternate with light sections for visual rhythm
+- [ ] Amber accent used sparingly — highlights only, not backgrounds
+- [ ] All text passes WCAG AA contrast on its background
+- [ ] Mobile tested — no text overflow, no broken layouts
+- [ ] Fonts loading from Google Fonts: DM Serif Display + DM Sans
