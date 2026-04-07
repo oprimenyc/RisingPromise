@@ -565,46 +565,72 @@ export default function Home() {
           </motion.h2>
           <motion.p
             {...mv(0.1)}
-            className="font-sans text-center mb-14"
-            style={{ color: '#4A5568', fontSize: '1rem', maxWidth: '640px', margin: '0 auto 3.5rem' }}
+            className="font-sans text-center"
+            style={{ color: '#4A5568', fontSize: '1rem', maxWidth: '640px', margin: '0 auto 1.5rem' }}
             data-testid="text-team-intro"
           >
             {siteConfig.team.introText}
           </motion.p>
+          <motion.p
+            {...mv(0.15)}
+            className="font-sans font-medium uppercase text-center mb-12"
+            style={{ fontSize: '0.7rem', letterSpacing: '0.1em', color: '#E8A020' }}
+          >
+            Leadership Team
+          </motion.p>
           <motion.div
             {...(shouldReduceMotion ? {} : { variants: stagger, initial: "hidden", whileInView: "visible", viewport: { once: true } })}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12"
+            className="grid grid-cols-1 md:grid-cols-2 mb-12"
             style={{ gap: '24px' }}
           >
-            {siteConfig.team.members.map((member, i) => (
-              <motion.div
-                key={i}
-                {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.1, ease: EASE } })}
-                className="bg-white rounded-lg p-6 text-center"
-                style={{ border: '1px solid #E2E6EA' }}
-                data-testid={`card-team-${i}`}
-              >
-                <img
-                  src={member.photo}
-                  alt={member.name}
-                  className="mx-auto mb-4 object-cover"
-                  style={{ width: '88px', height: '88px', borderRadius: '50%', border: '2px solid #E8A020' }}
-                  data-testid={`img-team-${i}`}
-                />
-                <h3 className="font-sans font-semibold mb-1" style={{ fontSize: '1rem', color: '#0B1F3A' }} data-testid={`text-team-name-${i}`}>
-                  {member.name}
-                </h3>
-                <p className="font-sans mb-4" style={{ color: '#4A5568', fontSize: '0.875rem' }} data-testid={`text-team-title-${i}`}>
-                  {member.title}
-                </p>
-                <div className="relative text-left">
-                  <span className="font-heading absolute pointer-events-none" style={{ fontSize: '3rem', color: '#E8A020', lineHeight: '1', top: '-8px', left: '-4px' }}>"</span>
-                  <p className="font-heading italic pt-5 pl-2 leading-relaxed" style={{ color: '#0B1F3A', fontSize: '0.9rem', lineHeight: '1.6' }} data-testid={`text-team-quote-${i}`}>
-                    {member.quote}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+            {siteConfig.team.members.map((member, i) => {
+              const nameOnly = member.name.split(',')[0].trim();
+              const parts = nameOnly.split(' ').filter(p => p.length > 1 && !p.endsWith('.'));
+              const initials = parts.length >= 2
+                ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                : (parts[0]?.[0] ?? '?').toUpperCase();
+
+              return (
+                <motion.div
+                  key={i}
+                  {...(shouldReduceMotion ? {} : { variants: fadeUp, transition: { duration: 0.5, delay: i * 0.1, ease: EASE } })}
+                  className="bg-white rounded-lg overflow-hidden"
+                  style={{ border: '1px solid #E2E6EA', boxShadow: 'none', transition: 'box-shadow 0.2s ease' }}
+                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)')}
+                  onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
+                  data-testid={`card-team-${i}`}
+                >
+                  <div style={{ height: '3px', background: '#E8A020' }} />
+                  <div className="flex gap-5" style={{ padding: '32px' }}>
+                    {/* Initials square */}
+                    <div
+                      className="flex-shrink-0 flex items-center justify-center"
+                      style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#0B1F3A' }}
+                      data-testid={`avatar-team-${i}`}
+                    >
+                      <span className="font-heading" style={{ fontSize: '1.5rem', color: '#E8A020', lineHeight: 1 }}>
+                        {initials}
+                      </span>
+                    </div>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-sans font-semibold mb-0.5" style={{ fontSize: '1rem', color: '#0B1F3A' }} data-testid={`text-team-name-${i}`}>
+                        {member.name}
+                      </h3>
+                      <p className="font-sans mb-3" style={{ color: '#4A5568', fontSize: '0.8rem' }} data-testid={`text-team-title-${i}`}>
+                        {member.title}
+                      </p>
+                      <div className="relative">
+                        <span className="font-heading absolute pointer-events-none" style={{ fontSize: '2.5rem', color: '#E8A020', lineHeight: '1', top: '-6px', left: '-4px' }}>"</span>
+                        <p className="font-heading italic pt-4 leading-relaxed" style={{ color: '#0B1F3A', fontSize: '0.875rem', lineHeight: '1.6' }} data-testid={`text-team-quote-${i}`}>
+                          {member.quote}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
           <motion.p
             {...mv(0.2)}

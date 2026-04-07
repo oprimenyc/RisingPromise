@@ -1,0 +1,73 @@
+# Rising Promise — Team Section Revamp
+
+## Instructions for Replit AI
+
+Update ONLY the Team section in `home.tsx`. Do not change any other section.
+
+-----
+
+## THE CHANGE
+
+Remove all team member photos and avatar placeholders entirely.
+Replace with an initial-based design that looks intentional and premium — not like a placeholder.
+
+-----
+
+## NEW TEAM CARD DESIGN
+
+Each team member card gets:
+
+**Avatar replacement:**
+
+- A square (64x64px, 8px border-radius) filled with `--secondary` (#0B1F3A)
+- Centered inside: the person’s initials in DM Serif Display, 1.5rem, `--accent` color (#E8A020)
+- This sits in the top-left of the card — not centered above it
+
+**Card layout (horizontal, not vertical):**
+
+- Switch from centered vertical layout to left-aligned horizontal layout
+- Initial square on the left
+- Name, title, and quote to the right
+- This feels more editorial and intentional than a headshot placeholder
+
+**Card styling (consistent with visual revamp):**
+
+- White background, 1px `--border`, 8px radius
+- 3px `--accent` top border
+- 32px padding all sides
+- Subtle hover: `box-shadow: 0 4px 24px rgba(0,0,0,0.08)`
+
+-----
+
+## TEAM MEMBER INITIALS
+
+|Name                |Initials|
+|--------------------|--------|
+|Jason Pilgrim       |JP      |
+|Shawn J. Wright, FNP|SW      |
+|Melissa Meeham, MPA |MM      |
+|Kenya Roberts, CFRE |KR      |
+
+-----
+
+## SECTION HEADER
+
+Keep existing:
+
+- Headline: “Built by People Who’ve Been There”
+- Intro: “This isn’t theory. This is personal.”
+- Closing: “We’re not saviors. We’re partners.”
+
+Add below the intro line, above the cards:
+
+- Small label: “LEADERSHIP TEAM” — DM Sans 500, 0.7rem, uppercase, letter-spacing 0.1em, `--accent` color
+
+-----
+
+## IMPORTANT NOTES
+
+- Do NOT use avatar images, silhouettes, or icon placeholders
+- The initials treatment must look designed — not like a fallback
+- When real photos are added later, they drop into the same card slot replacing the initials square with a circular photo — same card layout stays
+- Keep all existing copy, quotes, names, and titles exactly as they are
+- Keep all existing animations (staggered fade-in on scroll)
