@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion, useReducedMotion, useInView } from "framer-motion";
-import horizontalLogoImage from "@assets/IMG_7944_1775777740428.png";
+import horizontalLogoImage from "@assets/IMG_7944_1775778491109.png";
 
 const iconMap: Record<string, any> = {
   "Graduation Cap": GraduationCap,
@@ -152,7 +152,7 @@ export default function Home() {
               src={horizontalLogoImage}
               alt="Rising Promise"
               className="transition-all duration-300"
-              style={{ height: isScrolled ? '28px' : '34px', filter: 'brightness(0) invert(1)' }}
+              style={{ height: isScrolled ? '28px' : '34px' }}
             />
           </a>
           <nav className="hidden md:flex items-center gap-8" data-testid="nav-desktop">
