@@ -152,7 +152,7 @@ export default function Home() {
               src={horizontalLogoImage}
               alt="Rising Promise"
               className="transition-all duration-300"
-              style={{ height: isScrolled ? '28px' : '34px' }}
+              style={{ height: isScrolled ? '28px' : '34px', filter: 'brightness(0) invert(1)' }}
             />
           </a>
           <nav className="hidden md:flex items-center gap-8" data-testid="nav-desktop">
