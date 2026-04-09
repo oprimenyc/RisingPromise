@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion, useReducedMotion, useInView } from "framer-motion";
-import horizontalLogoImage from "@assets/B28D20D5-0010-4244-BD10-703159C6EA2A_1762216606634.jpeg";
+import horizontalLogoImage from "@assets/IMG_7944_1775777740428.png";
 
 const iconMap: Record<string, any> = {
   "Graduation Cap": GraduationCap,
