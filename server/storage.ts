@@ -1,12 +1,14 @@
-import type { 
-  InsertNewsletterSignup, 
+import type {
+  InsertNewsletterSignup,
   NewsletterSignup,
   InsertProgramApplication,
   ProgramApplication,
   InsertDonation,
-  Donation
+  Donation,
+  InsertRaffleEntry,
+  RaffleEntry,
 } from "@shared/schema";
-import { newsletterSignups, programApplications, donations } from "@shared/schema";
+import { newsletterSignups, programApplications, donations, raffleEntries } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -29,6 +31,13 @@ export interface IStorage {
   updateDonationPaymentStatus(sessionId: string, paymentIntentId: string, status: string): Promise<Donation | undefined>;
   markReceiptSent(id: number): Promise<Donation | undefined>;
   getAllDonations(): Promise<Donation[]>;
+
+  // Raffle entry operations
+  createRaffleEntry(entry: InsertRaffleEntry): Promise<RaffleEntry>;
+  getRaffleEntryBySessionId(sessionId: string): Promise<RaffleEntry | undefined>;
+  getAllRaffleEntryNumbers(): Promise<string[]>;
+  updateRaffleEntry(sessionId: string, entryNumbers: string[], status: string): Promise<RaffleEntry | undefined>;
+  getAllRaffleEntries(): Promise<RaffleEntry[]>;
 }
 
 export class DbStorage implements IStorage {
@@ -109,6 +118,45 @@ export class DbStorage implements IStorage {
 
   async getAllDonations(): Promise<Donation[]> {
     return await db.select().from(donations);
+  }
+
+  // Raffle entry operations
+  async createRaffleEntry(entry: InsertRaffleEntry): Promise<RaffleEntry> {
+    const [result] = await db.insert(raffleEntries).values(entry).returning();
+    return result;
+  }
+
+  async getRaffleEntryBySessionId(sessionId: string): Promise<RaffleEntry | undefined> {
+    const [result] = await db
+      .select()
+      .from(raffleEntries)
+      .where(eq(raffleEntries.stripeSessionId, sessionId));
+    return result;
+  }
+
+  async getAllRaffleEntryNumbers(): Promise<string[]> {
+    const rows = await db
+      .select({ entryNumbers: raffleEntries.entryNumbers })
+      .from(raffleEntries)
+      .where(eq(raffleEntries.paymentStatus, "paid"));
+    return rows.flatMap((r) => r.entryNumbers ?? []);
+  }
+
+  async updateRaffleEntry(
+    sessionId: string,
+    entryNumbers: string[],
+    status: string
+  ): Promise<RaffleEntry | undefined> {
+    const [result] = await db
+      .update(raffleEntries)
+      .set({ entryNumbers, paymentStatus: status })
+      .where(eq(raffleEntries.stripeSessionId, sessionId))
+      .returning();
+    return result;
+  }
+
+  async getAllRaffleEntries(): Promise<RaffleEntry[]> {
+    return await db.select().from(raffleEntries);
   }
 }
 

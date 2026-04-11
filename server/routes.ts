@@ -3,6 +3,14 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertNewsletterSignupSchema, insertProgramApplicationSchema } from "@shared/schema";
 import Stripe from "stripe";
+import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
+
+// Raffle ticket tier definitions — server-side source of truth for pricing
+const RAFFLE_TICKET_TIERS: Record<string, { label: string; priceInCents: number; entries: number }> = {
+  single:    { label: "Single Entry",   priceInCents: 2500,  entries: 1  },
+  supporter: { label: "Supporter Pack", priceInCents: 10000, entries: 5  },
+  champion:  { label: "Champion Pack",  priceInCents: 17500, entries: 10 },
+};
 
 // Initialize Stripe - will use test keys for development
 const stripe = process.env.STRIPE_SECRET_KEY 
@@ -46,6 +54,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = insertProgramApplicationSchema.parse(req.body);
       
       const application = await storage.createProgramApplication(data);
+
+      sendApplicationConfirmation(data.email, data.firstName, data.programType).catch((err) => {
+        console.error("Application confirmation email failed:", err);
+      });
+
       res.json({ success: true, data: application });
     } catch (error) {
       console.error("Program application error:", error);
@@ -91,6 +104,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   //     res.status(500).json({ error: "Failed to update status" });
   //     }
   // });
+
+  // Raffle ticket purchase — Create Checkout Session
+  app.post("/api/raffle/create-checkout-session", async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(500).json({ error: "Stripe is not configured." });
+      }
+
+      const { tierId, email, name, drawDate, legal } = req.body;
+      const tier = RAFFLE_TICKET_TIERS[tierId];
+      if (!tier) {
+        return res.status(400).json({ error: "Invalid ticket tier." });
+      }
+      if (!email) {
+        return res.status(400).json({ error: "Email is required." });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `${tier.label} — Rising Promise Raffle`,
+              description: `${tier.entries} raffle ${tier.entries === 1 ? "entry" : "entries"}`,
+            },
+            unit_amount: tier.priceInCents,
+          },
+          quantity: 1,
+        }],
+        mode: "payment",
+        success_url: `${req.headers.origin || "http://localhost:5000"}/raffle?purchase=success`,
+        cancel_url:  `${req.headers.origin || "http://localhost:5000"}/raffle`,
+        customer_email: email,
+        metadata: {
+          type: "raffle",
+          tierId,
+          entryCount: String(tier.entries),
+          buyerName: name || "",
+          buyerEmail: email,
+          drawDate: drawDate || "To Be Announced",
+          legal: (legal || "No purchase necessary. Must be 18+. See official rules.").slice(0, 500),
+        },
+      });
+
+      await storage.createRaffleEntry({
+        email,
+        name: name || null,
+        ticketTierId: tierId,
+        entryCount: tier.entries,
+        entryNumbers: [],
+        stripeSessionId: session.id,
+        paymentStatus: "pending",
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Raffle checkout error:", error);
+      res.status(500).json({ error: error.message || "Failed to create checkout session" });
+    }
+  });
 
   // Stripe donation routes - Create Checkout Session
   app.post("/api/donations/create-checkout-session", async (req, res) => {
@@ -189,23 +263,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle the checkout.session.completed event
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
+        const sessionType = session.metadata?.type;
 
-        // Update donation status in database
-        await storage.updateDonationPaymentStatus(
-          session.id,
-          session.payment_intent as string,
-          'succeeded'
-        );
+        if (sessionType === "raffle") {
+          // ── Raffle purchase ──────────────────────────────────────────────
+          const tierId      = session.metadata?.tierId ?? "";
+          const entryCount  = parseInt(session.metadata?.entryCount ?? "1", 10);
+          const buyerName   = session.metadata?.buyerName ?? "";
+          const buyerEmail  = session.customer_email ?? session.metadata?.buyerEmail ?? "";
+          const drawDate    = session.metadata?.drawDate ?? "To Be Announced";
+          const legal       = session.metadata?.legal ?? "No purchase necessary. Must be 18+.";
+          const tierLabel   = RAFFLE_TICKET_TIERS[tierId]?.label ?? tierId;
 
-        // TODO: Send confirmation email with tax receipt
-        // This will be implemented when email service is integrated
-        console.log(`✅ Donation completed: ${session.id}`);
+          // Generate unique entry codes (RP-XXXX, 36^4 = 1.68M possible codes)
+          const existingNumbers = await storage.getAllRaffleEntryNumbers();
+          const existingSet = new Set(existingNumbers);
+          const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+          const newEntryNumbers: string[] = [];
+
+          while (newEntryNumbers.length < entryCount) {
+            let code = "RP-";
+            for (let i = 0; i < 4; i++) {
+              code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            if (!existingSet.has(code) && !newEntryNumbers.includes(code)) {
+              newEntryNumbers.push(code);
+              existingSet.add(code);
+            }
+          }
+
+          await storage.updateRaffleEntry(session.id, newEntryNumbers, "paid");
+
+          if (buyerEmail) {
+            sendRaffleConfirmation(buyerEmail, buyerName, newEntryNumbers, tierLabel, drawDate, legal).catch((err) => {
+              console.error("Raffle confirmation email failed:", err);
+            });
+          }
+
+          console.log(`✅ Raffle purchase confirmed: ${session.id} — entries: ${newEntryNumbers.join(", ")}`);
+
+        } else {
+          // ── Donation ─────────────────────────────────────────────────────
+          await storage.updateDonationPaymentStatus(
+            session.id,
+            session.payment_intent as string,
+            "succeeded"
+          );
+
+          const donorEmail = session.customer_email ?? (session.metadata?.donorEmail ?? "");
+          const donorName  = session.metadata?.donorName ?? "";
+          if (donorEmail) {
+            sendDonationReceipt(donorEmail, donorName, session.amount_total ?? 0, session.id).catch((err) => {
+              console.error("Donation receipt email failed:", err);
+            });
+          }
+
+          console.log(`✅ Donation completed: ${session.id}`);
+        }
       }
 
       res.json({ received: true });
     } catch (error: any) {
       console.error("Webhook error:", error);
       res.status(400).json({ error: error.message || "Webhook error" });
+    }
+  });
+
+  // Admin — verify password
+  app.post("/api/admin/verify-password", (req, res) => {
+    const { password } = req.body;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      return res.status(500).json({ error: "ADMIN_PASSWORD is not configured on the server." });
+    }
+    if (password !== adminPassword) {
+      return res.status(401).json({ error: "Invalid password." });
+    }
+    res.json({ success: true });
+  });
+
+  // Admin — get all raffle entries
+  app.get("/api/admin/raffle-entries", async (req, res) => {
+    const password = req.headers["x-admin-password"];
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword || password !== adminPassword) {
+      return res.status(401).json({ error: "Unauthorized." });
+    }
+    try {
+      const entries = await storage.getAllRaffleEntries();
+      res.json({ data: entries });
+    } catch (error: any) {
+      console.error("Admin raffle entries error:", error);
+      res.status(500).json({ error: "Failed to fetch entries." });
     }
   });
 

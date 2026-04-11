@@ -26,6 +26,7 @@ export type NavItem = z.infer<typeof navItemSchema>;
 
 // Hero section
 export const heroSchema = z.object({
+  tagline: z.string(),
   headline: z.string(),
   subheadline: z.string(),
   primaryButtonText: z.string(),
@@ -157,15 +158,6 @@ export const programSchema = z.object({
 
 export type Program = z.infer<typeof programSchema>;
 
-// Raffle
-export const ticketPricingSchema = z.object({
-  price: z.string(),
-  entries: z.string(),
-  description: z.string(),
-  badge: z.boolean(),
-});
-
-export type TicketPricing = z.infer<typeof ticketPricingSchema>;
 
 // Organization info
 export const organizationSchema = z.object({
@@ -209,25 +201,34 @@ export const siteConfigSchema = z.object({
     it: programSchema,
   }),
   raffle: z.object({
+    active: z.boolean(),
+    showInNav: z.boolean(),
     headline: z.string(),
     subheadline: z.string(),
+    drawDate: z.string(),
+    drawDateNote: z.string(),
+    sponsor: z.object({
+      name: z.string(),
+      logoUrl: z.string(),
+      tagline: z.string(),
+    }),
     prizes: z.array(z.object({
-      place: z.string(),
+      tier: z.number(),
+      label: z.string(),
       value: z.string(),
       description: z.string(),
-      badge: z.boolean(),
+      imageUrl: z.string(),
     })),
-    ticketPricing: z.array(ticketPricingSchema),
-    details: z.object({
-      drawDate: z.string(),
-      totalTickets: z.string(),
-      whereMoneyGoes: z.string(),
-      rules: z.array(z.string()),
-    }),
-    faq: z.array(z.object({
-      question: z.string(),
-      answer: z.string(),
+    ticketTiers: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      price: z.number(),
+      entries: z.number(),
+      badge: z.string(),
+      description: z.string(),
     })),
+    legal: z.string(),
+    rulesUrl: z.string(),
   }),
 });
 
@@ -314,3 +315,24 @@ export const insertDonationSchema = createInsertSchema(donations).omit({
 
 export type InsertDonation = z.infer<typeof insertDonationSchema>;
 export type Donation = typeof donations.$inferSelect;
+
+// Raffle Entries Table
+export const raffleEntries = pgTable("raffle_entries", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  name: text("name"),
+  ticketTierId: text("ticket_tier_id").notNull(),
+  entryCount: integer("entry_count").notNull(),
+  entryNumbers: text("entry_numbers").array().notNull(),
+  stripeSessionId: text("stripe_session_id").notNull().unique(),
+  purchasedAt: timestamp("purchased_at").defaultNow().notNull(),
+  paymentStatus: text("payment_status").notNull().default("pending"), // 'pending', 'paid', 'failed'
+});
+
+export const insertRaffleEntrySchema = createInsertSchema(raffleEntries).omit({
+  id: true,
+  purchasedAt: true,
+});
+
+export type InsertRaffleEntry = z.infer<typeof insertRaffleEntrySchema>;
+export type RaffleEntry = typeof raffleEntries.$inferSelect;

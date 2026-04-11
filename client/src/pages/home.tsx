@@ -239,7 +239,7 @@ export default function Home() {
             className="font-sans font-medium uppercase mb-5"
             style={{ color: '#E8A020', fontSize: '0.7rem', letterSpacing: '0.12em' }}
           >
-            Nonprofit Workforce Training
+            {siteConfig.hero.tagline}
           </motion.p>
           <motion.div
             {...heroAnim(0.1, 0.5)}

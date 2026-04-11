@@ -38,7 +38,7 @@ export const siteConfig: SiteConfig = {
     name: "Rising Promise",
     tagline: "Everyone deserves a fighting chance. We're here to make sure they get it.",
     email: "info@risingpromise.org",
-    phone: "[PHONE — TO BE ADDED]",
+    phone: "Coming Soon",
     address: "Texas-Based. Serving Communities Nationwide.",
     nonprofitStatus: "501(c)(3) nonprofit | Registered in Texas | SAM.gov Registered",
   },
@@ -74,6 +74,7 @@ export const siteConfig: SiteConfig = {
   
   // HERO SECTION
   hero: {
+    tagline: "Everyone deserves a fighting chance. We're here to make sure they get it.",
     headline: "Everyone Deserves a Fighting Chance",
     subheadline: "We believe potential isn't determined by your past — it's unlocked by your future.",
     primaryButtonText: "Learn Our Story",
@@ -110,7 +111,7 @@ export const siteConfig: SiteConfig = {
   // WHAT WE DO SECTION
   whatWeDo: {
     headline: "We Don't Just Train People. We Invest in Them.",
-    introText: "Rising Promise is a government-registered, 501(c)(3) nonprofit building workforce pipelines in healthcare and technology for people who need it most. Every program we run is designed to lead directly to employment — not just a certificate.",
+    introText: "Rising Promise is a government-registered, 501(c)(3) nonprofit creating real pathways in healthcare and technology for people who need it most. Every program we run is designed to lead directly to employment — not just a certificate.",
     features: [
       {
         icon: "Graduation Cap",
@@ -298,79 +299,77 @@ export const siteConfig: SiteConfig = {
   },
 
   /**
-   * RAFFLE PAGE
+   * RAFFLE
+   * Set active: true to launch the raffle publicly.
+   * All raffle copy, prizes, and ticket pricing are edited here.
    */
   raffle: {
-    headline: "Win Big. Change Lives.",
-    subheadline: "Every ticket you buy funds workforce training for someone who needs it most. And you might just win $10,000.",
-    
-    prizes: [
-      {
-        place: "1st Prize",
-        value: "$10,000",
-        description: "Cash Grand Prize",
-        badge: true
-      },
-      {
-        place: "2nd Prize",
-        value: "$2,500",
-        description: "Cash Prize",
-        badge: false
-      },
-      {
-        place: "3rd Prize",
-        value: "$1,000",
-        description: "Cash Prize",
-        badge: false
-      }
-    ],
+    active: false,       // flip to true to go live
+    showInNav: true,
 
-    ticketPricing: [
-      {
-        price: "$25",
-        entries: "1 Entry",
-        description: "One ticket, one chance",
-        badge: false
-      },
-      {
-        price: "$100",
-        entries: "5 Entries",
-        description: "Best value — 20% bonus entries",
-        badge: true
-      },
-      {
-        price: "$250",
-        entries: "15 Entries",
-        description: "Maximum impact — 50% bonus entries",
-        badge: false
-      }
-    ],
+    headline: "Enter to Win — And Help Us Launch",
+    subheadline: "Every ticket funds our first class of students.",
+    drawDate: "To Be Announced",
+    drawDateNote: "Winner notified by email.",
 
-    details: {
-      drawDate: "Date To Be Announced",
-      totalTickets: "5,000",
-      whereMoneyGoes: "100% of net proceeds fund scholarships, training materials, and wraparound support for Rising Promise students.",
-      rules: [
-        "Must be 18 or older to enter",
-        "No purchase necessary (see official rules)",
-        "Winners notified by email and phone",
-        "Odds depend on total tickets sold"
-      ]
+    sponsor: {
+      name: "To Be Announced",
+      logoUrl: "",       // leave blank until confirmed
+      tagline: ""
     },
 
-    faq: [
+    prizes: [
       {
-        question: "How do I know this is legitimate?",
-        answer: "Rising Promise is a registered 501(c)(3) nonprofit operating under Texas law. All raffle proceeds are tracked, reported, and publicly accountable. We are registered with the Texas Attorney General's office."
+        tier: 1,
+        label: "Grand Prize",
+        value: "To Be Announced",
+        description: "Details coming soon.",
+        imageUrl: ""
       },
       {
-        question: "Can I donate my winnings back?",
-        answer: "Absolutely. Winners can choose to donate all or part of their prize back to Rising Promise as a fully tax-deductible contribution."
+        tier: 2,
+        label: "Second Prize",
+        value: "To Be Announced",
+        description: "Details coming soon.",
+        imageUrl: ""
       },
       {
-        question: "What if I don't win?",
-        answer: "Your money still builds something real. Every dollar goes directly to training costs, support services, and job placement for people rebuilding their lives."
+        tier: 3,
+        label: "Third Prize",
+        value: "To Be Announced",
+        description: "Details coming soon.",
+        imageUrl: ""
       }
-    ]
+    ],
+
+    ticketTiers: [
+      {
+        id: "single",
+        label: "Single Entry",
+        price: 25,
+        entries: 1,
+        badge: "",
+        description: "One chance to win."
+      },
+      {
+        id: "supporter",
+        label: "Supporter Pack",
+        price: 100,
+        entries: 5,
+        badge: "Most Popular",
+        description: "5x the chances, 5x the impact."
+      },
+      {
+        id: "champion",
+        label: "Champion Pack",
+        price: 175,
+        entries: 10,
+        badge: "Best Value",
+        description: "Maximum entries, maximum impact."
+      }
+    ],
+
+    legal: "No purchase necessary. Must be 18+. See official rules.",
+    rulesUrl: ""
   },
 };
