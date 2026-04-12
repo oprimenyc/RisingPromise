@@ -2,15 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertNewsletterSignupSchema, insertProgramApplicationSchema } from "@shared/schema";
+import { RAFFLE_TIERS_BY_ID } from "@shared/raffleConfig";
 import Stripe from "stripe";
 import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
-
-// Raffle ticket tier definitions — server-side source of truth for pricing
-const RAFFLE_TICKET_TIERS: Record<string, { label: string; priceInCents: number; entries: number }> = {
-  single:    { label: "Single Entry",   priceInCents: 2500,  entries: 1  },
-  supporter: { label: "Supporter Pack", priceInCents: 10000, entries: 5  },
-  champion:  { label: "Champion Pack",  priceInCents: 17500, entries: 10 },
-};
 
 // Initialize Stripe - will use test keys for development
 const stripe = process.env.STRIPE_SECRET_KEY 
@@ -113,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { tierId, email, name, drawDate, legal } = req.body;
-      const tier = RAFFLE_TICKET_TIERS[tierId];
+      const tier = RAFFLE_TIERS_BY_ID[tierId];
       if (!tier) {
         return res.status(400).json({ error: "Invalid ticket tier." });
       }
@@ -273,7 +267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const buyerEmail  = session.customer_email ?? session.metadata?.buyerEmail ?? "";
           const drawDate    = session.metadata?.drawDate ?? "To Be Announced";
           const legal       = session.metadata?.legal ?? "No purchase necessary. Must be 18+.";
-          const tierLabel   = RAFFLE_TICKET_TIERS[tierId]?.label ?? tierId;
+          const tierLabel   = RAFFLE_TIERS_BY_ID[tierId]?.label ?? tierId;
 
           // Generate unique entry codes (RP-XXXX, 36^4 = 1.68M possible codes)
           const existingNumbers = await storage.getAllRaffleEntryNumbers();

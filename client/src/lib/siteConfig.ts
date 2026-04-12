@@ -1,4 +1,5 @@
 import type { SiteConfig } from "@shared/schema";
+import { RAFFLE_TIERS } from "@shared/raffleConfig";
 
 /**
  * ============================================================================
@@ -342,32 +343,14 @@ export const siteConfig: SiteConfig = {
       }
     ],
 
-    ticketTiers: [
-      {
-        id: "single",
-        label: "Single Entry",
-        price: 25,
-        entries: 1,
-        badge: "",
-        description: "One chance to win."
-      },
-      {
-        id: "supporter",
-        label: "Supporter Pack",
-        price: 100,
-        entries: 5,
-        badge: "Most Popular",
-        description: "5x the chances, 5x the impact."
-      },
-      {
-        id: "champion",
-        label: "Champion Pack",
-        price: 175,
-        entries: 10,
-        badge: "Best Value",
-        description: "Maximum entries, maximum impact."
-      }
-    ],
+    ticketTiers: RAFFLE_TIERS.map((t) => ({
+      id: t.id,
+      label: t.label,
+      price: t.priceInCents / 100,
+      entries: t.entries,
+      badge: t.badge,
+      description: t.description,
+    })),
 
     legal: "No purchase necessary. Must be 18+. See official rules.",
     rulesUrl: ""
