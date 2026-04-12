@@ -186,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               currency: 'usd',
               product_data: {
                 name: 'Donation to Rising Promise',
-                description: 'Supporting workforce training and community empowerment',
+                description: 'Supporting Rising Promise and changing lives',
               },
               unit_amount: amount, // Amount in cents
             },

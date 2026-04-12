@@ -801,7 +801,7 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle className="font-heading" style={{ fontSize: '1.5rem' }}>Make a Donation to Rising Promise</DialogTitle>
             <DialogDescription className="font-sans">
-              Your donation directly funds workforce training, wraparound support, and job placement for people rebuilding their lives. Rising Promise is a registered 501(c)(3) nonprofit — your gift is tax-deductible.
+              Your donation directly funds career training, wraparound support, and job placement for people rebuilding their lives. Rising Promise is a registered 501(c)(3) nonprofit — your gift is tax-deductible.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleDonationSubmit} className="space-y-6">
