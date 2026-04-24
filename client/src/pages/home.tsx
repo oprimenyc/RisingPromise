@@ -460,22 +460,17 @@ export default function Home() {
             </p>
           </motion.div>
           <motion.div {...mfade(0.25)}>
-            <button
-              className="font-sans font-medium text-white transition-colors"
+            <a
+              href={siteConfig.whatWeDo.buttonHref}
+              className="font-sans font-medium text-white transition-colors inline-block"
               style={{
-                padding: '14px 32px', borderRadius: '4px', fontSize: '1rem', border: 'none', cursor: siteConfig.whatWeDo.buttonComingSoon ? 'default' : 'pointer',
-                background: '#1A56DB', opacity: siteConfig.whatWeDo.buttonComingSoon ? 0.5 : 1,
+                padding: '14px 32px', borderRadius: '4px', fontSize: '1rem',
+                background: '#1A56DB', textDecoration: 'none',
               }}
-              disabled={siteConfig.whatWeDo.buttonComingSoon}
               data-testid="button-explore-programs"
             >
               {siteConfig.whatWeDo.buttonText}
-              {siteConfig.whatWeDo.buttonComingSoon && (
-                <span className="ml-2 font-sans" style={{ fontSize: '0.7rem', background: '#E8A020', color: '#0B1F3A', padding: '2px 8px', borderRadius: '4px' }}>
-                  Coming Soon
-                </span>
-              )}
-            </button>
+            </a>
           </motion.div>
         </div>
       </section>

@@ -61,7 +61,7 @@ export const siteConfig: SiteConfig = {
    */
   navigation: {
     menuItems: [
-      { text: "Our Story", href: "#story" },
+      { text: "Our Story", href: "/about" },
       { text: "Our Team", href: "#team" },
       { text: "Programs", href: "/programs" },
       { text: "Get Involved", href: "#join-us" },
@@ -133,7 +133,7 @@ export const siteConfig: SiteConfig = {
     promise: "Our Promise: If you show up ready to fight for your future, we will fight with you. Every step.",
     buttonText: "Explore Our Programs",
     buttonHref: "/programs",
-    buttonComingSoon: true,
+    buttonComingSoon: false,
   },
 
   // IMPACT SECTION
