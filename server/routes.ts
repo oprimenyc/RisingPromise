@@ -12,6 +12,9 @@ const stripe = process.env.STRIPE_SECRET_KEY
   : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Internal exec bible — not linked in nav
+  app.get("/execbible", (_req, res) => res.redirect("/execbible.html"));
+
   // Newsletter signup endpoint
   app.post("/api/newsletter/signup", async (req, res) => {
     try {
