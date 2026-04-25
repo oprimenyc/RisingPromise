@@ -267,7 +267,7 @@ export default function ProgramVIA() {
           <div className="via-monogram">V.I.A.</div>
           <h1>Vanguard Innovation Academy</h1>
           <h2>Via — Latin for <em>The Path</em> · K–8 Learning Center · Florida</h2>
-          <p>An online-first learning center for registered homeschool families. Gamified, AI-driven, culturally grounded. Built for the next generation of Black and POC leaders — and designed to be accessible through Florida's PEP scholarship program.</p>
+          <p>An online-first learning center for registered homeschool families. Gamified, AI-driven, culturally grounded. Built for the next generation of underserved leaders — and designed to be accessible through Florida's PEP scholarship program.</p>
           <Link href="/get-involved" className="btn-gold">Join the Waitlist</Link>
           <Link href="/programs" className="btn-outline">← All Programs</Link>
         </div>
@@ -298,8 +298,8 @@ export default function ProgramVIA() {
             <div className="concept-block">
               <div className="concept-block-label">Phase 3 · Physical Flagship</div>
               <h3>NOBLE<br />Institute</h3>
-              <div className="tagline">Network of Black Leaders & Entrepreneurs</div>
-              <p>When V.I.A. proves the model, the brand transitions to NOBLE — a physical school where diplomas are earned, legacy is built, and the next generation of Black excellence is forged. Reclaiming nobility for underrepresented communities.</p>
+              <div className="tagline">Network of Bold Leaders & Entrepreneurs</div>
+              <p>When V.I.A. proves the model, the brand transitions to NOBLE — a physical school where diplomas are earned, legacy is built, and the next generation of excellence is forged. Reclaiming nobility for underrepresented communities.</p>
             </div>
           </div>
         </div>
@@ -364,7 +364,7 @@ export default function ProgramVIA() {
               <div className="pricing-card-top heritage">
                 <div className="pricing-tier heritage-label">Legacy Grant</div>
                 <div className="pricing-name">Heritage Tier</div>
-                <div className="pricing-sub">Mission-based eligibility · POC communities</div>
+                <div className="pricing-sub">Mission-based eligibility · underserved communities</div>
               </div>
               <div className="pricing-card-body">
                 <div className="pricing-amount">$0<span> out-of-pocket</span></div>
@@ -404,7 +404,7 @@ export default function ProgramVIA() {
         <div className="section-inner">
           <div className="noble-teaser">
             <h3>NOBLE Institute</h3>
-            <div className="noble-full">Network of Black Leaders & Entrepreneurs</div>
+            <div className="noble-full">Network of Bold Leaders & Entrepreneurs</div>
             <p>When V.I.A. proves the model — enrollment is full, students are thriving, families are committed — the brand transitions to its permanent identity. A physical school. A diploma-granting institution. A space where nobility belongs to us.</p>
             <div className="noble-tagline">"A Noble path to a global legacy."</div>
           </div>

@@ -444,7 +444,7 @@ export default function Programs() {
               <p>The Learning Center Built for the Leaders They Haven't Met Yet.</p>
             </div>
             <div className="prog-card-body">
-              <p>A high-impact K–8 learning center designed specifically for Black and POC families who refuse to accept that excellence is someone else's birthright. AI-driven curriculum. Gamified mastery system. Florida PEP scholarship accepted directly.</p>
+              <p>A high-impact K–8 learning center designed for underserved families who refuse to accept that excellence is someone else's birthright. AI-driven curriculum. Gamified mastery system. Florida PEP scholarship accepted directly.</p>
               <div className="prog-card-tags">
                 <span className="tag">K–8 Learning Center</span>
                 <span className="tag">PEP Scholarship · ~$8,000/yr</span>

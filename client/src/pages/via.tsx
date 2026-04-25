@@ -12,12 +12,12 @@ const DIFFERENTIATORS = [
   {
     num: "01",
     title: "The Executive Mentor Pipeline",
-    body: "Students don't just have teachers — they have access. Every student is connected to a professional mentor from our network of successful POC tech founders, attorneys, real estate developers, and entrepreneurs. By 8th grade, your child will have a network of high-powered mentors who look like them, believe in them, and are invested in their success. That network is worth more than any transcript.",
+    body: "Students don't just have teachers — they have access. Every student is connected to a professional mentor from our network of successful tech founders, attorneys, real estate developers, and entrepreneurs. By 8th grade, your child will have a network of high-powered mentors who look like them, believe in them, and are invested in their success. That network is worth more than any transcript.",
   },
   {
     num: "02",
     title: "Heritage-First Curriculum",
-    body: "Traditional schools celebrate diversity as an add-on. At V.I.A., it is the operating system. We teach math through the lens of global POC innovators. History through entrepreneurship and empire-building — the Silk Road, the economics of Mansa Musa, the architects of Silicon Valley who were never given a seat at the table. Psychological safety and cultural confidence built in from day one.",
+    body: "Traditional schools celebrate diversity as an add-on. At V.I.A., it is the operating system. We teach math through the lens of global innovators. History through entrepreneurship and empire-building — the Silk Road, the economics of Mansa Musa, the architects of Silicon Valley who were never given a seat at the table. Psychological safety and cultural confidence built in from day one.",
   },
   {
     num: "03",
@@ -45,7 +45,7 @@ const ELECTIVES = [
   { name: "Full-Stack Development & Cyber-Logic", aka: "Computer Science", desc: "Python, Lua, cybersecurity fundamentals." },
   { name: "Strategic Wealth & Capital Management", aka: "Business", desc: "\"Alpha Wallet\" simulated economy, virtual stock portfolios." },
   { name: "Kinetic Performance & Biometrics", aka: "PE/Health", desc: "Physical health data tracked for peak performance." },
-  { name: "Heritage Leadership & Global Trade History", aka: "History/Social Studies", desc: "POC empires, innovators, wealth-builders." },
+  { name: "Heritage Leadership & Global Trade History", aka: "History/Social Studies", desc: "Empires, innovators, wealth-builders." },
   { name: "Visual Brand Identity & UX", aka: "Art/Design", desc: "App design, brand logos, user experience." },
 ];
 
@@ -75,8 +75,8 @@ const TIERS = [
 ];
 
 const WHO_WE_SERVE = [
-  "We see the Black family that has been told \"elite education\" isn't for their child.",
-  "We see the POC parent who wants their child surrounded by peers who look like them.",
+  "We see the family that has been told \"elite education\" isn't for their child.",
+  "We see the parent who wants their child surrounded by peers who look like them.",
   "We see the family that is homeschool-curious but terrified of doing it alone.",
   "We see the parent who is tired of managing curriculum and wants a high-tech system to take over.",
   "We see the working parent who needs a full-day solution, not just a school day.",
@@ -163,7 +163,7 @@ export default function VIA() {
       {/* ── OPENING ── */}
       <section style={{ maxWidth: 800, margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
         <p style={{ fontSize: "clamp(16px, 2vw, 19px)", color: "#2d3748", lineHeight: 1.85, marginBottom: 24 }}>For too long, elite education has been a closed room. The best technology, the most powerful networks, the highest-caliber instruction — all of it reserved for families who already had everything.</p>
-        <p style={{ fontSize: "clamp(16px, 2vw, 19px)", color: "#2d3748", lineHeight: 1.85, marginBottom: 24 }}>V.I.A. — Vanguard Innovation Academy — is a high-impact, private K–8 learning center designed to cultivate the next generation of leaders from underserved communities. We are not just a school. We are a cultural fortress, a launchpad, and a movement — built specifically for Black and POC families who refuse to accept that excellence is someone else's birthright.</p>
+        <p style={{ fontSize: "clamp(16px, 2vw, 19px)", color: "#2d3748", lineHeight: 1.85, marginBottom: 24 }}>V.I.A. — Vanguard Innovation Academy — is a high-impact, private K–8 learning center designed to cultivate the next generation of leaders from underserved communities. We are not just a school. We are a cultural fortress, a launchpad, and a movement — built for families who refuse to accept that excellence is someone else's birthright.</p>
         <p style={{ fontSize: "clamp(16px, 2vw, 19px)", color: "#2d3748", lineHeight: 1.85, marginBottom: 24 }}>We offer AI-adaptive curriculum, a gamified mastery system, and the data-driven results of the most elite tech schools in the country. And we pair it with something no generic private school can offer: a community that looks like your child, mentors who have walked their path, and a curriculum that treats their heritage as a competitive advantage — not an afterthought.</p>
         <p style={{ fontSize: "clamp(17px, 2.2vw, 20px)", fontWeight: 700, color: "#0D1B2A" }}>Our belief: Potential is not determined by your past. It is unlocked by your future. And the future we are building is extraordinary.</p>
       </section>
@@ -346,7 +346,7 @@ export default function VIA() {
       <section style={{ background: "#0D1B2A", padding: "80px 24px", textAlign: "center" }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <h2 style={{ fontSize: "clamp(26px, 4.5vw, 44px)", fontWeight: 700, color: "#fff", marginBottom: 24, lineHeight: 1.2 }}>This Isn't Just a School. It's a Statement.</h2>
-          <p style={{ fontSize: "clamp(15px, 2vw, 17px)", color: "rgba(255,255,255,0.7)", lineHeight: 1.85, marginBottom: 40 }}>A statement that excellence belongs to every child. That technology is a tool for liberation, not just profit. That the next generation of Black and POC founders, investors, and leaders deserves the same head start as everyone else. We are building that future right now. And we want your family to be part of it from day one.</p>
+          <p style={{ fontSize: "clamp(15px, 2vw, 17px)", color: "rgba(255,255,255,0.7)", lineHeight: 1.85, marginBottom: 40 }}>A statement that excellence belongs to every child. That technology is a tool for liberation, not just profit. That the next generation of founders, investors, and leaders deserves the same head start as everyone else. We are building that future right now. And we want your family to be part of it from day one.</p>
           <div>
             <a href="#waitlist" className="via-btn-gold">Join the Waitlist</a>
             <Link href="/programs" className="via-btn-ghost">Learn About Our Programs</Link>
