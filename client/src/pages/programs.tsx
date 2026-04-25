@@ -357,12 +357,19 @@ export default function Programs() {
 
       {/* ── HERO ── */}
       <section className="prog-hero">
-        <p className="prog-hero-eyebrow">Our Programs</p>
-        <h1>Real Training.<br />Real Jobs.<br />Real Change.</h1>
-        <p>We don't just teach skills. We build complete pathways — from the first lesson to the first paycheck and the housing stability that makes it stick.</p>
+        <p className="prog-hero-eyebrow">What We Do</p>
+        <h1>Real Pathways.<br />Real Careers.<br />Real Change.</h1>
+        <p>Rising Promise is a government-registered, 501(c)(3) nonprofit creating direct pathways in healthcare, technology, and housing for people who need it most. Every program we run is designed to lead to employment, stability, and economic independence — not just a certificate.</p>
         <div className="prog-hero-note">
           <strong>Honest note:</strong> Our programs are in active development. We don't launch until we're ready to deliver. See where each one stands below.
         </div>
+      </section>
+
+      {/* ── MISSION INTRO ── */}
+      <section className="prog-section-narrow">
+        <p style={{fontSize: 'clamp(16px, 2vw, 19px)', color: '#2d3748', lineHeight: 1.85, marginBottom: 24}}>We built Rising Promise because we know the system wasn't built for everyone. We know what it feels like to have potential and no pathway. We know what it means to work hard and still fall short because the right door was never opened for you.</p>
+        <p style={{fontSize: 'clamp(18px, 2.5vw, 22px)', fontWeight: 700, color: '#0D1B2A', marginBottom: 24}}>That ends here.</p>
+        <p style={{fontSize: 'clamp(16px, 2vw, 19px)', color: '#2d3748', lineHeight: 1.85}}>Our programs are not charity. They are investments — in your skills, your future, and your family's next chapter. Every credential we offer leads directly to a job. Every support service we provide removes the barrier that was going to stop you from finishing. We don't believe in half-measures.</p>
       </section>
 
       {/* ── THE PIPELINE ── */}
@@ -398,15 +405,15 @@ export default function Programs() {
             <div className="prog-card-top gold-accent">
               <div className="prog-card-icon">🏥</div>
               <span className="prog-card-status status-building">In Development</span>
-              <h3>Heart of Healthcare</h3>
-              <p>CNA Certification Program</p>
+              <h3>The Heart of Healthcare</h3>
+              <p>Fast-Track Your Career. Change Someone's Life. Starting With Your Own.</p>
             </div>
             <div className="prog-card-body">
-              <p>A fast-track pathway to becoming a Certified Nursing Assistant. Designed for career-changers, women in crisis, veterans, and anyone ready to enter one of the most stable, in-demand professions in the country.</p>
+              <p>A fast-track pathway to becoming a Certified Nursing Assistant — built for the single mom who needs a career, not just a paycheck. For the veteran who served this country. For the person who just needs one real opportunity. Hybrid online + in-person. Wraparound support included.</p>
               <div className="prog-card-tags">
                 <span className="tag">CNA Certification</span>
                 <span className="tag">Hybrid Online + Clinical</span>
-                <span className="tag">WIOA Eligible</span>
+                <span className="tag">WIOA Eligible · Up to $8,500</span>
               </div>
               <span className="prog-card-link">Learn more →</span>
             </div>
@@ -418,53 +425,53 @@ export default function Programs() {
               <div className="prog-card-icon" style={{background: 'rgba(27,156,229,0.15)'}}>💻</div>
               <span className="prog-card-status status-audit">Under Audit</span>
               <h3>Pathways in Technology</h3>
-              <p>CompTIA IT Certification</p>
+              <p>The Tech Industry Has a Door. We're Opening It for You.</p>
             </div>
             <div className="prog-card-body">
-              <p>Industry-recognized CompTIA certifications (A+, Network+, Security+) for career-changers entering the tech workforce. Platform built — currently in curriculum audit before launch.</p>
+              <p>CompTIA A+, Network+, and Security+ — the entry points employers across every industry are hiring for. No degree required. No prior experience required. Just the willingness to learn and the commitment to show up. Our instructors are career coaches.</p>
               <div className="prog-card-tags">
                 <span className="tag">CompTIA A+</span>
                 <span className="tag">Network+</span>
                 <span className="tag">Security+</span>
-                <span className="tag">WIOA Eligible</span>
+                <span className="tag">WIOA Eligible · $7,500–$8,500</span>
+              </div>
+              <span className="prog-card-link">Learn more →</span>
+            </div>
+          </Link>
+
+          {/* Housing */}
+          <Link href="/programs/housing" className="prog-card">
+            <div className="prog-card-top green-accent">
+              <div className="prog-card-icon" style={{background: 'rgba(46,204,113,0.15)'}}>🏠</div>
+              <span className="prog-card-status status-building">Planning Phase</span>
+              <h3>You Can't Build a Career Without a Foundation</h3>
+              <p>Workforce Training Meets Housing Stability.</p>
+            </div>
+            <div className="prog-card-body">
+              <p>You cannot focus on a new career if you do not have a safe place to sleep. Rising Promise addresses both sides — workforce development and housing stability — as a single, integrated mission. Transitional housing, ALF staffing pipeline, and foster youth support.</p>
+              <div className="prog-card-tags">
+                <span className="tag">Transitional Housing</span>
+                <span className="tag">Foster Youth 18–24</span>
+                <span className="tag">HUD CoC Aligned</span>
               </div>
               <span className="prog-card-link">Learn more →</span>
             </div>
           </Link>
 
           {/* V.I.A. */}
-          <Link href="/programs/via" className="prog-card">
+          <Link href="/via" className="prog-card">
             <div className="prog-card-top" style={{background: 'linear-gradient(135deg, #0D1B2A, #2d1a0d)', borderBottom: '3px solid #c9a84c'}}>
               <div className="prog-card-icon">🎓</div>
               <span className="prog-card-status status-phase2">Phase 2</span>
-              <h3>V.I.A. Academy</h3>
-              <p>Vanguard Innovation Academy · K–8</p>
+              <h3>V.I.A. — Vanguard Innovation Academy</h3>
+              <p>The Learning Center Built for the Leaders They Haven't Met Yet.</p>
             </div>
             <div className="prog-card-body">
-              <p>An online-first learning center for registered homeschool families. Gamified, AI-driven curriculum built for the next generation of Black and POC leaders — leveraging Florida PEP scholarships.</p>
+              <p>A high-impact K–8 learning center designed specifically for Black and POC families who refuse to accept that excellence is someone else's birthright. AI-driven curriculum. Gamified mastery system. Florida PEP scholarship accepted directly.</p>
               <div className="prog-card-tags">
                 <span className="tag">K–8 Learning Center</span>
-                <span className="tag">PEP Scholarship Eligible</span>
-                <span className="tag">Florida</span>
-              </div>
-              <span className="prog-card-link">Learn more →</span>
-            </div>
-          </Link>
-
-          {/* ALF / Housing */}
-          <Link href="/programs/housing" className="prog-card">
-            <div className="prog-card-top green-accent">
-              <div className="prog-card-icon" style={{background: 'rgba(46,204,113,0.15)'}}>🏠</div>
-              <span className="prog-card-status status-building">Planning Phase</span>
-              <h3>Workforce Housing</h3>
-              <p>Transitional & Assisted Living Pipeline</p>
-            </div>
-            <div className="prog-card-body">
-              <p>Transitional housing for workforce trainees and an assisted living facility staffing pipeline — connecting our trained workforce directly to care facilities that need them.</p>
-              <div className="prog-card-tags">
-                <span className="tag">Transitional Housing</span>
-                <span className="tag">ALF Pipeline</span>
-                <span className="tag">HUD CoC Aligned</span>
+                <span className="tag">PEP Scholarship · ~$8,000/yr</span>
+                <span className="tag">Florida · Phase 2</span>
               </div>
               <span className="prog-card-link">Learn more →</span>
             </div>
@@ -496,12 +503,56 @@ export default function Programs() {
         </div>
       </section>
 
+      {/* ── METRICS ── */}
+      <section style={{background: '#0D1B2A', padding: '80px 24px'}}>
+        <div style={{maxWidth: 1080, margin: '0 auto', textAlign: 'center'}}>
+          <span className="eyebrow">The Numbers We Are Building Toward</span>
+          <h2 style={{fontSize: 'clamp(22px, 3.5vw, 34px)', fontWeight: 700, color: '#fff', marginBottom: 48}}>Our Year 1 Targets</h2>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32}}>
+            {[
+              {num: '100+', label: 'Lives Served', note: 'Year 1 Target'},
+              {num: '80%+', label: 'Job Placement Rate', note: 'Projected'},
+              {num: '$2M+', label: 'Graduate Earnings Impact', note: 'Projected'},
+              {num: 'TX · FL · NY', label: 'States Served', note: 'Launch Markets'},
+            ].map((m, i) => (
+              <div key={i} style={{padding: '28px 16px', borderTop: '2px solid rgba(201,168,76,0.3)'}}>
+                <div style={{fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: '#c9a84c', fontFamily: "'Playfair Display', serif", lineHeight: 1, marginBottom: 8}}>{m.num}</div>
+                <div style={{fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4}}>{m.label}</div>
+                <div style={{fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: "'DM Mono', monospace"}}>{m.note}</div>
+              </div>
+            ))}
+          </div>
+          <p style={{fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 40, maxWidth: 640, margin: '40px auto 0', lineHeight: 1.7, fontStyle: 'italic'}}>We are transparent about where we are: these are our Year 1 targets, built on industry data, program design, and an unshakeable commitment to accountability.</p>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{background: '#f8f9fc', padding: '80px 24px'}}>
+        <div style={{maxWidth: 640, margin: '0 auto', textAlign: 'center'}}>
+          <span className="eyebrow">Be Part of the Promise</span>
+          <h2 style={{fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 700, color: '#0D1B2A', marginBottom: 16}}>Not Sure Which Program Is Right for You?</h2>
+          <p style={{fontSize: 16, color: '#4a5568', lineHeight: 1.75, marginBottom: 40}}>You don't have to figure it out alone. Drop your name and email and we will reach out personally to help you find the right pathway. No pressure. No spam. Just a real conversation about your future.</p>
+          <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target as HTMLFormElement); window.location.href = `/get-involved?name=${encodeURIComponent(fd.get('name') as string)}&email=${encodeURIComponent(fd.get('email') as string)}&interest=${encodeURIComponent(fd.get('interest') as string)}`; }} style={{display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left'}}>
+            <input name="name" type="text" placeholder="Your Name" required style={{padding: '14px 16px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 15, outline: 'none'}} />
+            <input name="email" type="email" placeholder="Email Address" required style={{padding: '14px 16px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 15, outline: 'none'}} />
+            <select name="interest" style={{padding: '14px 16px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 15, color: '#4a5568', outline: 'none', background: '#fff'}}>
+              <option value="">What are you most interested in?</option>
+              <option value="healthcare">Healthcare (CNA)</option>
+              <option value="technology">Technology (CompTIA)</option>
+              <option value="housing">Housing Support</option>
+              <option value="via">V.I.A. Academy</option>
+              <option value="unsure">Not Sure Yet</option>
+            </select>
+            <button type="submit" style={{padding: '16px 32px', background: '#c9a84c', color: '#0D1B2A', fontWeight: 700, fontSize: 15, borderRadius: 8, border: 'none', cursor: 'pointer', letterSpacing: '0.02em'}}>Start the Conversation</button>
+          </form>
+        </div>
+      </section>
+
       {/* ── MISSION BRIDGE ── */}
       <section className="mission-bridge">
-        <h2>If you're ready to fight for your future,<br />we'll fight with you.</h2>
-        <p>Our programs aren't open yet. But we're building them with you in mind. Get notified the moment enrollment opens.</p>
+        <h2>If you show up ready to fight for your future,<br />we will fight with you.</h2>
+        <p>Our programs are in active development. Get notified the moment enrollment opens.</p>
         <Link href="/get-involved" className="btn-gold">Get Notified</Link>
-        <Link href="/donate" className="btn-ghost">Support the Build</Link>
       </section>
     </main>
   );

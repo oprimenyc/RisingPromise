@@ -51,7 +51,7 @@ export const siteConfig: SiteConfig = {
   social: {
     facebook: "https://facebook.com/risingpromise",
     instagram: "https://instagram.com/risingpromise",
-    linkedin: "https://linkedin.com/company/risingpromise",
+    linkedin: "https://www.linkedin.com/company/rising-promise-nonprofit",
     twitter: "https://twitter.com/risingpromise",
   },
 
@@ -64,6 +64,7 @@ export const siteConfig: SiteConfig = {
       { text: "Our Story", href: "/about" },
       { text: "Our Team", href: "#team" },
       { text: "Programs", href: "/programs" },
+      { text: "V.I.A.", href: "/via" },
       { text: "Get Involved", href: "#join-us" },
       { text: "Contact", href: "#footer" },
     ]

@@ -748,20 +748,24 @@ export default function Home() {
                           background: 'none',
                           border: 'none',
                           borderTop: '1px solid #E2E6EA',
-                          cursor: action.comingSoon ? 'default' : 'pointer',
-                          color: action.comingSoon ? '#8A96A3' : '#0B1F3A',
+                          cursor: (action.comingSoon && action.text !== "Enter the Raffle") ? 'default' : 'pointer',
+                          color: (action.comingSoon && action.text !== "Enter the Raffle") ? '#8A96A3' : '#0B1F3A',
                           fontSize: '0.95rem',
                         }}
-                        disabled={action.comingSoon}
+                        disabled={action.comingSoon && action.text !== "Enter the Raffle"}
                         onClick={() => {
+                          if (action.text === "Enter the Raffle") {
+                            toast({ title: "Raffle coming soon!", description: "The raffle is coming soon — join our list to be notified first." });
+                            return;
+                          }
                           if (action.comingSoon) return;
                           if (action.text === "Partner With Us") {
-                            window.location.href = `mailto:${siteConfig.organization.email}`;
+                            window.location.href = `mailto:${siteConfig.organization.email}?subject=Partnership Inquiry`;
                           } else if (action.text === "Share Our Story") {
                             if (navigator.share) {
-                              navigator.share({ title: "Rising Promise", text: "Everyone deserves a fighting chance.", url: window.location.origin }).catch(() => {});
+                              navigator.share({ title: "Rising Promise", text: "Rising Promise is closing the opportunity gap for underserved communities.", url: "https://risingpromise.org" }).catch(() => {});
                             } else {
-                              navigator.clipboard.writeText(window.location.origin).then(() => {
+                              navigator.clipboard.writeText("https://risingpromise.org").then(() => {
                                 toast({ title: "Link copied!", description: "Share link has been copied to your clipboard." });
                               }).catch(() => {});
                             }
@@ -769,7 +773,7 @@ export default function Home() {
                         }}
                         data-testid={`button-action-${i}`}
                       >
-                        <span className={!action.comingSoon ? 'group-hover:underline' : ''}>
+                        <span className={(action.comingSoon && action.text !== "Enter the Raffle") ? '' : 'group-hover:underline'}>
                           {action.text}
                         </span>
                         {action.comingSoon ? (

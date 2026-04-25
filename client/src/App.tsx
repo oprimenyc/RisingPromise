@@ -10,6 +10,7 @@ import ProgramIT from "@/pages/program-it";
 import ProgramVIA from "@/pages/program-via";
 import ProgramHousing from "@/pages/program-housing";
 import About from "@/pages/about";
+import VIA from "@/pages/via";
 import Raffle from "@/pages/raffle";
 import AdminRaffle from "@/pages/adminRaffle";
 import NotFound from "@/pages/not-found";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/programs/via" component={ProgramVIA} />
       <Route path="/programs/housing" component={ProgramHousing} />
       <Route path="/about" component={About} />
+      <Route path="/via" component={VIA} />
       <Route path="/raffle" component={Raffle} />
       <Route path="/admin/raffle" component={AdminRaffle} />
       <Route component={NotFound} />
