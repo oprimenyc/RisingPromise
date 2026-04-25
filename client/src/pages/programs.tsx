@@ -142,31 +142,8 @@ export default function Programs() {
           margin-bottom: 14px;
           font-size: 20px;
         }
-        .prog-card-status {
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          padding: 4px 10px;
-          border-radius: 20px;
-        }
-        .status-building {
-          background: rgba(243,156,18,0.2);
-          color: #f39c12;
-          border: 1px solid rgba(243,156,18,0.3);
-        }
-        .status-phase2 {
-          background: rgba(201,168,76,0.15);
-          color: #c9a84c;
-          border: 1px solid rgba(201,168,76,0.25);
-        }
-        .status-audit {
-          background: rgba(255,255,255,0.08);
-          color: rgba(255,255,255,0.55);
-          border: 1px solid rgba(255,255,255,0.12);
+        .status-building, .status-phase2, .status-audit, .prog-card-status {
+          display: none;
         }
         .prog-card-top h3 {
           font-size: 20px;
