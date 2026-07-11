@@ -1,11 +1,4 @@
-import { Resend } from "resend";
-
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
-
-const FROM = "Rising Promise <info@risingpromise.org>";
-const REPLY_TO = "info@risingpromise.org";
+import { mail } from "./providers/mail";
 
 function baseHtml(title: string, bodyContent: string): string {
   return `<!DOCTYPE html>
@@ -53,8 +46,8 @@ export async function sendDonationReceipt(
   amountCents: number,
   donationId: string
 ): Promise<void> {
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping donation receipt email");
+  if (!mail) {
+    console.warn("mail.transactional unconfigured — skipping donation receipt email");
     return;
   }
 
@@ -83,10 +76,8 @@ export async function sendDonationReceipt(
     <p style="margin:0;">With gratitude,<br/><strong>The Rising Promise Team</strong></p>
   `;
 
-  await resend.emails.send({
-    from: FROM,
+  await mail.send({
     to,
-    replyTo: REPLY_TO,
     subject: "Thank you for supporting Rising Promise",
     html: baseHtml("Donation Receipt — Rising Promise", body),
   });
@@ -97,8 +88,8 @@ export async function sendApplicationConfirmation(
   firstName: string,
   programType: string
 ): Promise<void> {
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping application confirmation email");
+  if (!mail) {
+    console.warn("mail.transactional unconfigured — skipping application confirmation email");
     return;
   }
 
@@ -120,10 +111,8 @@ export async function sendApplicationConfirmation(
     <p style="margin:0;">Warmly,<br/><strong>The Rising Promise Team</strong></p>
   `;
 
-  await resend.emails.send({
-    from: FROM,
+  await mail.send({
     to,
-    replyTo: REPLY_TO,
     subject: "We received your Rising Promise application",
     html: baseHtml("Application Received — Rising Promise", body),
   });
@@ -137,8 +126,8 @@ export async function sendRaffleConfirmation(
   drawDate: string,
   legal: string
 ): Promise<void> {
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping raffle confirmation email");
+  if (!mail) {
+    console.warn("mail.transactional unconfigured — skipping raffle confirmation email");
     return;
   }
 
@@ -165,10 +154,8 @@ export async function sendRaffleConfirmation(
     <p style="font-size:12px;color:#aaa;margin-top:32px;padding-top:16px;border-top:1px solid #eee;">${legal}</p>
   `;
 
-  await resend.emails.send({
-    from: FROM,
+  await mail.send({
     to,
-    replyTo: REPLY_TO,
     subject: "You're in — your Rising Promise raffle entries",
     html: baseHtml("Raffle Confirmation — Rising Promise", body),
   });

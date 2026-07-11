@@ -5,7 +5,7 @@ import path from "path";
 import { storage } from "./storage";
 import { insertNewsletterSignupSchema, insertProgramApplicationSchema } from "@shared/schema";
 import { RAFFLE_TIERS_BY_ID } from "@shared/raffleConfig";
-import Stripe from "stripe";
+import { payments } from "./providers/payments";
 import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
 import { requireAdmin, requireBasicAdmin, rateLimit, verifyAdminPassword, adminConfigured } from "./security";
 import { publishEvent, startDispatcher, queueStats } from "./core/events";
@@ -16,14 +16,9 @@ import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "
 import { db } from "./db";
 import { capabilities as capabilitiesTable, features as featuresTable } from "@shared/schema";
 
-// Initialize Stripe - will use test keys for development
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-10-29.clover" })
-  : null;
-
 // Boot-time capability visibility — never fail silently at request time only
-if (!stripe) {
-  console.warn("[boot] STRIPE_SECRET_KEY not set — donation/raffle checkout DISABLED");
+if (!payments) {
+  console.warn("[boot] payments.checkout unconfigured — donation/raffle checkout DISABLED");
 }
 if (!adminConfigured()) {
   console.warn("[boot] no ADMIN_PASSWORD_SHA256/ADMIN_PASSWORD — admin endpoints DISABLED");
@@ -145,8 +140,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Raffle ticket purchase — Create Checkout Session
   app.post("/api/raffle/create-checkout-session", checkoutLimiter, async (req, res) => {
     try {
-      if (!stripe) {
-        return res.status(500).json({ error: "Stripe is not configured." });
+      if (!payments) {
+        return res.status(500).json({ error: "Payments capability is not configured." });
       }
 
       const { tierId, email, name, drawDate, legal } = req.body;
@@ -158,23 +153,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Email is required." });
       }
 
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [{
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `${tier.label} — Rising Promise Raffle`,
-              description: `${tier.entries} raffle ${tier.entries === 1 ? "entry" : "entries"}`,
-            },
-            unit_amount: tier.priceInCents,
-          },
-          quantity: 1,
-        }],
-        mode: "payment",
-        success_url: `${req.headers.origin || "http://localhost:5000"}/raffle?purchase=success`,
-        cancel_url:  `${req.headers.origin || "http://localhost:5000"}/raffle`,
-        customer_email: email,
+      const session = await payments.createCheckoutSession({
+        productName: `${tier.label} — Rising Promise Raffle`,
+        productDescription: `${tier.entries} raffle ${tier.entries === 1 ? "entry" : "entries"}`,
+        amountCents: tier.priceInCents,
+        currency: "usd",
+        customerEmail: email,
+        successUrl: `${req.headers.origin || "http://localhost:5000"}/raffle?purchase=success`,
+        cancelUrl: `${req.headers.origin || "http://localhost:5000"}/raffle`,
         metadata: {
           type: "raffle",
           tierId,
@@ -192,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ticketTierId: tierId,
         entryCount: tier.entries,
         entryNumbers: [],
-        stripeSessionId: session.id,
+        stripeSessionId: session.sessionId,
         paymentStatus: "pending",
       });
 
@@ -206,8 +192,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe donation routes - Create Checkout Session
   app.post("/api/donations/create-checkout-session", checkoutLimiter, async (req, res) => {
     try {
-      if (!stripe) {
-        return res.status(500).json({ error: "Stripe is not configured. Please add STRIPE_SECRET_KEY and VITE_STRIPE_PUBLIC_KEY to your secrets." });
+      if (!payments) {
+        return res.status(500).json({ error: "Payments capability is not configured. Please add STRIPE_SECRET_KEY and VITE_STRIPE_PUBLIC_KEY to your secrets." });
       }
 
       const { amount, donorName, donorEmail } = req.body;
@@ -220,26 +206,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Email is required" });
       }
 
-      // Create Stripe Checkout Session
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'Donation to Rising Promise',
-                description: 'Supporting Rising Promise and changing lives',
-              },
-              unit_amount: amount, // Amount in cents
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: `${req.headers.origin || 'http://localhost:5000'}/?donation=success`,
-        cancel_url: `${req.headers.origin || 'http://localhost:5000'}/?donation=cancelled`,
-        customer_email: donorEmail,
+      const session = await payments.createCheckoutSession({
+        productName: 'Donation to Rising Promise',
+        productDescription: 'Supporting Rising Promise and changing lives',
+        amountCents: amount,
+        currency: 'usd',
+        successUrl: `${req.headers.origin || 'http://localhost:5000'}/?donation=success`,
+        cancelUrl: `${req.headers.origin || 'http://localhost:5000'}/?donation=cancelled`,
+        customerEmail: donorEmail,
         metadata: {
           donorName: donorName || '',
           donorEmail,
@@ -252,12 +226,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         donorEmail,
         amount,
         currency: 'usd',
-        stripeSessionId: session.id,
+        stripeSessionId: session.sessionId,
         stripePaymentIntentId: null,
         stripePaymentStatus: 'pending',
       });
 
-      res.json({ sessionId: session.id, url: session.url });
+      res.json({ sessionId: session.sessionId, url: session.url });
     } catch (error: any) {
       console.error("Create checkout session error:", error);
       res.status(500).json({ error: error.message || "Failed to create checkout session" });
@@ -267,8 +241,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe webhook endpoint - Handle payment confirmation
   app.post("/api/webhooks/stripe", async (req, res) => {
     try {
-      if (!stripe) {
-        return res.status(500).json({ error: "Stripe is not configured" });
+      if (!payments) {
+        return res.status(500).json({ error: "Payments capability is not configured" });
       }
 
       const sig = req.headers['stripe-signature'];
@@ -284,32 +258,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: "Webhook secret not configured" });
       }
 
-      // Verify the webhook signature
+      // Verify the webhook signature and parse to a vendor-neutral event
       let event;
       try {
-        event = stripe.webhooks.constructEvent(
-          req.rawBody as Buffer,
-          sig,
-          webhookSecret
-        );
+        event = payments.verifyWebhook(req.rawBody as Buffer, sig as string, webhookSecret);
       } catch (err: any) {
         console.error("Webhook signature verification failed:", err.message);
         return res.status(400).json({ error: `Webhook signature verification failed: ${err.message}` });
       }
 
-      // Handle the checkout.session.completed event
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        const sessionType = session.metadata?.type;
+      if (event.kind === 'checkout.completed') {
+        const session = event;
+        const sessionType = session.metadata.type;
 
         if (sessionType === "raffle") {
           // ── Raffle purchase ──────────────────────────────────────────────
-          const tierId      = session.metadata?.tierId ?? "";
-          const entryCount  = parseInt(session.metadata?.entryCount ?? "1", 10);
-          const buyerName   = session.metadata?.buyerName ?? "";
-          const buyerEmail  = session.customer_email ?? session.metadata?.buyerEmail ?? "";
-          const drawDate    = session.metadata?.drawDate ?? "To Be Announced";
-          const legal       = session.metadata?.legal ?? "No purchase necessary. Must be 18+.";
+          const tierId      = session.metadata.tierId ?? "";
+          const entryCount  = parseInt(session.metadata.entryCount ?? "1", 10);
+          const buyerName   = session.metadata.buyerName ?? "";
+          const buyerEmail  = session.customerEmail ?? session.metadata.buyerEmail ?? "";
+          const drawDate    = session.metadata.drawDate ?? "To Be Announced";
+          const legal       = session.metadata.legal ?? "No purchase necessary. Must be 18+.";
           const tierLabel   = RAFFLE_TIERS_BY_ID[tierId]?.label ?? tierId;
 
           // Generate unique entry codes (RP-XXXX, 36^4 = 1.68M possible codes)
@@ -331,11 +300,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
 
-          await storage.updateRaffleEntry(session.id, newEntryNumbers, "paid");
+          await storage.updateRaffleEntry(session.sessionId, newEntryNumbers, "paid");
 
           if (buyerEmail) {
             const personId = await ensurePerson(buyerEmail, { first: buyerName || undefined });
-            await publishEvent("RaffleTicketPurchased", { personId, email: buyerEmail, entryCount, tierId, sessionId: session.id }, "webhook:stripe");
+            await publishEvent("RaffleTicketPurchased", { personId, email: buyerEmail, entryCount, tierId, sessionId: session.sessionId }, "webhook:payments");
           }
 
           if (buyerEmail) {
@@ -344,29 +313,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
 
-          console.log(`✅ Raffle purchase confirmed: ${session.id} — entries: ${newEntryNumbers.join(", ")}`);
+          console.log(`✅ Raffle purchase confirmed: ${session.sessionId} — entries: ${newEntryNumbers.join(", ")}`);
 
         } else {
           // ── Donation ─────────────────────────────────────────────────────
           await storage.updateDonationPaymentStatus(
-            session.id,
-            session.payment_intent as string,
+            session.sessionId,
+            session.paymentIntentId as string,
             "succeeded"
           );
 
-          const donorEmail = session.customer_email ?? (session.metadata?.donorEmail ?? "");
-          const donorName  = session.metadata?.donorName ?? "";
+          const donorEmail = session.customerEmail ?? (session.metadata.donorEmail ?? "");
+          const donorName  = session.metadata.donorName ?? "";
           if (donorEmail) {
             const personId = await ensurePerson(donorEmail, { first: donorName || undefined });
-            await publishEvent("DonationReceived", { personId, email: donorEmail, amountCents: session.amount_total ?? 0, sessionId: session.id }, "webhook:stripe");
+            await publishEvent("DonationReceived", { personId, email: donorEmail, amountCents: session.amountTotalCents ?? 0, sessionId: session.sessionId }, "webhook:payments");
           }
           if (donorEmail) {
-            sendDonationReceipt(donorEmail, donorName, session.amount_total ?? 0, session.id).catch((err) => {
+            sendDonationReceipt(donorEmail, donorName, session.amountTotalCents ?? 0, session.sessionId).catch((err) => {
               console.error("Donation receipt email failed:", err);
             });
           }
 
-          console.log(`✅ Donation completed: ${session.id}`);
+          console.log(`✅ Donation completed: ${session.sessionId}`);
         }
       }
 
