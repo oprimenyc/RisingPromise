@@ -8,6 +8,13 @@ import { RAFFLE_TIERS_BY_ID } from "@shared/raffleConfig";
 import Stripe from "stripe";
 import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
 import { requireAdmin, requireBasicAdmin, rateLimit, verifyAdminPassword, adminConfigured } from "./security";
+import { publishEvent, startDispatcher, queueStats } from "./core/events";
+import { ensurePerson, ensureParticipation, seedPrograms } from "./core/identity";
+import { seedDecisionLedger, recentDecisions } from "./core/decisions";
+import { runVerification, startVerificationSchedule } from "./core/registry";
+import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "./core/graph";
+import { db } from "./db";
+import { capabilities as capabilitiesTable, features as featuresTable } from "@shared/schema";
 
 // Initialize Stripe - will use test keys for development
 const stripe = process.env.STRIPE_SECRET_KEY
@@ -28,6 +35,15 @@ const checkoutLimiter = rateLimit({ name: "checkout", max: 10, windowMs: 60_000 
 const adminAuthLimiter = rateLimit({ name: "admin-auth", max: 5, windowMs: 60_000 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // ── M1 core spine boot ────────────────────────────────────────────────────
+  await seedPrograms();
+  await seedDecisionLedger();
+  registerGraphProjector();
+  await projectPrograms();
+  startDispatcher();
+  startVerificationSchedule();
+  runVerification().catch((e) => console.error("[verify] boot verification error:", e));
+
   // Internal exec bible — auth-gated (was publicly served from the static
   // build; moved to internal/ and placed behind Basic auth per M0)
   app.get(["/execbible", "/execbible.html"], adminAuthLimiter, requireBasicAdmin, (_req, res) => {
@@ -46,6 +62,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const signup = await storage.createNewsletterSignup(data);
+
+      const personId = await ensurePerson(data.email, { first: data.name ?? undefined });
+      await publishEvent("NewsletterSubscribed", { personId, email: data.email, source: data.source }, personId);
+
       res.json({ success: true, data: signup });
     } catch (error) {
       console.error("Newsletter signup error:", error);
@@ -70,6 +90,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = insertProgramApplicationSchema.parse(req.body);
       
       const application = await storage.createProgramApplication(data);
+
+      // Unified identity + program participation (site programType 'it' maps
+      // to the comptia program under the Workforce umbrella)
+      const programSlug = data.programType === "it" ? "comptia" : data.programType;
+      const personId = await ensurePerson(data.email, { first: data.firstName, last: data.lastName });
+      await ensureParticipation(personId, programSlug, "applicant", String(application.id));
+      await publishEvent("ApplicationSubmitted", { personId, email: data.email, programSlug, applicationId: application.id }, personId);
 
       sendApplicationConfirmation(data.email, data.firstName, data.programType).catch((err) => {
         console.error("Application confirmation email failed:", err);
@@ -307,6 +334,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.updateRaffleEntry(session.id, newEntryNumbers, "paid");
 
           if (buyerEmail) {
+            const personId = await ensurePerson(buyerEmail, { first: buyerName || undefined });
+            await publishEvent("RaffleTicketPurchased", { personId, email: buyerEmail, entryCount, tierId, sessionId: session.id }, "webhook:stripe");
+          }
+
+          if (buyerEmail) {
             sendRaffleConfirmation(buyerEmail, buyerName, newEntryNumbers, tierLabel, drawDate, legal).catch((err) => {
               console.error("Raffle confirmation email failed:", err);
             });
@@ -324,6 +356,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           const donorEmail = session.customer_email ?? (session.metadata?.donorEmail ?? "");
           const donorName  = session.metadata?.donorName ?? "";
+          if (donorEmail) {
+            const personId = await ensurePerson(donorEmail, { first: donorName || undefined });
+            await publishEvent("DonationReceived", { personId, email: donorEmail, amountCents: session.amount_total ?? 0, sessionId: session.id }, "webhook:stripe");
+          }
           if (donorEmail) {
             sendDonationReceipt(donorEmail, donorName, session.amount_total ?? 0, session.id).catch((err) => {
               console.error("Donation receipt email failed:", err);
@@ -360,6 +396,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Admin raffle entries error:", error);
       res.status(500).json({ error: "Failed to fetch entries." });
+    }
+  });
+
+  // ── Observability (M1 §8) ────────────────────────────────────────────────
+  // public: coarse summary only — no config details, no evidence payloads
+  app.get("/api/health", async (_req, res) => {
+    try {
+      const caps = await db.select({ status: capabilitiesTable.status }).from(capabilitiesTable);
+      const counts: Record<string, number> = {};
+      for (const c of caps) counts[c.status] = (counts[c.status] ?? 0) + 1;
+      const queue = await queueStats();
+      const failed = (counts["failed"] ?? 0) + queue.deadLettered;
+      res.status(failed > 0 ? 503 : 200).json({
+        ok: failed === 0,
+        capabilities: counts,
+        eventQueue: queue,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Health check error:", error);
+      res.status(503).json({ ok: false, error: "health check failed" });
+    }
+  });
+
+  // admin: full detail — capabilities with evidence, features, ledger, graph
+  app.get("/api/admin/observability", adminAuthLimiter, requireAdmin, async (_req, res) => {
+    try {
+      const [caps, feats, queue, graph, ledger] = await Promise.all([
+        db.select().from(capabilitiesTable),
+        db.select().from(featuresTable),
+        queueStats(),
+        graphStats(),
+        recentDecisions(10),
+      ]);
+      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger });
+    } catch (error) {
+      console.error("Observability error:", error);
+      res.status(500).json({ error: "Failed to assemble observability report" });
+    }
+  });
+
+  // admin: run runtime verification on demand
+  app.post("/api/admin/verify", adminAuthLimiter, requireAdmin, async (_req, res) => {
+    try {
+      const counts = await runVerification();
+      res.json({ success: true, counts });
+    } catch (error) {
+      console.error("On-demand verification error:", error);
+      res.status(500).json({ error: "Verification run failed" });
+    }
+  });
+
+  // admin: graph neighborhood query (restricted nodes visible to admin only)
+  app.get("/api/admin/graph/:kind/:refId", adminAuthLimiter, requireAdmin, async (req, res) => {
+    try {
+      const result = await neighbors(req.params.kind, req.params.refId, true);
+      if (!result) return res.status(404).json({ error: "Node not found" });
+      res.json(result);
+    } catch (error) {
+      console.error("Graph query error:", error);
+      res.status(500).json({ error: "Graph query failed" });
     }
   });
 

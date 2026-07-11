@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// M1 core platform schema (identity, events, registries, ledger, graph)
+export * from "./coreSchema";
+
 /**
  * Rising Promise Website Configuration Schema
  * This file defines all the types and schemas for the website content
