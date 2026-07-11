@@ -64,7 +64,7 @@ export async function sendDonationReceipt(
   const body = `
     <p style="margin:0 0 16px;">Dear ${displayName},</p>
     <p style="margin:0 0 16px;">Thank you for your generous gift of <strong>$${dollars}</strong> to Rising Promise. Your support directly funds training, wraparound services, and job placement for people who are building a new future — and that matters more than we can say.</p>
-    <p style="margin:0 0 16px;">Rising Promise is a registered 501(c)(3) nonprofit. Your contribution may be tax-deductible to the extent permitted by law. Please retain this email as your official receipt.</p>
+    <p style="margin:0 0 16px;">Rising Promise is a registered 501(c)(3) nonprofit. <strong>No goods or services were provided in exchange for this contribution.</strong> Your contribution may be tax-deductible to the extent permitted by law. Please retain this email as your official receipt.</p>
     <table cellpadding="0" cellspacing="0" style="background:#f4f6f9;border-radius:6px;padding:20px 24px;margin:24px 0;width:100%;box-sizing:border-box;">
       <tr>
         <td style="color:#555;font-size:14px;padding:5px 0;">Donation amount</td>
@@ -160,6 +160,7 @@ export async function sendRaffleConfirmation(
     <p style="margin:0 0 16px;"><strong>Draw date:</strong> ${drawDate}</p>
     <p style="margin:0 0 16px;">Winners are notified by email. Keep this message — it contains your official entry numbers.</p>
     <p style="margin:0 0 32px;">Thank you for supporting Rising Promise. Every ticket directly funds a student's path to a new career.</p>
+    <p style="margin:0 0 16px;font-size:13px;color:#777;">Please note: raffle ticket purchases are <strong>not tax-deductible</strong> as charitable contributions under IRS rules.</p>
     <p style="margin:0 0 16px;">Good luck,<br/><strong>The Rising Promise Team</strong></p>
     <p style="font-size:12px;color:#aaa;margin-top:32px;padding-top:16px;border-top:1px solid #eee;">${legal}</p>
   `;

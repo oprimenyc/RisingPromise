@@ -1,22 +1,41 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import crypto from "crypto";
+import path from "path";
 import { storage } from "./storage";
 import { insertNewsletterSignupSchema, insertProgramApplicationSchema } from "@shared/schema";
 import { RAFFLE_TIERS_BY_ID } from "@shared/raffleConfig";
 import Stripe from "stripe";
 import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
+import { requireAdmin, requireBasicAdmin, rateLimit, verifyAdminPassword, adminConfigured } from "./security";
 
 // Initialize Stripe - will use test keys for development
-const stripe = process.env.STRIPE_SECRET_KEY 
+const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-10-29.clover" })
   : null;
 
+// Boot-time capability visibility — never fail silently at request time only
+if (!stripe) {
+  console.warn("[boot] STRIPE_SECRET_KEY not set — donation/raffle checkout DISABLED");
+}
+if (!adminConfigured()) {
+  console.warn("[boot] no ADMIN_PASSWORD_SHA256/ADMIN_PASSWORD — admin endpoints DISABLED");
+}
+
+// Rate limiters (in-memory; durable limiter lands with the M1 spine)
+const publicFormLimiter = rateLimit({ name: "public-form", max: 10, windowMs: 60_000 });
+const checkoutLimiter = rateLimit({ name: "checkout", max: 10, windowMs: 60_000 });
+const adminAuthLimiter = rateLimit({ name: "admin-auth", max: 5, windowMs: 60_000 });
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Internal exec bible — not linked in nav
-  app.get("/execbible", (_req, res) => res.redirect("/execbible.html"));
+  // Internal exec bible — auth-gated (was publicly served from the static
+  // build; moved to internal/ and placed behind Basic auth per M0)
+  app.get(["/execbible", "/execbible.html"], adminAuthLimiter, requireBasicAdmin, (_req, res) => {
+    res.sendFile(path.resolve(process.cwd(), "internal", "execbible.html"));
+  });
 
   // Newsletter signup endpoint
-  app.post("/api/newsletter/signup", async (req, res) => {
+  app.post("/api/newsletter/signup", publicFormLimiter, async (req, res) => {
     try {
       const data = insertNewsletterSignupSchema.parse(req.body);
       
@@ -34,19 +53,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all newsletter signups (for admin) - TODO: Add authentication before enabling
-  // app.get("/api/newsletter/signups", async (req, res) => {
-  //   try {
-  //     const signups = await storage.getAllNewsletterSignups();
-  //     res.json({ data: signups });
-  //   } catch (error) {
-  //     console.error("Get newsletter signups error:", error);
-  //     res.status(500).json({ error: "Failed to fetch signups" });
-  //   }
-  // });
+  // Get all newsletter signups (admin)
+  app.get("/api/newsletter/signups", adminAuthLimiter, requireAdmin, async (_req, res) => {
+    try {
+      const signups = await storage.getAllNewsletterSignups();
+      res.json({ data: signups });
+    } catch (error) {
+      console.error("Get newsletter signups error:", error);
+      res.status(500).json({ error: "Failed to fetch signups" });
+    }
+  });
 
   // Program application submission endpoint
-  app.post("/api/programs/apply", async (req, res) => {
+  app.post("/api/programs/apply", publicFormLimiter, async (req, res) => {
     try {
       const data = insertProgramApplicationSchema.parse(req.body);
       
@@ -63,47 +82,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all program applications (for admin) - TODO: Add authentication before enabling
-  // app.get("/api/programs/applications", async (req, res) => {
-  //   try {
-  //     const { programType } = req.query;
-  //     
-  //     const applications = programType
-  //       ? await storage.getProgramApplicationsByType(programType as string)
-  //       : await storage.getAllProgramApplications();
-  //     
-  //     res.json({ data: applications });
-  //   } catch (error) {
-  //     console.error("Get program applications error:", error);
-  //     res.status(500).json({ error: "Failed to fetch applications" });
-  //   }
-  // });
+  // Get all program applications (admin) — applications no longer land in a void
+  app.get("/api/programs/applications", adminAuthLimiter, requireAdmin, async (req, res) => {
+    try {
+      const { programType } = req.query;
+      const applications = programType
+        ? await storage.getProgramApplicationsByType(programType as string)
+        : await storage.getAllProgramApplications();
+      res.json({ data: applications });
+    } catch (error) {
+      console.error("Get program applications error:", error);
+      res.status(500).json({ error: "Failed to fetch applications" });
+    }
+  });
 
-  // Update program application status (for admin) - TODO: Add authentication before enabling
-  // app.patch("/api/programs/applications/:id/status", async (req, res) => {
-  //   try {
-  //     const id = parseInt(req.params.id);
-  //     const { status } = req.body;
-  //     
-  //     if (!status || !['pending', 'reviewed', 'accepted', 'rejected'].includes(status)) {
-  //       return res.status(400).json({ error: "Invalid status" });
-  //     }
-  //     
-  //     const application = await storage.updateProgramApplicationStatus(id, status);
-  //     
-  //     if (!application) {
-  //       return res.status(404).json({ error: "Application not found" });
-  //     }
-  //     
-  //     res.json({ success: true, data: application });
-  //   } catch (error) {
-  //     console.error("Update application status error:", error);
-  //     res.status(500).json({ error: "Failed to update status" });
-  //     }
-  // });
+  // Update program application status (admin)
+  app.patch("/api/programs/applications/:id/status", adminAuthLimiter, requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      if (!status || !['pending', 'reviewed', 'accepted', 'rejected'].includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      const application = await storage.updateProgramApplicationStatus(id, status);
+      if (!application) {
+        return res.status(404).json({ error: "Application not found" });
+      }
+      res.json({ success: true, data: application });
+    } catch (error) {
+      console.error("Update application status error:", error);
+      res.status(500).json({ error: "Failed to update status" });
+    }
+  });
 
   // Raffle ticket purchase — Create Checkout Session
-  app.post("/api/raffle/create-checkout-session", async (req, res) => {
+  app.post("/api/raffle/create-checkout-session", checkoutLimiter, async (req, res) => {
     try {
       if (!stripe) {
         return res.status(500).json({ error: "Stripe is not configured." });
@@ -164,7 +177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe donation routes - Create Checkout Session
-  app.post("/api/donations/create-checkout-session", async (req, res) => {
+  app.post("/api/donations/create-checkout-session", checkoutLimiter, async (req, res) => {
     try {
       if (!stripe) {
         return res.status(500).json({ error: "Stripe is not configured. Please add STRIPE_SECRET_KEY and VITE_STRIPE_PUBLIC_KEY to your secrets." });
@@ -273,6 +286,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const tierLabel   = RAFFLE_TIERS_BY_ID[tierId]?.label ?? tierId;
 
           // Generate unique entry codes (RP-XXXX, 36^4 = 1.68M possible codes)
+          // Cryptographically random — Math.random() is predictable and has no
+          // place in a money-linked drawing (M0 hardening).
           const existingNumbers = await storage.getAllRaffleEntryNumbers();
           const existingSet = new Set(existingNumbers);
           const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -281,7 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           while (newEntryNumbers.length < entryCount) {
             let code = "RP-";
             for (let i = 0; i < 4; i++) {
-              code += chars.charAt(Math.floor(Math.random() * chars.length));
+              code += chars.charAt(crypto.randomInt(chars.length));
             }
             if (!existingSet.has(code) && !newEntryNumbers.includes(code)) {
               newEntryNumbers.push(code);
@@ -326,26 +341,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin — verify password
-  app.post("/api/admin/verify-password", (req, res) => {
-    const { password } = req.body;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword) {
-      return res.status(500).json({ error: "ADMIN_PASSWORD is not configured on the server." });
+  // Admin — verify password (timing-safe hash compare + rate limit; see security.ts)
+  app.post("/api/admin/verify-password", adminAuthLimiter, (req, res) => {
+    if (!adminConfigured()) {
+      return res.status(500).json({ error: "Admin access is not configured on the server." });
     }
-    if (password !== adminPassword) {
+    if (!verifyAdminPassword(req.body?.password)) {
       return res.status(401).json({ error: "Invalid password." });
     }
     res.json({ success: true });
   });
 
   // Admin — get all raffle entries
-  app.get("/api/admin/raffle-entries", async (req, res) => {
-    const password = req.headers["x-admin-password"];
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword || password !== adminPassword) {
-      return res.status(401).json({ error: "Unauthorized." });
-    }
+  app.get("/api/admin/raffle-entries", adminAuthLimiter, requireAdmin, async (req, res) => {
     try {
       const entries = await storage.getAllRaffleEntries();
       res.json({ data: entries });
