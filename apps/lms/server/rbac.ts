@@ -1,17 +1,18 @@
 import type { RequestHandler } from "express";
 import { storage } from "./storage";
-
-type Role = "student" | "instructor" | "staff" | "admin";
+import { authorize } from "../../../server/core/policy";
 
 /**
- * Role gate. Must be chained AFTER isAuthenticated.
- * Looks the user up in the database on every call so a role revocation
- * takes effect immediately (roles are not cached in the session/JWT).
+ * Policy-driven role gate (M1 Policy Engine). Must be chained AFTER
+ * isAuthenticated. The allowed-role sets live in server/core/policy.ts —
+ * this middleware holds NO permission logic of its own (no duplicated
+ * permission rules, RP mission rule 3).
  *
- * Denials are logged with actor + path — privileged-endpoint probing is
- * a signal we want visible (CONSTITUTION §1: no silent failures).
+ * The user is looked up in the database on every call so a role revocation
+ * takes effect immediately (roles are not cached in the session/JWT).
+ * Denials are logged with actor + path (CONSTITUTION §1: no silent failures).
  */
-export function requireRole(...allowed: Role[]): RequestHandler {
+export function requirePolicy(action: string): RequestHandler {
   return async (req: any, res, next) => {
     try {
       const userId = req.user?.claims?.sub;
@@ -19,14 +20,14 @@ export function requireRole(...allowed: Role[]): RequestHandler {
         return res.status(401).json({ message: "Unauthorized" });
       }
       const user = await storage.getUser(userId);
-      const role = (user?.role ?? "student") as Role;
-      if (!allowed.includes(role)) {
-        console.warn(
-          `[rbac] DENIED role=${role} user=${userId} ${req.method} ${req.path}`
-        );
+      const role = user?.role ?? "student";
+      const decision = authorize(action, [role]);
+      if (!decision.allowed) {
+        console.warn(`[rbac] DENIED ${decision.policyId} role=${role} user=${userId} ${req.method} ${req.path}: ${decision.reason}`);
         return res.status(403).json({ message: "Forbidden: insufficient role" });
       }
       req.rpRole = role;
+      req.rpPolicy = decision.policyId;
       return next();
     } catch (error) {
       console.error("[rbac] role check failed:", error);
@@ -36,5 +37,5 @@ export function requireRole(...allowed: Role[]): RequestHandler {
   };
 }
 
-export const requireAdmin = requireRole("admin");
-export const requireStaff = requireRole("admin", "staff");
+export const requireAdmin = requirePolicy("lms.admin");
+export const requireStaff = requirePolicy("lms.staff");

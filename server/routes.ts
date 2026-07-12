@@ -14,6 +14,7 @@ import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
 import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "./core/graph";
 import { registerAuthBroker } from "./core/authBroker";
+import { checkEligibility, listPolicies } from "./core/policy";
 import { db } from "./db";
 import { capabilities as capabilitiesTable, features as featuresTable } from "../shared/schema";
 import { sql } from "drizzle-orm";
@@ -94,7 +95,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const programSlug = data.programType === "it" ? "comptia" : data.programType;
       const personId = await ensurePerson(data.email, { first: data.firstName, last: data.lastName });
       await ensureParticipation(personId, programSlug, "applicant", String(application.id));
-      await publishEvent("ApplicationSubmitted", { personId, email: data.email, programSlug, applicationId: application.id }, personId);
+
+      // Eligibility is policy-evaluated (advisory at intake — the application
+      // is still recorded; staff see the policy result on review).
+      const eligibility = checkEligibility(`program.apply.${data.programType}`, data as Record<string, unknown>);
+      await publishEvent("ApplicationSubmitted", {
+        personId,
+        email: data.email,
+        programSlug,
+        applicationId: application.id,
+        eligibility: { policyId: eligibility.policyId, version: eligibility.version, eligible: eligibility.allowed, reason: eligibility.reason },
+      }, personId);
 
       sendApplicationConfirmation(data.email, data.firstName, data.programType).catch((err) => {
         console.error("Application confirmation email failed:", err);
@@ -417,7 +428,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recentDecisions(10),
         lmsAiSpend(),
       ]);
-      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger, aiSpend });
+      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger, aiSpend, policies: listPolicies() });
     } catch (error) {
       console.error("Observability error:", error);
       res.status(500).json({ error: "Failed to assemble observability report" });
