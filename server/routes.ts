@@ -15,7 +15,7 @@ import { ensurePerson, ensureParticipation, seedPrograms } from "./core/identity
 import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
 import { registerGraphProjector, projectPrograms, projectPlatform, neighbors, graphStats } from "./core/graph";
-import { registerAuthBroker } from "./core/authBroker";
+import { registerAuthBroker, brokerConfigured } from "./core/authBroker";
 import { checkEligibility, listPolicies } from "./core/policy";
 import { registerJob, scheduleJob, jobStats } from "./core/jobs";
 import { dispatchPending } from "./core/events";
@@ -485,6 +485,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ error: String(error?.message ?? "Failed to complete task") });
+    }
+  });
+
+  // ── Mission Control (M1 §7): ONE operational dashboard endpoint ──────────
+  app.get("/api/admin/mission-control", adminAuthLimiter, requireAdmin, async (_req, res) => {
+    try {
+      const [caps, feats, queue, graph, ledger, aiSpend, jobs, notifStats, workflowRows] = await Promise.all([
+        db.select().from(capabilitiesTable),
+        db.select().from(featuresTable),
+        queueStats(),
+        graphStats(),
+        recentDecisions(10),
+        lmsAiSpend(),
+        jobStats(),
+        notificationStats(),
+        db.execute(sql`select workflow_id, state, count(*)::int as count from core_workflow_instances group by 1,2 order by 1,2`).then((r: any) => r.rows ?? r),
+      ]);
+
+      const capCounts: Record<string, number> = {};
+      for (const c of caps) capCounts[c.status] = (capCounts[c.status] ?? 0) + 1;
+      const providerHealth = caps.filter((c) => c.domain === "provider").map((c) => ({ name: c.name, status: c.status, lastVerifiedAt: c.lastVerifiedAt, detail: (c.evidence as any)?.detail }));
+      const failedCaps = caps.filter((c) => c.status === "failed").map((c) => c.name);
+      const unhealthyFeatures = feats.filter((f) => f.healthy === false).map((f) => f.name);
+
+      const security = {
+        adminAuthConfigured: adminConfigured(),
+        oidcBroker: brokerConfigured() ? "configured" : "activation-ready (missing GOOGLE_OAUTH_CLIENT_ID/SECRET)",
+        paymentsCapability: payments ? "active" : "fail-closed (unconfigured/disabled)",
+        rateLimiting: "per-route in-memory limits active (M0)",
+      };
+
+      // Rollup: failed capabilities, dead-lettered events, or DLQ'd jobs mean attention needed.
+      const attention: string[] = [];
+      if (failedCaps.length > 0) attention.push(`capabilities failed: ${failedCaps.join(", ")}`);
+      if (queue.deadLettered > 0) attention.push(`${queue.deadLettered} dead-lettered events`);
+      if ((jobs.deadLettered ?? 0) > 0) attention.push(`${jobs.deadLettered} dead-lettered jobs`);
+      if (unhealthyFeatures.length > 0) attention.push(`features unhealthy: ${unhealthyFeatures.join(", ")}`);
+      if (!security.adminAuthConfigured) attention.push("admin auth not configured");
+
+      res.json({
+        status: attention.length === 0 ? "healthy" : "attention",
+        attention,
+        runtimeVerification: { counts: capCounts, lastRun: caps.reduce<string | null>((max, c) => (c.lastVerifiedAt && (!max || c.lastVerifiedAt.toISOString() > max) ? c.lastVerifiedAt.toISOString() : max), null) },
+        providerHealth,
+        capabilities: caps,
+        features: feats,
+        eventQueue: queue,
+        jobs,
+        notifications: notifStats,
+        workflows: workflowRows,
+        security,
+        graph,
+        aiSpend,
+        recentDecisions: ledger,
+        policies: listPolicies(),
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Mission control error:", error);
+      res.status(500).json({ error: "Failed to assemble mission control report" });
     }
   });
 
