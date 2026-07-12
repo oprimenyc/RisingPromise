@@ -41,12 +41,52 @@ DB-backed, seeded D-001…D-009; `core.decision-ledger` probe asserts seed compl
 ### Type/build
 Site `tsc` exit 0; `npm run build` OK (71.8kb server bundle). LMS unchanged this pass (still green from M0).
 
-## Remaining M1 work (explicitly NOT done — no hidden stubs)
-1. **Auth broker (unified login)**: Google OIDC needs `GOOGLE_OAUTH_CLIENT_ID/SECRET` from the owner's Cloud console. The identity model and `linkIdentity` are ready; session issuance against `core_persons` is the next build once credentials exist.
-2. **Monorepo consolidation**: `rpcourses` is still a nested repo/DB. Merge plan: move under `apps/lms`, point at the shared cluster, map `users` → `core_persons` via `identities(provider='replit')`, emit `StudentEnrolled`/`CourseCompleted` events.
-3. **Business-logic rewiring through providers**: ✅ DONE 2026-07-11 (branch `mission/m1-provider-rewiring`). `server/providers/payments.ts` (payments.checkout/webhooks capability wrapping Stripe; vendor-neutral `CheckoutCompleted` webhook event) and `server/providers/mail.ts` (mail.transactional wrapping Resend). `routes.ts` and `email.ts` now depend only on capability interfaces — vendor SDK imports exist solely under `server/providers/` (grep-verified). Runtime proof: (a) configured boot → registry `{verified:7, failed:1, unconfigured:9, manual:1}`; stripe probe verified live (HTTP 200); newsletter route exercised end-to-end (person + `NewsletterSubscribed`/`PersonCreated` events `processed`, attempts=0); (b) keyless boot → `[boot] payments.checkout unconfigured — donation/raffle checkout DISABLED` warning and checkout endpoint fails closed with `{"error":"Payments capability is not configured."}`; registry `{verified:6, unconfigured:11}` matching the M1 baseline. **Finding:** the local `RESEND_API_KEY` is invalid (Resend API: "API key is invalid", HTTP 400) — honest `failed` probe status; owner must rotate the key before transactional email works. Webhook path typecheck-verified only (no live Stripe event fired — external action, DL-009 fail closed).
-4. **Durable job queue**: events are durable; the dispatcher/verification scheduler are in-process intervals. pg-boss (or equivalent) replaces them when jobs beyond dispatch/verification exist.
-5. **LMS event emission + AI-spend surfacing in the unified observability endpoint** (follows consolidation).
+## 2026-07-12 pass — M1 completion (branch `mission/m1-consolidation`)
+All runtime evidence from a throwaway local Postgres 18 (:5599, fresh `rp_site`); site on :5000, LMS on :5100. Production untouched (read-only check confirmed only the original 4 site tables exist there).
 
-## Deploy steps for production
-`npm run db:push` against production DB (adds 11 core tables; purely additive), then normal deploy. No behavior change for site visitors; new endpoints are additive.
+### §2 Monorepo consolidation — ✅ VERIFIED
+`rpcourses` → `apps/lms` npm workspace (deps hoisted/deduped; LMS git history preserved at `../rpcourses-git-history-backup`). LMS Drizzle tables in Postgres schema `lms` on the shared cluster; site/core in `public` (16 + 11 tables confirmed via `\dt`). **Critical finding:** without `schemaFilter: ["lms"]` in the LMS drizzle config, `drizzle-kit push` DROPS every public-schema table — proven destructively on the throwaway cluster; the config now carries the guard + warning. LMS login and `createEnrollment` map users into `core_persons` + `identities(provider='replit')`; derived course completion stamps `enrollment.completionDate` once; `StudentEnrolled`/`CourseCompleted` emitted through the shared outbox and projected into the graph. `consolidation.verify.ts`: 10/10 PASS.
+
+### Provider runtime framework — ✅ VERIFIED
+Six-state lifecycle (`disabled`/`development`/`configured`/`verified`/`degraded`/`failed`) for all 13 providers incl. the 11 mission providers. `PROVIDERS_DISABLED` kill-switch honored by capability wrappers; degraded = slow probe or first failure after healthy; second consecutive failure = failed; recovery resets. `providers.verify.ts`: 22/22 PASS incl. live grants.gov probe. Boot registry: `{development:11, verified:6, configured:1}` (keyless baseline).
+
+### Unified Identity Broker — ✅ VERIFIED (Google creds = owner activation step)
+`core/authBroker.ts`: Google OIDC code flow (no vendor SDK), CSRF state, DB-backed revocable `core_sessions`; activation-ready — `/api/auth/google` returns 503 naming the missing keys; `/api/auth/me` 401 unauthenticated (observed). Account linking: sub match → person; verified-email match → link; else create. `identityMerge.ts`: tombstone merge (`persons.merged_into`), identities/roles/participations move, live sessions resolve through the tombstone. `migrateLmsUsers.ts` backfill (idempotent; refuses non-local DB without `MIGRATE_CONFIRM=yes`). `identity.verify.ts`: 19/19 PASS.
+
+### Policy Engine — ✅ VERIFIED
+`core/policy.ts`: deny-by-default versioned rules (9 policies) for authorization, eligibility (CNA/IT intake), and approval gates (grants.submit ED sign-off; external comms; identity.merge). LMS RBAC middleware delegates entirely to it; application intake evaluates eligibility into the `ApplicationSubmitted` event. `policy.verify.ts` 18/18 PASS; LMS `rbac.verify.ts` re-run ALL PASS (L-008).
+
+### Durable job queue — ✅ VERIFIED
+pg-boss (schema `jobs`): retries, per-queue DLQ, cron with wall-clock + timezone + intended-time logging (L-007), terminal SUCCESS/FAILED per run. Site: `platform.verify` (*/15) + `events.sweep` recovery (every minute); LMS automations ported off node-cron (dep removed): inactivity 9AM ET, milestones hourly, welcome */30. `jobs.verify.ts` ALL PASS (retry → DLQ observed live).
+
+### Workflow Engine — ✅ VERIFIED
+One generic executor + `core_workflow_instances` (append-only history). Definitions: student.intake, volunteer.onboarding, grant.pipeline (submit transition policy-gated with required approval note), donor.stewardship, parent.engagement, sponsor.partnership, housing.residency. V.I.A./N.O.B.L.E. deliberately absent (prepare-only per owner directive). `ApplicationSubmitted` auto-opens intake (idempotent). `workflow.verify.ts`: 16/16 PASS.
+
+### Notification Framework — ✅ VERIFIED
+`core_notifications` + channels email/sms/internal/task/calendar resolved to capabilities at delivery time on the durable queue. Missing providers → status `unavailable` with reason (observed for email/sms/calendar keyless) — never silent, never faked. Application events raise deduped review tasks. Admin endpoints: list + task complete. `notifications.verify.ts`: 11/11 PASS.
+
+### Mission Control — ✅ VERIFIED
+`GET /api/admin/mission-control`: runtime verification counts, per-provider health, capabilities/features, event queue, jobs + DLQ, notifications, workflow counts, security posture (admin auth, broker state, payments fail-closed), graph stats, AI spend, decisions, policies, and an honest healthy/attention rollup — observed correctly flagging unconfigured payment/mail features and a synthetic DLQ row from verification.
+
+### Knowledge Graph — ✅ VERIFIED
+New projections: volunteers, sponsors, grants, background checks (restricted, reference-only), person merges, workflow instances (state on node), decisions; `projectPlatform()` projects providers/capabilities (DEPENDS_ON)/features (REQUIRES)/policies at boot. Restricted-node exclusion re-verified. `graph.verify.ts`: 17/17 PASS (58 nodes / 32 edges on the verification dataset).
+
+### Ledger & registries
+Decision ledger seeded D-001…D-015 (probe now asserts ≥15). Capability registry persists six-state statuses with evidence + consecutive-failure counts. AI spend durable in `lms.system_settings`, surfaced in observability + mission control.
+
+### Type/build (final sweep, fresh DB)
+Site `tsc` 0 / build OK; LMS `tsc` 0 / build OK; all 10 verification suites ALL PASS (providers, policy, identity, workflow, jobs, notifications, graph, consolidation, rbac, aiGuard).
+
+## Remaining work (explicitly NOT done — no hidden stubs)
+1. **OIDC activation** — owner supplies `GOOGLE_OAUTH_CLIENT_ID/SECRET`; broker + linking already runtime-verified. BLOCKED on external credential.
+2. **Provider credentials** — stripe/resend/brevo/givebutter/paypal/samgov/candid/cloudflare/microsoft/google remain `development` (activation-ready, missing keys named) until owner supplies keys. `RESEND_API_KEY` in `.env` is invalid (2026-07-11 finding) — rotate before transactional email works.
+3. **SMS provider** — Twilio delivery path implemented; needs `TWILIO_ACCOUNT_SID/AUTH_TOKEN/FROM_NUMBER`.
+4. **Calendar channel** — activation-ready stub pending the Google provider module (RP_GOOGLE_PROVIDER); requests are recorded `unavailable`, never dropped.
+5. **LMS session-auth migration off Replit OIDC** — broker is ready; the cutover (LMS consuming `core_sessions`) is deliberately sequenced after Google creds exist so students aren't stranded between IdPs.
+
+## Deploy steps for production (owner)
+1. `npm run db:push` at repo root (adds core tables incl. sessions/workflows/notifications; additive).
+2. `cd apps/lms && npm run db:push` — **only with the committed `schemaFilter: ["lms"]` config** (creates the `lms` schema; without the filter it would drop public tables).
+3. One-time: `MIGRATE_CONFIRM=yes npx tsx server/core/migrateLmsUsers.ts` to backfill LMS users into core identity.
+4. Migrate LMS data from the old Replit DB into the `lms` schema (pg_dump/restore) before pointing the LMS at the shared cluster.
+5. Set `GOOGLE_OAUTH_CLIENT_ID/SECRET` when ready to activate unified login; rotate `RESEND_API_KEY`.

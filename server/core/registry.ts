@@ -58,9 +58,9 @@ const platformCapabilities: CapabilityDef[] = [
     dependsOn: ["core.database"],
     probe: async () => {
       const [row] = await db.execute(sql`select count(*)::int as n from core_decisions`).then((r: any) => r.rows ?? r);
-      return row.n >= 9
+      return row.n >= 15
         ? { ok: true, status: "verified", detail: `${row.n} ledger entries present (seed complete)` }
-        : { ok: false, status: "failed", detail: `only ${row.n} ledger entries; seed incomplete` };
+        : { ok: false, status: "failed", detail: `only ${row.n} ledger entries; seed incomplete (expect >= 15)` };
     },
   },
   {

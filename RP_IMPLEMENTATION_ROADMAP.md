@@ -17,7 +17,7 @@ security  spine  LMS ├─► M4 (Donors)
 6. Remove ghost deps; add required IRS receipt language; verify SPF/DKIM/DMARC.
 Exit criteria: unauthenticated probe of every route passes; no unmetered paid endpoint.
 
-## M1 — Core spine — 🟡 IN PROGRESS 2026-07-11 (delivered & runtime-verified: core schema, unified identity model + program boundaries (V.I.A./N.O.B.L.E./Workforce, D-008), event outbox+dispatcher, capability/feature registries with verification engine, 13-provider layer with honest probes, DB decision ledger, projected graph, /api/health + admin observability — see RP_M1_VERIFICATION.md. Remaining: OIDC auth broker (blocked on owner's Google OAuth creds), rpcourses monorepo/DB consolidation, provider rewiring of Stripe/Resend call sites, pg-boss job queue)
+## M1 — Core spine — ✅ CODE-COMPLETE & RUNTIME-VERIFIED 2026-07-12 (see RP_M1_VERIFICATION.md). Delivered: monorepo consolidation (apps/lms, schema-per-domain on one cluster), six-state provider runtime framework, unified identity broker (OIDC activation-ready, merge strategy, migration tooling), policy engine, pg-boss durable jobs, generic workflow engine, notification framework, mission control, expanded knowledge graph. Owner activation steps outstanding: Google OAuth + provider credentials, production db:push + LMS data migration, LMS IdP cutover after creds.
 1. Monorepo consolidation (site + rpcourses under one workspace), one Postgres cluster, schema-per-domain.
 2. `core.persons`/identities + RBAC; OIDC via Google Cloud Identity; migrate LMS users off Replit Auth (L-008: re-verify every client after the auth change).
 3. Route auth wrapper (`public(reason)` pattern) + nightly self-tests; boot-time config validation.
