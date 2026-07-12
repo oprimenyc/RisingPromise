@@ -13,6 +13,7 @@ import { ensurePerson, ensureParticipation, seedPrograms } from "./core/identity
 import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
 import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "./core/graph";
+import { registerAuthBroker } from "./core/authBroker";
 import { db } from "./db";
 import { capabilities as capabilitiesTable, features as featuresTable } from "../shared/schema";
 import { sql } from "drizzle-orm";
@@ -38,6 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await projectPrograms();
   startDispatcher();
   startVerificationSchedule();
+  registerAuthBroker(app);
   runVerification().catch((e) => console.error("[verify] boot verification error:", e));
 
   // Internal exec bible — auth-gated (was publicly served from the static

@@ -13,9 +13,24 @@ export const persons = pgTable("core_persons", {
   primaryEmail: text("primary_email").unique(),
   firstName: text("first_name"),
   lastName: text("last_name"),
+  // Identity merge strategy (M1): duplicates are never deleted — they are
+  // tombstoned with a pointer to the surviving record. Lookups follow the
+  // pointer; history (events) stays attributed to the original id.
+  mergedInto: varchar("merged_into"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+// DB-backed sessions issued by the auth broker against core_persons.
+// Revocable (revokedAt), expiring; the cookie carries only the opaque id.
+export const authSessions = pgTable("core_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  personId: varchar("person_id").notNull().references(() => persons.id),
+  provider: text("provider").notNull(), // which IdP authenticated this session
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  revokedAt: timestamp("revoked_at"),
+}, (t) => [index("core_sessions_person").on(t.personId)]);
 
 // External authentication subjects mapped to persons (email, google, replit…)
 export const identities = pgTable("core_identities", {

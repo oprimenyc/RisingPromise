@@ -20,6 +20,8 @@ export type EventType =
   | "SponsorCreated"
   | "BackgroundCheckCompleted"
   | "PersonCreated"
+  | "IdentityLinked"
+  | "PersonMerged"
   | "DecisionRecorded";
 
 export type Consumer = {
