@@ -138,6 +138,20 @@ export const graphEdges = pgTable("core_graph_edges", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [index("core_graph_edges_from").on(t.fromNode), index("core_graph_edges_to").on(t.toNode)]);
 
+// ── Workflow engine (generic, config-driven; definitions live in code) ─────
+export const workflowInstances = pgTable("core_workflow_instances", {
+  id: serial("id").primaryKey(),
+  workflowId: text("workflow_id").notNull(), // e.g. 'student.intake'
+  version: integer("version").notNull(),
+  personId: varchar("person_id").references(() => persons.id),
+  subjectRef: text("subject_ref"), // application id, grant opportunity id, ...
+  state: text("state").notNull(),
+  // append-only [{at, from, to, action, actor, note}]
+  history: jsonb("history").notNull().default(sql`'[]'::jsonb`),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (t) => [index("core_workflow_person").on(t.personId), index("core_workflow_kind").on(t.workflowId, t.state)]);
+
 export type Person = typeof persons.$inferSelect;
 export type DomainEvent = typeof domainEvents.$inferSelect;
 export type Capability = typeof capabilities.$inferSelect;

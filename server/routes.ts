@@ -8,7 +8,8 @@ import { RAFFLE_TIERS_BY_ID } from "../shared/raffleConfig";
 import { payments } from "./providers/payments";
 import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
 import { requireAdmin, requireBasicAdmin, rateLimit, verifyAdminPassword, adminConfigured } from "./security";
-import { publishEvent, startDispatcher, queueStats } from "./core/events";
+import { publishEvent, startDispatcher, queueStats, registerConsumer } from "./core/events";
+import { startIntakeOnApplication, workflowDefinitions } from "./core/workflow";
 import { ensurePerson, ensureParticipation, seedPrograms } from "./core/identity";
 import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
@@ -39,6 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await seedPrograms();
   await seedDecisionLedger();
   registerGraphProjector();
+  registerConsumer({ name: "workflow-intake", handle: startIntakeOnApplication });
   await projectPrograms();
   startDispatcher(); // 3s in-process loop for dispatch latency; durability lives in the outbox rows
   registerAuthBroker(app);

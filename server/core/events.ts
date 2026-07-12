@@ -21,6 +21,8 @@ export type EventType =
   | "BackgroundCheckCompleted"
   | "PersonCreated"
   | "IdentityLinked"
+  | "WorkflowStarted"
+  | "WorkflowTransitioned"
   | "PersonMerged"
   | "DecisionRecorded";
 
