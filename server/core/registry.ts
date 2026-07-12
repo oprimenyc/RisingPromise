@@ -5,7 +5,7 @@
  */
 import { db } from "../db";
 import { capabilities, features } from "../../shared/schema";
-import { providers, type ProbeResult } from "../providers";
+import { providers, evaluateProvider, type ProbeResult } from "../providers";
 import { queueStats } from "./events";
 import { sql } from "drizzle-orm";
 
@@ -97,12 +97,16 @@ const featureDefs: FeatureDef[] = [
 ];
 
 // ── Verification engine ─────────────────────────────────────────────────────
-export async function runVerification(): Promise<{ verified: number; failed: number; unconfigured: number; manual: number }> {
+export async function runVerification(): Promise<Record<string, number>> {
   const started = Date.now();
-  const counts = { verified: 0, failed: 0, unconfigured: 0, manual: 0 };
+  const counts: Record<string, number> = {};
+
+  // Prior persisted state drives the degraded->failed lifecycle transition.
+  const priorRows = await db.select({ name: capabilities.name, status: capabilities.status, evidence: capabilities.evidence }).from(capabilities);
+  const prior = new Map(priorRows.map((r) => [r.name, { status: r.status, consecutiveFailures: (r.evidence as any)?.consecutiveFailures ?? 0 }]));
 
   const targets: Array<{ name: string; domain: string; owner: string; dependsOn: string[]; probe: () => Promise<ProbeResult> }> = [
-    ...providers.map((p) => ({ name: p.name, domain: "provider", owner: "platform", dependsOn: p.requiredConfig, probe: () => p.probe() })),
+    ...providers.map((p) => ({ name: p.name, domain: "provider", owner: "platform", dependsOn: p.requiredConfig, probe: () => evaluateProvider(p, prior.get(p.name)) })),
     ...platformCapabilities,
   ];
 
@@ -114,7 +118,7 @@ export async function runVerification(): Promise<{ verified: number; failed: num
     } catch (error: any) {
       result = { ok: false, status: "failed", detail: `probe threw: ${String(error?.message ?? error).slice(0, 200)}` };
     }
-    counts[result.status as keyof typeof counts] = (counts[result.status as keyof typeof counts] ?? 0) + 1;
+    counts[result.status] = (counts[result.status] ?? 0) + 1;
     statusByName.set(t.name, result.status);
     await db
       .insert(capabilities)
@@ -125,9 +129,11 @@ export async function runVerification(): Promise<{ verified: number; failed: num
       });
   }
 
-  // Feature health derives from capability statuses (manual counts as available)
+  // Feature health derives from capability statuses. 'degraded' still serves
+  // traffic (loudly visible in the registry); 'configured' covers manual
+  // channels that cannot be runtime-probed.
   for (const f of featureDefs) {
-    const healthy = f.requiredCapabilities.every((c) => ["verified", "manual"].includes(statusByName.get(c) ?? "missing"));
+    const healthy = f.requiredCapabilities.every((c) => ["verified", "degraded", "configured"].includes(statusByName.get(c) ?? "missing"));
     await db
       .insert(features)
       .values({ name: f.name, description: f.description, requiredCapabilities: f.requiredCapabilities, requiredPermissions: f.requiredPermissions, healthy, lastVerifiedAt: new Date() })

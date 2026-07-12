@@ -1,14 +1,27 @@
 /**
  * Provider layer (M1 §2, RP_PROVIDER_SPEC). Business logic depends on
- * capability lookups, never on vendor SDKs. Every provider declares its
- * required config and a REAL health probe:
- *   - missing config  -> status 'unconfigured' (honest, visible; never fake success)
- *   - config present  -> live network probe against the vendor API
- *   - no API exists   -> status 'manual' (e.g. TechSoup)
+ * capability lookups, never on vendor SDKs. Every provider moves through an
+ * explicit six-state lifecycle — no provider may silently fail:
+ *   - disabled     operator turned it off (PROVIDERS_DISABLED env list); never probed
+ *   - development  credentials absent; activation-ready, fakes usable locally
+ *   - configured   config present but not runtime-verifiable (manual channels)
+ *                  or probe not yet executed
+ *   - verified     live probe against the real vendor API succeeded
+ *   - degraded     probe succeeded but slow (> PROVIDER_DEGRADED_MS), or the
+ *                  FIRST failure after a verified run (transient allowance)
+ *   - failed       probe failed (or kept failing after a degraded grace probe)
  * Probe results feed the capability registry (runtime is the proof).
  */
 
-export type ProbeResult = { ok: boolean; status: "verified" | "failed" | "unconfigured" | "manual"; detail: string };
+export type ProviderState = "disabled" | "development" | "configured" | "verified" | "degraded" | "failed";
+
+export type ProbeResult = {
+  ok: boolean;
+  status: ProviderState;
+  detail: string;
+  latencyMs?: number;
+  consecutiveFailures?: number;
+};
 
 export interface ProviderDef {
   name: string;
@@ -17,8 +30,27 @@ export interface ProviderDef {
   probe(): Promise<ProbeResult>;
 }
 
-function unconfigured(missing: string[]): ProbeResult {
-  return { ok: false, status: "unconfigured", detail: `missing config: ${missing.join(", ")}` };
+const DEGRADED_LATENCY_MS = (() => {
+  const v = parseInt(process.env.PROVIDER_DEGRADED_MS ?? "", 10);
+  return Number.isFinite(v) && v > 0 ? v : 5000;
+})();
+
+function disabledProviders(): Set<string> {
+  return new Set(
+    (process.env.PROVIDERS_DISABLED ?? "")
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+/** True when the operator has explicitly disabled a provider. */
+export function providerDisabled(name: string): boolean {
+  return disabledProviders().has(name.toLowerCase());
+}
+
+function development(missing: string[]): ProbeResult {
+  return { ok: false, status: "development", detail: `activation-ready; missing config: ${missing.join(", ")}` };
 }
 
 function missingKeys(keys: string[]): string[] {
@@ -26,13 +58,57 @@ function missingKeys(keys: string[]): string[] {
 }
 
 async function httpProbe(name: string, fn: () => Promise<Response>): Promise<ProbeResult> {
+  const started = Date.now();
   try {
     const res = await fn();
-    if (res.ok) return { ok: true, status: "verified", detail: `${name} API reachable (HTTP ${res.status})` };
-    return { ok: false, status: "failed", detail: `${name} API returned HTTP ${res.status}` };
+    const latencyMs = Date.now() - started;
+    if (res.ok) {
+      if (latencyMs > DEGRADED_LATENCY_MS) {
+        return { ok: true, status: "degraded", detail: `${name} API reachable but slow (HTTP ${res.status}, ${latencyMs}ms > ${DEGRADED_LATENCY_MS}ms)`, latencyMs };
+      }
+      return { ok: true, status: "verified", detail: `${name} API reachable (HTTP ${res.status})`, latencyMs };
+    }
+    return { ok: false, status: "failed", detail: `${name} API returned HTTP ${res.status}`, latencyMs };
   } catch (error: any) {
-    return { ok: false, status: "failed", detail: `${name} probe error: ${String(error?.message ?? error).slice(0, 200)}` };
+    return { ok: false, status: "failed", detail: `${name} probe error: ${String(error?.message ?? error).slice(0, 200)}`, latencyMs: Date.now() - started };
   }
+}
+
+/**
+ * Full lifecycle evaluation for one provider. `prior` is the last persisted
+ * result (from the capability registry) and drives the degraded->failed
+ * transition: the first failure after a healthy run reports 'degraded'
+ * (transient allowance, loudly); a second consecutive failure is 'failed'.
+ */
+export async function evaluateProvider(
+  p: ProviderDef,
+  prior?: { status?: string; consecutiveFailures?: number }
+): Promise<ProbeResult> {
+  if (providerDisabled(p.name)) {
+    return { ok: false, status: "disabled", detail: `disabled by operator (PROVIDERS_DISABLED)` };
+  }
+  let result: ProbeResult;
+  try {
+    result = await p.probe();
+  } catch (error: any) {
+    result = { ok: false, status: "failed", detail: `probe threw: ${String(error?.message ?? error).slice(0, 200)}` };
+  }
+  const priorFailures = prior?.consecutiveFailures ?? 0;
+  if (result.status === "failed") {
+    const wasHealthy = prior?.status === "verified" || prior?.status === "degraded";
+    const consecutiveFailures = priorFailures + 1;
+    if (wasHealthy && consecutiveFailures === 1) {
+      console.warn(`[providers] ${p.name} DEGRADED (first failure after healthy run): ${result.detail}`);
+      return { ...result, status: "degraded", consecutiveFailures };
+    }
+    console.error(`[providers] ${p.name} FAILED (consecutive failures: ${consecutiveFailures}): ${result.detail}`);
+    return { ...result, consecutiveFailures };
+  }
+  if (result.status === "degraded") {
+    console.warn(`[providers] ${p.name} DEGRADED: ${result.detail}`);
+    return { ...result, consecutiveFailures: priorFailures + (result.ok ? 0 : 1) };
+  }
+  return { ...result, consecutiveFailures: 0 };
 }
 
 function keyedHttpProvider(opts: {
@@ -47,7 +123,7 @@ function keyedHttpProvider(opts: {
     requiredConfig: opts.requiredConfig,
     async probe() {
       const missing = missingKeys(opts.requiredConfig);
-      if (missing.length > 0) return unconfigured(missing);
+      if (missing.length > 0) return development(missing);
       return httpProbe(opts.name, opts.request);
     },
   };
@@ -96,7 +172,7 @@ export const providers: ProviderDef[] = [
     requiredConfig: ["PAYPAL_CLIENT_ID", "PAYPAL_CLIENT_SECRET"],
     async probe() {
       const missing = missingKeys(this.requiredConfig);
-      if (missing.length > 0) return unconfigured(missing);
+      if (missing.length > 0) return development(missing);
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString("base64");
       return httpProbe("paypal", () =>
         fetch("https://api-m.paypal.com/v1/oauth2/token", {
@@ -145,7 +221,7 @@ export const providers: ProviderDef[] = [
     requiredConfig: ["CANDID_API_KEY"], // GuideStar profiles are served by Candid's API platform
     async probe() {
       const missing = missingKeys(this.requiredConfig);
-      if (missing.length > 0) return unconfigured(missing);
+      if (missing.length > 0) return development(missing);
       return { ok: true, status: "verified", detail: "served via candid provider credentials" };
     },
   },
@@ -154,7 +230,7 @@ export const providers: ProviderDef[] = [
     capabilities: ["procurement.nonprofit-software"],
     requiredConfig: [],
     async probe() {
-      return { ok: true, status: "manual", detail: "TechSoup has no public API; tracked as a manual procurement channel" };
+      return { ok: true, status: "configured", detail: "manual channel: TechSoup has no public API; not runtime-verifiable" };
     },
   },
   keyedHttpProvider({
@@ -172,7 +248,7 @@ export const providers: ProviderDef[] = [
     requiredConfig: ["GOOGLE_SERVICE_ACCOUNT_JSON", "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET"],
     async probe() {
       const missing = missingKeys(this.requiredConfig);
-      if (missing.length > 0) return unconfigured(missing);
+      if (missing.length > 0) return development(missing);
       // Validate the service-account JSON parses and has the expected shape;
       // scoped API probes land with each Google module (RP_GOOGLE_PROVIDER).
       try {
@@ -192,7 +268,7 @@ export const providers: ProviderDef[] = [
     requiredConfig: ["MS_TENANT_ID", "MS_CLIENT_ID", "MS_CLIENT_SECRET"],
     async probe() {
       const missing = missingKeys(this.requiredConfig);
-      if (missing.length > 0) return unconfigured(missing);
+      if (missing.length > 0) return development(missing);
       return httpProbe("microsoft", () =>
         fetch(`https://login.microsoftonline.com/${process.env.MS_TENANT_ID}/oauth2/v2.0/token`, {
           method: "POST",

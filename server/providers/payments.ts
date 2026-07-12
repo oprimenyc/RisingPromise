@@ -5,6 +5,7 @@
  * matching the provider registry's 'unconfigured' probe status.
  */
 import Stripe from "stripe";
+import { providerDisabled } from "./index";
 
 export interface CheckoutSessionRequest {
   productName: string;
@@ -89,7 +90,11 @@ function stripePayments(secretKey: string): PaymentsCapability {
   };
 }
 
-/** null when unconfigured — callers fail closed, same visibility rule as the registry probe. */
-export const payments: PaymentsCapability | null = process.env.STRIPE_SECRET_KEY
-  ? stripePayments(process.env.STRIPE_SECRET_KEY)
-  : null;
+/** null when unconfigured or operator-disabled — callers fail closed, same visibility rule as the registry probe. */
+export const payments: PaymentsCapability | null = (() => {
+  if (providerDisabled("stripe")) {
+    console.warn("[providers] stripe DISABLED by operator (PROVIDERS_DISABLED) — payments capability off");
+    return null;
+  }
+  return process.env.STRIPE_SECRET_KEY ? stripePayments(process.env.STRIPE_SECRET_KEY) : null;
+})();

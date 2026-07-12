@@ -5,6 +5,7 @@
  * best-effort side effects, never on the request critical path).
  */
 import { Resend } from "resend";
+import { providerDisabled } from "./index";
 
 export interface MailMessage {
   to: string;
@@ -37,7 +38,11 @@ function resendMail(apiKey: string): MailCapability {
   };
 }
 
-/** null when unconfigured — same visibility rule as the registry probe. */
-export const mail: MailCapability | null = process.env.RESEND_API_KEY
-  ? resendMail(process.env.RESEND_API_KEY)
-  : null;
+/** null when unconfigured or operator-disabled — same visibility rule as the registry probe. */
+export const mail: MailCapability | null = (() => {
+  if (providerDisabled("resend")) {
+    console.warn("[providers] resend DISABLED by operator (PROVIDERS_DISABLED) — mail capability off");
+    return null;
+  }
+  return process.env.RESEND_API_KEY ? resendMail(process.env.RESEND_API_KEY) : null;
+})();
