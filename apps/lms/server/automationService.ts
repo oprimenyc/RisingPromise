@@ -1,6 +1,6 @@
-import cron from 'node-cron';
 import { storage } from './storage';
 import { emailService } from './emailService';
+import { registerJob, scheduleJob } from '../../../server/core/jobs';
 
 export class AutomationService {
   public isInitialized = false;
@@ -16,8 +16,11 @@ export class AutomationService {
     // Setup default system settings
     await this.setupDefaultSettings();
 
-    // Schedule automated tasks
-    this.scheduleAutomatedTasks();
+    // Schedule automated tasks on the durable job queue (D6). Failure to
+    // reach the queue is loud but does not block LMS boot.
+    await this.scheduleAutomatedTasks().catch((e) =>
+      console.error('[automation] durable job scheduling FAILED (email automations inactive):', e)
+    );
 
     this.isInitialized = true;
     console.log('Automation services initialized successfully');
@@ -265,23 +268,25 @@ export class AutomationService {
     }
   }
 
-  private scheduleAutomatedTasks(): void {
-    // Check for inactivity every day at 9 AM
-    cron.schedule('0 9 * * *', async () => {
+  private async scheduleAutomatedTasks(): Promise<void> {
+    // Durable pg-boss jobs (D6): retries + dead-letter + terminal status.
+    // Cron expressions are LOCAL WALL-CLOCK with an explicit timezone (L-007).
+    await registerJob('lms.inactivity.check', async () => {
       console.log('Running daily inactivity check...');
       await this.checkForInactiveStudents();
-    });
+    }, { retryLimit: 2, retryDelaySeconds: 300 });
+    await scheduleJob('lms.inactivity.check', '0 9 * * *', 'America/New_York', '9:00 AM Eastern daily');
 
-    // Check for progress milestones every hour
-    cron.schedule('0 * * * *', async () => {
+    await registerJob('lms.progress.milestones', async () => {
       console.log('Checking for progress milestones...');
       await this.checkProgressMilestones();
-    });
+    }, { retryLimit: 2, retryDelaySeconds: 300 });
+    await scheduleJob('lms.progress.milestones', '0 * * * *', 'America/New_York', 'top of every hour Eastern');
 
-    // Send welcome sequence emails (check every 30 minutes)
-    cron.schedule('*/30 * * * *', async () => {
+    await registerJob('lms.welcome.sequence', async () => {
       await this.processWelcomeSequence();
-    });
+    }, { retryLimit: 2, retryDelaySeconds: 300 });
+    await scheduleJob('lms.welcome.sequence', '*/30 * * * *', 'America/New_York', 'every 30 minutes');
 
     console.log('Scheduled automated tasks successfully');
   }

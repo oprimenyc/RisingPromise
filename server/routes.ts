@@ -15,6 +15,8 @@ import { runVerification, startVerificationSchedule } from "./core/registry";
 import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "./core/graph";
 import { registerAuthBroker } from "./core/authBroker";
 import { checkEligibility, listPolicies } from "./core/policy";
+import { registerJob, scheduleJob, jobStats } from "./core/jobs";
+import { dispatchPending } from "./core/events";
 import { db } from "./db";
 import { capabilities as capabilitiesTable, features as featuresTable } from "../shared/schema";
 import { sql } from "drizzle-orm";
@@ -38,9 +40,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await seedDecisionLedger();
   registerGraphProjector();
   await projectPrograms();
-  startDispatcher();
-  startVerificationSchedule();
+  startDispatcher(); // 3s in-process loop for dispatch latency; durability lives in the outbox rows
   registerAuthBroker(app);
+
+  // Durable jobs (M1 §4): verification + event-sweep recovery run under
+  // pg-boss so they survive restarts and report terminal status. Failure to
+  // start jobs is loud but non-fatal (the in-process dispatcher still runs).
+  (async () => {
+    await registerJob("platform.verify", async () => {
+      await runVerification();
+    }, { retryLimit: 2, retryDelaySeconds: 60 });
+    await scheduleJob("platform.verify", "*/15 * * * *", "America/New_York", "every 15 minutes");
+
+    await registerJob("events.sweep", async () => {
+      const result = await dispatchPending();
+      const stats = await queueStats();
+      if (stats.deadLettered > 0) {
+        console.error(`[jobs] events.sweep: ${stats.deadLettered} dead-lettered events need attention`);
+      }
+      if (result.processed > 0) {
+        console.warn(`[jobs] events.sweep recovered ${result.processed} events missed by the in-process dispatcher`);
+      }
+    }, { retryLimit: 1, retryDelaySeconds: 30 });
+    await scheduleJob("events.sweep", "* * * * *", "America/New_York", "every minute (recovery sweep)");
+  })().catch((e) => console.error("[jobs] boot registration FAILED (in-process schedules still active):", e));
+  startVerificationSchedule(); // in-process fallback keeps verification alive if jobs infra degrades
   runVerification().catch((e) => console.error("[verify] boot verification error:", e));
 
   // Internal exec bible — auth-gated (was publicly served from the static
@@ -420,15 +444,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // admin: full detail — capabilities with evidence, features, ledger, graph
   app.get("/api/admin/observability", adminAuthLimiter, requireAdmin, async (_req, res) => {
     try {
-      const [caps, feats, queue, graph, ledger, aiSpend] = await Promise.all([
+      const [caps, feats, queue, graph, ledger, aiSpend, jobs] = await Promise.all([
         db.select().from(capabilitiesTable),
         db.select().from(featuresTable),
         queueStats(),
         graphStats(),
         recentDecisions(10),
         lmsAiSpend(),
+        jobStats(),
       ]);
-      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger, aiSpend, policies: listPolicies() });
+      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger, aiSpend, jobs, policies: listPolicies() });
     } catch (error) {
       console.error("Observability error:", error);
       res.status(500).json({ error: "Failed to assemble observability report" });
