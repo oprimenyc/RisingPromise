@@ -152,6 +152,24 @@ export const workflowInstances = pgTable("core_workflow_instances", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (t) => [index("core_workflow_person").on(t.personId), index("core_workflow_kind").on(t.workflowId, t.state)]);
 
+// ── Notification framework (provider-independent) ──────────────────────────
+export const notifications = pgTable("core_notifications", {
+  id: serial("id").primaryKey(),
+  channel: text("channel").notNull(), // 'email' | 'sms' | 'internal' | 'task' | 'calendar'
+  personId: varchar("person_id").references(() => persons.id),
+  address: text("address"), // email address / phone; null for internal/task
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  // queued -> sent | failed | unavailable (no provider configured — honest)
+  // tasks: open -> done
+  status: text("status").notNull().default("queued"),
+  providerUsed: text("provider_used"),
+  error: text("error"),
+  dedupeKey: text("dedupe_key").unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  sentAt: timestamp("sent_at"),
+}, (t) => [index("core_notifications_status").on(t.status), index("core_notifications_channel").on(t.channel)]);
+
 export type Person = typeof persons.$inferSelect;
 export type DomainEvent = typeof domainEvents.$inferSelect;
 export type Capability = typeof capabilities.$inferSelect;

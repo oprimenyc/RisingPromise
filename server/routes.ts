@@ -10,6 +10,7 @@ import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmatio
 import { requireAdmin, requireBasicAdmin, rateLimit, verifyAdminPassword, adminConfigured } from "./security";
 import { publishEvent, startDispatcher, queueStats, registerConsumer } from "./core/events";
 import { startIntakeOnApplication, workflowDefinitions } from "./core/workflow";
+import { registerNotificationWorker, raiseTasksFromEvents, listNotifications, notificationStats, completeTask } from "./core/notifications";
 import { ensurePerson, ensureParticipation, seedPrograms } from "./core/identity";
 import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
@@ -41,6 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await seedDecisionLedger();
   registerGraphProjector();
   registerConsumer({ name: "workflow-intake", handle: startIntakeOnApplication });
+  registerConsumer({ name: "notification-tasks", handle: raiseTasksFromEvents });
   await projectPrograms();
   startDispatcher(); // 3s in-process loop for dispatch latency; durability lives in the outbox rows
   registerAuthBroker(app);
@@ -53,6 +55,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await runVerification();
     }, { retryLimit: 2, retryDelaySeconds: 60 });
     await scheduleJob("platform.verify", "*/15 * * * *", "America/New_York", "every 15 minutes");
+
+    await registerNotificationWorker();
 
     await registerJob("events.sweep", async () => {
       const result = await dispatchPending();
@@ -459,6 +463,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Observability error:", error);
       res.status(500).json({ error: "Failed to assemble observability report" });
+    }
+  });
+
+  // admin: notifications + internal task queue
+  app.get("/api/admin/notifications", adminAuthLimiter, requireAdmin, async (req, res) => {
+    try {
+      const channel = typeof req.query.channel === "string" ? (req.query.channel as any) : undefined;
+      res.json({ notifications: await listNotifications({ channel }), stats: await notificationStats() });
+    } catch (error) {
+      console.error("Notifications list error:", error);
+      res.status(500).json({ error: "Failed to list notifications" });
+    }
+  });
+
+  app.post("/api/admin/tasks/:id/complete", adminAuthLimiter, requireAdmin, async (req, res) => {
+    try {
+      await completeTask(parseInt(req.params.id, 10), "admin");
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ error: String(error?.message ?? "Failed to complete task") });
     }
   });
 
