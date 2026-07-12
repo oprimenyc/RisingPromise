@@ -4,7 +4,7 @@
  * into core_persons via identities(provider='replit', subject=<oidc sub>).
  */
 import { db } from "../db";
-import { persons, identities, personRoles, programs, programParticipations } from "@shared/schema";
+import { persons, identities, personRoles, programs, programParticipations } from "../../shared/schema";
 import { eq, and } from "drizzle-orm";
 import { publishEvent } from "./events";
 

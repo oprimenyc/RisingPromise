@@ -3,8 +3,8 @@ import { createServer, type Server } from "http";
 import crypto from "crypto";
 import path from "path";
 import { storage } from "./storage";
-import { insertNewsletterSignupSchema, insertProgramApplicationSchema } from "@shared/schema";
-import { RAFFLE_TIERS_BY_ID } from "@shared/raffleConfig";
+import { insertNewsletterSignupSchema, insertProgramApplicationSchema } from "../shared/schema";
+import { RAFFLE_TIERS_BY_ID } from "../shared/raffleConfig";
 import { payments } from "./providers/payments";
 import { sendDonationReceipt, sendApplicationConfirmation, sendRaffleConfirmation } from "./email";
 import { requireAdmin, requireBasicAdmin, rateLimit, verifyAdminPassword, adminConfigured } from "./security";
@@ -14,7 +14,8 @@ import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
 import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "./core/graph";
 import { db } from "./db";
-import { capabilities as capabilitiesTable, features as featuresTable } from "@shared/schema";
+import { capabilities as capabilitiesTable, features as featuresTable } from "../shared/schema";
+import { sql } from "drizzle-orm";
 
 // Boot-time capability visibility — never fail silently at request time only
 if (!payments) {
@@ -389,17 +390,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LMS AI spend, read from the shared cluster (lms.system_settings is written
+  // durably by the LMS aiGuard). Absence of the lms schema is reported, never
+  // masked (pre-consolidation deployments).
+  async function lmsAiSpend(): Promise<Record<string, unknown>> {
+    try {
+      const rows = await db
+        .execute(sql`select setting_value, updated_at from lms.system_settings where setting_key = ${"ai_spend:" + new Date().toDateString()}`)
+        .then((r: any) => r.rows ?? r);
+      return { available: true, estimatedSpendUsdToday: rows[0] ? parseFloat(rows[0].setting_value) : 0, updatedAt: rows[0]?.updated_at ?? null };
+    } catch (error: any) {
+      return { available: false, reason: `lms schema unreadable: ${String(error?.message ?? error).slice(0, 200)}` };
+    }
+  }
+
   // admin: full detail — capabilities with evidence, features, ledger, graph
   app.get("/api/admin/observability", adminAuthLimiter, requireAdmin, async (_req, res) => {
     try {
-      const [caps, feats, queue, graph, ledger] = await Promise.all([
+      const [caps, feats, queue, graph, ledger, aiSpend] = await Promise.all([
         db.select().from(capabilitiesTable),
         db.select().from(featuresTable),
         queueStats(),
         graphStats(),
         recentDecisions(10),
+        lmsAiSpend(),
       ]);
-      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger });
+      res.json({ capabilities: caps, features: feats, eventQueue: queue, graph, recentDecisions: ledger, aiSpend });
     } catch (error) {
       console.error("Observability error:", error);
       res.status(500).json({ error: "Failed to assemble observability report" });

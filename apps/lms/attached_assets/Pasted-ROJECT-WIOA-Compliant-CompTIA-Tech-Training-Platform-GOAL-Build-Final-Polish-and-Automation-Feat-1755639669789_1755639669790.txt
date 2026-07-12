@@ -1,0 +1,35 @@
+ROJECT: WIOA-Compliant CompTIA Tech+ Training Platform
+GOAL: Build Final Polish and Automation Features
+TECHNOLOGY: MERN Stack (integrate with all existing components)
+DESIGN: Consistent with the existing patriotic professional theme.
+
+COMPONENT 1: Automated Email & Communication System
+- **Functionality:** Implement an automated email system to manage student communication and reduce the need for manual check-ins.
+- **Integration:** Use a well-known email service API (e.g., SendGrid, Mailgun) for transactional email delivery.
+- **Automated Sequences & Triggers:**
+    - **Welcome Series:** A 3-part sequence sent to new students upon registration (e.g., Day 1: Welcome & Login Info; Day 3: Tips for Getting Started; Day 7: Check-in on Progress).
+    - **Progress Milestones:** An email sent automatically when a student completes 25%, 50%, and 75% of the course content.
+    - **Inactivity Alert:** A notification sent to the admin when a student has not logged in for 7 days.
+    - **Completion Celebration:** An email sent to the student upon course completion with a digital certificate.
+
+COMPONENT 2: Enhanced WIOA Reporting Automation
+- **Functionality:** Refine the WIOA Reporting Dashboard to make it a one-click process for the admin.
+- **Reporting System:**
+    - The "Generate WIOA Report" button should now automatically compile all required data (as per the previous prompt).
+    - It should also include a "Submit Report to Email" button that sends the generated CSV to a predefined email address (e.g., `fl.wioa.reports@yourdomain.com`).
+    - The system should maintain a log of all submitted reports for audit purposes.
+- **Compliance Status Dashboard:** Add a visual dashboard for the admin that shows the real-time compliance status of the entire student body (e.g., a "Compliance Score" or a list of students with missing data).
+
+COMPONENT 3: Final UI/UX Polish & Role-Based Access
+- **Functionality:** Implement small but critical user experience improvements across the entire platform and ensure secure, role-based access.
+- **Improvements:**
+    - **Loading States:** Add loading spinners or progress indicators for all pages and components that fetch data from the server.
+    - **Error Handling:** Add user-friendly error messages and a dedicated 404 page for broken links.
+    - **Mobile Optimization:** Ensure all forms, dashboards, and course viewers are fully responsive and look professional on mobile devices.
+    - **Accessibility:** Make sure the site is accessible with clear contrasts and proper labeling.
+- **Role-Based Access:**
+    - Create a clear distinction between a **Student Dashboard** and a secure **Admin Panel**.
+    - Students should only be able to see their personal progress and access the course material.
+    - The WIOA Compliance Dashboard, bulk operations, and all reporting should only be visible to users with an 'admin' role. The Admin Panel should be on a separate, protected URL.
+
+**INSTRUCTIONS:** Ensure all components are fully integrated with the existing user, course, and enrollment data. This is the last major development phase. The result should be a production-ready, highly automated platform that a single person (e.g., the Filipino admin) can manage with minimal effort.

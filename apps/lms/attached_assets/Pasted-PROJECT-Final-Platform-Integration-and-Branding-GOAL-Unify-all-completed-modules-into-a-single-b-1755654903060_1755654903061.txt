@@ -1,0 +1,52 @@
+PROJECT: Final Platform Integration and Branding
+GOAL: Unify all completed modules into a single, branded, and production-ready website.
+TECHNOLOGY: MERN Stack (integrate all existing components).
+DESIGN: Maintain the patriotic professional theme, but replace the placeholder homepage with the new branded version.
+
+***
+
+### **Phase 1: Complete System Integration**
+
+**INSTRUCTIONS:** Unify all previously completed modules into one, cohesive codebase. Ensure all data flows correctly between them.
+
+- **Completed Modules to Unify:**
+    1.  **Core Foundation:** User Authentication & Dashboard.
+    2.  **WIOA Compliance:** All reporting and data collection tools.
+    3.  **AI Features:** The AI Chatbot and Resume Builder.
+    4.  **Revenue & Community:** The Stripe payment gateway and course forum.
+    5.  **Career Success Hub:** The newly built job readiness section.
+
+**CHECKLIST:**
+- Verify that user roles (`admin`, `student`) correctly restrict access to the Admin Panel.
+- Ensure that the Stripe payment gateway correctly grants course access.
+- Confirm that student progress is accurately reflected in the Admin's WIOA Compliance Dashboard.
+
+***
+
+### **Phase 2: Brand Identity & Homepage Implementation**
+
+**INSTRUCTIONS:** Create a new homepage to replace the existing one, fully implementing the new brand identity.
+
+- **Branding Elements:**
+    - **Name:** Veridian Tech
+    - **Logo:** Use a simple, clean, and modern logo with the patriotic color scheme.
+- **Hero Section:**
+    - **Headline:** "Secure Your American Future in Tech."
+    - **Subheadline:** "Our government-certified platform provides the training, tools, and support you need to land a high-paying job in tech."
+    - **Design:** Add a subtle animated background, such as a soft, animated grid or a gentle glowing effect.
+- **Navigation:**
+    - The top navigation should be clean and professional, with links to the new homepage sections.
+- **Call-to-Action:**
+    - Create two clear call-to-action buttons on the homepage: one for "Get Started" (for private-pay clients) and a separate one for "Funding & Eligibility" (for WIOA clients).
+
+***
+
+### **Phase 3: Final Production Readiness**
+
+**INSTRUCTIONS:** Prepare the entire platform for deployment.
+
+- **Security:** Implement final security checks on all routes and user data.
+- **Environment:** Ensure all environment variables (e.g., Stripe, OpenAI) are correctly configured.
+- **Documentation:** Acknowledge and use the existing `PLATFORM_DOCUMENTATION.md` file for reference. Do not regenerate.
+
+**DELIVERY:** The final output should be a complete, well-documented, and production-ready MERN application.

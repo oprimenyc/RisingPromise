@@ -2,7 +2,7 @@ import { drizzle as drizzleNeon, type NeonDatabase } from "drizzle-orm/neon-serv
 import { Pool as NeonPool, neonConfig } from "@neondatabase/serverless";
 import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
 import pg from "pg";
-import * as schema from "@shared/schema";
+import * as schema from "../shared/schema";
 import ws from "ws";
 
 // Configure Neon to use the ws library for WebSocket connections

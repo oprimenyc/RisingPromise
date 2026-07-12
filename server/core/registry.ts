@@ -4,7 +4,7 @@
  * executed probe, persisted with evidence and timestamp.
  */
 import { db } from "../db";
-import { capabilities, features } from "@shared/schema";
+import { capabilities, features } from "../../shared/schema";
 import { providers, type ProbeResult } from "../providers";
 import { queueStats } from "./events";
 import { sql } from "drizzle-orm";

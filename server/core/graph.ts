@@ -4,7 +4,7 @@
  * query output (restricted nodes are excluded from non-admin reads).
  */
 import { db } from "../db";
-import { graphNodes, graphEdges, programs, type DomainEvent } from "@shared/schema";
+import { graphNodes, graphEdges, programs, type DomainEvent } from "../../shared/schema";
 import { and, eq, or, ne } from "drizzle-orm";
 import { registerConsumer } from "./events";
 
@@ -61,6 +61,19 @@ async function project(event: DomainEvent): Promise<void> {
       const person = await ensureNode("person", p.personId, p.email ?? p.personId, "restricted");
       const program = await ensureNode("program", p.programSlug ?? "workforce", p.programSlug ?? "workforce", "public");
       await ensureEdge(person, program, "PARTICIPATES_IN", { role: "student" });
+      if (p.courseId) {
+        const course = await ensureNode("course", p.courseId, p.courseId, "internal");
+        await ensureEdge(person, course, "ENROLLED_IN", { enrollmentId: p.enrollmentId });
+        await ensureEdge(course, program, "PART_OF");
+      }
+      break;
+    }
+    case "CourseCompleted": {
+      const person = await ensureNode("person", p.personId, p.email ?? p.personId, "restricted");
+      if (p.courseId) {
+        const course = await ensureNode("course", p.courseId, p.courseId, "internal");
+        await ensureEdge(person, course, "COMPLETED", { enrollmentId: p.enrollmentId, completionDate: p.completionDate });
+      }
       break;
     }
     default:

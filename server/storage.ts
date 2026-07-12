@@ -7,8 +7,8 @@ import type {
   Donation,
   InsertRaffleEntry,
   RaffleEntry,
-} from "@shared/schema";
-import { newsletterSignups, programApplications, donations, raffleEntries } from "@shared/schema";
+} from "../shared/schema";
+import { newsletterSignups, programApplications, donations, raffleEntries } from "../shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 

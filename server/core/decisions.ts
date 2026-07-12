@@ -3,7 +3,7 @@
  * (RP_DECISION_LEDGER.md D-001..D-008) so the ledger is complete from day one.
  */
 import { db } from "../db";
-import { decisions } from "@shared/schema";
+import { decisions } from "../../shared/schema";
 import { desc } from "drizzle-orm";
 import { publishEvent } from "./events";
 

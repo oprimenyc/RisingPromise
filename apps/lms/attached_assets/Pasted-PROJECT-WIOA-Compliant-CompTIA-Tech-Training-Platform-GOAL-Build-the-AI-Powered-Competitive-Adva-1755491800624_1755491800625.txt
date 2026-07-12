@@ -1,0 +1,27 @@
+PROJECT: WIOA-Compliant CompTIA Tech+ Training Platform
+GOAL: Build the AI-Powered Competitive Advantage Features
+TECHNOLOGY: MERN Stack (integrate with existing components)
+DESIGN: Consistent with the patriotic professional theme.
+
+COMPONENT 1: AI Chatbot (Student-Facing)
+- **Functionality:** Integrate an AI chatbot into the student dashboard. This chatbot's primary purpose is to act as a teaching assistant for your CompTIA Tech+ students.
+- **Integration:** Use the OpenAI API (specify a GPT model, such as gemini-2.5-flash-preview-05-20). The chatbot should be able to answer questions about the CompTIA Tech+ curriculum and provide study tips.
+- **UI:** The chatbot should be a non-intrusive widget on the student dashboard, accessible from any course page.
+- **Behavioral Guidelines:**
+    - **Personality:** The bot should have a firm, knowledgeable, and encouraging tone. It should be professional but friendly, like a supportive tutor or mentor.
+    - **Boundaries:** The bot should only answer questions related to the CompTIA Tech+ curriculum. It should not engage in personal conversation or provide financial advice.
+    - **Response Format:** Answers should be clear, concise, and easy to understand.
+- **Knowledge Base:**
+    - **Curriculum:** The bot's core knowledge should be pre-trained or fine-tuned on the CompTIA Tech+ (FC0-U71) exam objectives.
+    - **Troubleshooting:** The bot should be able to provide basic troubleshooting steps for common technical issues.
+    - **Study Strategies:** The bot should be able to offer effective study techniques and exam preparation tips.
+- **Escalation Path:**
+    - **Functionality:** If the bot cannot answer a question or if the student's query requires human intervention (e.g., payment issues, personal crises, enrollment problems), it should provide a clear message.
+    - **Message:** The message should say something like, "I cannot assist with this specific request. I will escalate this to a human administrator who will contact you shortly."
+
+COMPONENT 2: AI Resume Builder
+- **Functionality:** Create a dedicated "Resume Builder" page for students. This page should use AI to generate a professional, ATS-optimized resume based on user inputs.
+- **Input Fields:** The user must be able to input their name, contact info, and previous work experience. The system should automatically pull their CompTIA certification from their user data.
+- **Output:** The AI should generate an ATS-optimized resume in a format that can be downloaded as a PDF.
+
+**INSTRUCTIONS:** Ensure the AI features are designed for a premium user experience and are a key part of your value proposition to workforce boards. All API calls must be handled securely on the backend. This component is crucial for justifying the $8,500 per-student funding.

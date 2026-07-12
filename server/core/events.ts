@@ -5,7 +5,7 @@
  * Failures are recorded on the row (attempts, lastError) — never swallowed.
  */
 import { db } from "../db";
-import { domainEvents, type DomainEvent } from "@shared/schema";
+import { domainEvents, type DomainEvent } from "../../shared/schema";
 import { isNull, asc, eq } from "drizzle-orm";
 
 export type EventType =

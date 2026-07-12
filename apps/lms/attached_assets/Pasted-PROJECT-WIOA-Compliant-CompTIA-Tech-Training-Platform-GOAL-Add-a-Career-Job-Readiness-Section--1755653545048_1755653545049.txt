@@ -1,0 +1,23 @@
+PROJECT: WIOA-Compliant CompTIA Tech+ Training Platform
+GOAL: Add a Career & Job Readiness Section to the Student Dashboard and Ensure All Links are Active
+TECHNOLOGY: MERN Stack (integrate with existing components)
+DESIGN: Consistent with the patriotic professional theme.
+
+COMPONENT 1: Job Readiness Dashboard Section
+- **Functionality:** Create a new, visually distinct section on the student's main dashboard. This section will contain resources and tools to help students prepare for the job market.
+- **Title:** The section should be clearly titled "Career Success Hub."
+- **Content:** The section should display the following interactive cards or links in a clean, professional grid layout, **arranged in a logical order for a student's journey**:
+    - **Card 1: "AI in the Modern Workplace":** A link to a new internal page titled "AI in the Modern Workplace." This page should contain a brief course on how to leverage AI for personal and professional growth, including an introduction to common AI tools and concepts used in the IT industry.
+    - **Card 2: "AI-Powered Resume Optimization":** A link to the AI Resume Builder tool. This ties the new content to your existing premium features.
+    - **Card 3: "Strategic Job Search":** A link to a new internal page titled "Strategic Job Search." This page should contain a series of articles and guides on topics like networking, finding jobs online, and using job boards.
+    - **Card 4: "Interview Mastery":** A link to a new internal mini-course page titled "Interview Mastery." This page should contain a simple mini-course with 3-5 short videos on how to prepare for a technical interview, covering common question types and strategies. **The content should include but not solely focus on the STAR method.**
+- **Backend:** Create new routes and pages to serve the content for the articles and the interview prep course. The content should be simple and served as static pages or markdown files.
+
+COMPONENT 2: Ensure All Links are Active and Correct
+- **Functionality:** Review the entire application to ensure every link, button, and navigation item is functional and leads to its respective page.
+- **Key Actions:**
+    - For the new "Strategic Job Search," "Interview Mastery," and "AI in the Modern Workplace," create placeholder pages with dummy content and a clean layout.
+    - Verify that all existing links (e.g., login, dashboard, course viewer) are active and correctly routed.
+    - Ensure all buttons (e.g., "Get Started," "Start Now," "Start Chat") are correctly linked to their respective actions.
+
+**INSTRUCTIONS:** Ensure this new component is professionally integrated into the existing student dashboard. It should look like a core part of the platform, not an afterthought. This feature will provide immense value to both students and funding organizations, who prioritize employment outcomes.

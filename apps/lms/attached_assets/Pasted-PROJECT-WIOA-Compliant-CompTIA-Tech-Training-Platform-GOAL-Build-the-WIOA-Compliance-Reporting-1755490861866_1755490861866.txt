@@ -1,0 +1,29 @@
+PROJECT: WIOA-Compliant CompTIA Tech+ Training Platform
+GOAL: Build the WIOA Compliance & Reporting Module
+TECHNOLOGY: MERN Stack (integrate with existing components)
+DESIGN: Consistent with the patriotic professional theme (do not add new CSS).
+
+COMPONENT 1: WIOA Data Collection
+- **Functionality:** The system must track and store specific data points for each enrolled student to meet WIOA reporting requirements.
+- **Data Points to Capture:**
+    - `enrollmentDate`
+    - `completionDate`
+    - `totalHoursCompleted`
+    - `employmentStatusAfterCompletion`
+    - `studentId` (from existing users collection)
+    - `courseId` (from existing courses collection)
+- **Data Source:** This data should be collected and stored in a new `enrollments` collection in the MongoDB database, or as part of the existing users collection if that's how the first prompt structured it.
+
+COMPONENT 2: Admin Reporting Dashboard
+- **Functionality:** Create a new, protected route for the admin dashboard. This dashboard must show a table of all students. Each row should display the WIOA data points (`name`, `enrollmentDate`, `completionDate`, `totalHoursCompleted`, `employmentStatusAfterCompletion`).
+- **Features:**
+    - Include filters for `completionDate` and `employmentStatus`.
+    - The dashboard should clearly show the status of each student (e.g., "Enrolled," "Completed," "Employed").
+- **Backend:** Implement a secure API route for administrators to fetch all WIOA data.
+
+COMPONENT 3: Automated Reporting
+- **Functionality:** The admin dashboard must have a single button, labeled "Generate WIOA Report". When clicked, this should compile a clean, standardized CSV file with the required data fields.
+- **CSV Fields:** `StudentName`, `StudentEmail`, `EnrollmentDate`, `CompletionDate`, `TotalHours`, `EmploymentStatus`.
+- **Backend:** The backend route should handle the data compilation and conversion to a CSV format.
+
+**INSTRUCTIONS:** Ensure all data is saved securely to the MongoDB database. This module is the most critical part of the platform's revenue model, as it is required for government reporting and getting paid. Build this component cleanly and ensure it integrates seamlessly with the existing user and course data.

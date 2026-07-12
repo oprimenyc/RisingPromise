@@ -1,0 +1,62 @@
+PROJECT: Complete WIOA-Compliant CompTIA Tech+ Training Platform
+GOAL: Build a high-converting, government-grade website for both WIOA-funded and private-pay students.
+TECHNOLOGY: MERN Stack (MongoDB, Express, React, Node.js).
+DESIGN: A patriotic professional theme using a refined color palette. The aesthetic should be modern, clean, and trustworthy, avoiding any overtly political symbols or messaging.
+
+***
+
+### **Phase 1: Brand, Domain, and Homepage**
+
+**BRANDING:**
+- **Name:** Veridian Tech
+- **Domain:** veridiantech.com
+- **Logo:** A simple, modern logo in the patriotic color scheme.
+- **Hero Section:**
+    - **Headline:** "Secure Your American Future in Tech.
+    - **Subheadline:** "Our government-certified platform provides the training, tools, and support you need to land a high-paying job in tech."
+    - **Design:** Add a subtle animated background (e.g., a soft, animated grid or a gentle glowing effect) to make the hero section look premium.
+
+**HOMEPAGE SECTIONS:**
+- **Section 1: The "Why":** A compelling section on the value proposition of the platform.
+- **Section 2: The "How":** A section highlighting unique selling points (AI tools, comprehensive curriculum, and career support).
+- **Section 3: The "What":** A final call-to-action section that funnels users to either the "Get Started" page (for private-pay clients) or the "Funding & Eligibility" page (for WIOA clients).
+
+***
+
+### **Phase 2: Core Platform & Dashboard**
+
+**DATABASE SCHEMA (MongoDB Collections):**
+- **users:** { _id, name, email, password, role ('student', 'admin'), wioaEligibilityStatus, fundingType ('WIOA', 'Private'), progress: { courseId: { lessonProgress: 'float' } }, etc. }
+- **courses:** { _id, title, description, lessons: [ { title, videoUrl, quiz } ], etc. }
+- **enrollments:** { _id, userId, courseId, wioaReportData: { enrollmentDate, completionDate, totalHoursCompleted, employmentStatusAfterCompletion } }
+- **transactions:** { _id, userId, amount, date, status, etc. }
+
+**USER DASHBOARD:**
+- **Title:** "Your Professional Development Dashboard."
+- **Content:**
+    - A "Program Status" card: Personalized based on funding type (`WIOA` or `Private`).
+    - The "Career Success Hub" module (as previously defined).
+    - A "Training Progress Overview" module with study hours and modules completed.
+- **AI Tools:** AI Study Assistant and AI Resume Builder tools will be accessible from the dashboard.
+
+**ADMIN PANEL:**
+- **Protected URL:** Only accessible by users with an 'admin' role.
+- **WIOA Compliance Dashboard:** Shows student progress and compliance data.
+- **Bulk Operations:** Tools to import users, enroll them, and perform mass communication.
+- **Financial Reporting:** A dashboard to view all transactions and revenue.
+
+***
+
+### **Phase 3: All Modules & Features**
+
+**Modules to Build:**
+- **Core Foundation:** User authentication, course viewer, and progress tracking.
+- **WIOA Compliance:** Automated data collection and reporting.
+- **AI Features:** AI Chatbot (with defined behavior) and AI Resume Builder.
+- **Revenue & Community:** Stripe payments (one-time & recurring), and a public course forum.
+- **Job Readiness:** The "Career Success Hub" with its four sub-modules.
+
+**Instructions:**
+- Ensure all links are active and functional.
+- Implement robust error handling and security throughout the application.
+- The final output should be a complete, well-documented, and production-ready MERN application.

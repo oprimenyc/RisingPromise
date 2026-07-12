@@ -1,0 +1,157 @@
+// MobileDeviceCategoryQuiz.jsx
+import React, { useState } from 'react';
+
+const MobileDeviceCategoryQuiz = () => {
+  const [devices, setDevices] = useState([
+    { id: 'laptop', content: 'Dell Latitude Business Laptop' },
+    { id: 'tablet', content: 'iPad Pro with Keyboard' },
+    { id: 'smartphone', content: 'Samsung Galaxy S23' },
+    { id: 'wearable', content: 'Apple Watch Series 9' },
+  ]);
+
+  const [categories, setCategories] = useState([
+    { id: 'cat-1', name: 'Full portable computer with keyboard', correctId: 'laptop' },
+    { id: 'cat-2', name: 'Touch-based, bridges phone and laptop', correctId: 'tablet' },
+    { id: 'cat-3', name: 'Pocket computer that makes calls', correctId: 'smartphone' },
+    { id: 'cat-4', name: 'Syncs with phone, worn on body', correctId: 'wearable' },
+  ]);
+
+  const [answers, setAnswers] = useState(
+    categories.map(cat => ({ id: cat.id, content: '', matchedDevice: null }))
+  );
+  
+  const [isCorrect, setIsCorrect] = useState(null);
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [attempts, setAttempts] = useState(0);
+
+  const handleDragStart = (e, item) => {
+    setDraggedItem(item);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetCategoryId) => {
+    e.preventDefault();
+    if (!draggedItem) return;
+
+    const newAnswers = [...answers];
+    const targetIndex = newAnswers.findIndex(a => a.id === targetCategoryId);
+    
+    if (newAnswers[targetIndex].matchedDevice) {
+      setDevices(prev => [...prev, newAnswers[targetIndex].matchedDevice]);
+    }
+    
+    newAnswers[targetIndex] = {
+      ...newAnswers[targetIndex],
+      content: draggedItem.content,
+      matchedDevice: draggedItem,
+    };
+    setAnswers(newAnswers);
+
+    setDevices(prev => prev.filter(d => d.id !== draggedItem.id));
+    setDraggedItem(null);
+  };
+
+  const checkAnswer = () => {
+    setAttempts(prev => prev + 1);
+    const isAllCorrect = answers.every(answer => {
+      const correspondingCategory = categories.find(c => c.id === answer.id);
+      return correspondingCategory && correspondingCategory.correctId === answer.matchedDevice?.id;
+    });
+    setIsCorrect(isAllCorrect);
+    
+    // Log for WIOA tracking
+    if (isAllCorrect) {
+      console.log(`Quiz completed successfully in ${attempts + 1} attempts`);
+    }
+  };
+
+  const resetQuiz = () => {
+    setDevices([
+      { id: 'laptop', content: 'Dell Latitude Business Laptop' },
+      { id: 'tablet', content: 'iPad Pro with Keyboard' },
+      { id: 'smartphone', content: 'Samsung Galaxy S23' },
+      { id: 'wearable', content: 'Apple Watch Series 9' },
+    ]);
+    setAnswers(categories.map(cat => ({ id: cat.id, content: '', matchedDevice: null })));
+    setIsCorrect(null);
+  };
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md max-w-3xl mx-auto font-sans">
+      <h3 className="text-lg font-semibold mb-4 text-gray-800">Match each device to its category description</h3>
+      <div className="flex justify-between items-start gap-4">
+        <div className="w-1/2">
+          <h4 className="font-medium text-gray-700 mb-2">Devices</h4>
+          <div className="bg-gray-50 p-4 rounded-lg min-h-[200px] border border-gray-200">
+            {devices.map(item => (
+              <div
+                key={item.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, item)}
+                className="p-3 m-2 rounded-md bg-white border-2 border-gray-300 shadow-sm cursor-grab hover:border-blue-400 hover:shadow-md transition-all"
+              >
+                {item.content}
+              </div>
+            ))}
+            {devices.length === 0 && (
+              <p className="text-gray-400 text-center">All devices placed!</p>
+            )}
+          </div>
+        </div>
+        <div className="w-1/2">
+          <h4 className="font-medium text-gray-700 mb-2">Categories</h4>
+          {categories.map((category, index) => (
+            <div
+              key={category.id}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, category.id)}
+              className="bg-gray-50 p-3 rounded-lg min-h-[60px] mb-3 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors"
+            >
+              <p className="text-sm font-medium text-gray-600 mb-2">{category.name}</p>
+              <div className="min-h-[36px] bg-white rounded-md flex items-center p-2 border border-gray-300">
+                {answers[index].content || <span className="text-gray-400 italic">Drop device here</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-6 flex justify-between items-center">
+        <div className="flex gap-3">
+          <button
+            onClick={checkAnswer}
+            disabled={devices.length > 0}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            Check Answer
+          </button>
+          <button
+            onClick={resetQuiz}
+            className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+        {isCorrect !== null && (
+          <div>
+            <p className={`font-semibold text-lg ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+              {isCorrect ? '✓ Correct! Well done!' : '✗ Not quite. Try again!'}
+            </p>
+            {!isCorrect && (
+              <p className="text-sm text-gray-600 mt-1">
+                Hint: Think about the primary purpose of each device
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="mt-2 text-xs text-gray-500">
+        Attempts: {attempts}
+      </div>
+    </div>
+  );
+};
+
+export default MobileDeviceCategoryQuiz;

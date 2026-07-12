@@ -1,8 +1,11 @@
 {
-  "name": "rest-express",
+  "name": "rp-platform",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
+  "workspaces": [
+    "apps/*"
+  ],
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
