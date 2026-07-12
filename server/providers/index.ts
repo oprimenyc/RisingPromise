@@ -242,6 +242,15 @@ export const providers: ProviderDef[] = [
         headers: { Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}` },
       }),
   }),
+  keyedHttpProvider({
+    name: "openai",
+    capabilities: ["ai.chat"],
+    requiredConfig: ["OPENAI_API_KEY"],
+    request: () =>
+      fetch("https://api.openai.com/v1/models", {
+        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+      }),
+  }),
   {
     name: "google",
     capabilities: ["identity.oidc", "storage.files", "docs.generate", "calendar.events", "sheets.export"],

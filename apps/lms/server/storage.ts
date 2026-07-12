@@ -29,6 +29,7 @@ import {
 import { db } from "./db";
 import { eq, and, sum, count, desc } from "drizzle-orm";
 import { publishEvent } from "../../../server/core/events";
+import { ai } from "../../../server/providers/ai";
 import { ensurePerson, linkIdentity, ensureParticipation } from "../../../server/core/identity";
 
 // LMS courses currently all belong to the CompTIA track under the Workforce
@@ -417,13 +418,13 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  // AI Operations
+  // AI Operations — via the ai.chat capability (D8: no vendor SDK here)
   async getChatbotResponse(message: string, userId: string): Promise<string> {
     try {
-      const { default: OpenAI } = await import('openai');
-      const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
-      });
+      if (!ai) {
+        console.warn(`[ai] chat unavailable (ai capability unconfigured) user=${userId}`);
+        return "AI assistance is not configured on this server. Please contact support.";
+      }
 
       // System prompt for CompTIA Tech+ teaching assistant
       const systemPrompt = `You are an AI teaching assistant for CompTIA Tech+ (FC0-U71) certification training. Your role is to:
@@ -442,17 +443,7 @@ Guidelines:
 
 CompTIA Tech+ (FC0-U71) covers: IT concepts, infrastructure, applications, software development, database fundamentals, and security.`;
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message }
-        ],
-        max_tokens: 500,
-        temperature: 0.7
-      });
-
-      return completion.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try asking your question again.";
+      return await ai.chat({ system: systemPrompt, user: message, tier: "fast", maxTokens: 500, temperature: 0.7 });
     } catch (error) {
       console.error("Error getting chatbot response:", error);
       return "I'm currently experiencing technical difficulties. Please try again in a moment or contact support if the problem persists.";
@@ -461,10 +452,9 @@ CompTIA Tech+ (FC0-U71) covers: IT concepts, infrastructure, applications, softw
 
   async generateResume(resumeData: any, userId: string): Promise<any> {
     try {
-      const { default: OpenAI } = await import('openai');
-      const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
-      });
+      if (!ai) {
+        throw new Error("ai capability unconfigured (OPENAI_API_KEY missing) — resume generation unavailable");
+      }
 
       const { personalInfo, workExperience, skills, certifications } = resumeData;
 
@@ -497,17 +487,13 @@ Requirements:
 
 Return only the formatted HTML resume.`;
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: "You are a professional resume writer specializing in IT careers and ATS optimization. Create clean, professional HTML resumes." },
-          { role: "user", content: prompt }
-        ],
-        max_tokens: 2000,
-        temperature: 0.3
+      const resumeHTML = await ai.chat({
+        system: "You are a professional resume writer specializing in IT careers and ATS optimization. Create clean, professional HTML resumes.",
+        user: prompt,
+        tier: "quality",
+        maxTokens: 2000,
+        temperature: 0.3,
       });
-
-      const resumeHTML = completion.choices[0].message.content || "<p>Error generating resume</p>";
 
       // Generate ATS keywords and improvement suggestions
       const keywordPrompt = `Based on this resume content, provide:
@@ -518,19 +504,17 @@ Resume: ${resumeHTML}
 
 Format response as JSON: {"keywords": ["keyword1", "keyword2", ...], "suggestions": ["suggestion1", "suggestion2", ...]}`;
 
-      const keywordCompletion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are an ATS optimization expert. Analyze resumes and provide keyword and improvement feedback in JSON format." },
-          { role: "user", content: keywordPrompt }
-        ],
-        max_tokens: 500,
-        temperature: 0.1
+      const keywordContent = await ai.chat({
+        system: "You are an ATS optimization expert. Analyze resumes and provide keyword and improvement feedback in JSON format.",
+        user: keywordPrompt,
+        tier: "fast",
+        maxTokens: 500,
+        temperature: 0.1,
       });
 
       let analysis;
       try {
-        analysis = JSON.parse(keywordCompletion.choices[0].message.content || '{"keywords": [], "suggestions": []}');
+        analysis = JSON.parse(keywordContent);
       } catch {
         analysis = {
           keywords: ["IT Support", "Technical Support", "CompTIA", "Troubleshooting", "Network Administration"],
