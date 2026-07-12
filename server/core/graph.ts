@@ -76,6 +76,61 @@ async function project(event: DomainEvent): Promise<void> {
       }
       break;
     }
+    case "VolunteerCreated": {
+      const person = await ensureNode("person", p.personId, p.email ?? p.personId, "restricted");
+      const program = await ensureNode("program", p.programSlug ?? "workforce", p.programSlug ?? "workforce", "public");
+      await ensureEdge(person, program, "VOLUNTEERS_FOR");
+      break;
+    }
+    case "SponsorCreated": {
+      const org = await ensureNode("organization", p.sponsorId ?? p.name, p.name ?? String(p.sponsorId), "internal");
+      const program = await ensureNode("program", p.programSlug ?? "workforce", p.programSlug ?? "workforce", "public");
+      await ensureEdge(org, program, "SPONSORS");
+      break;
+    }
+    case "GrantSubmitted": {
+      const grant = await ensureNode("grant", String(p.opportunityId ?? p.subjectRef), p.title ?? String(p.opportunityId), "internal");
+      const org = await ensureNode("organization", "rising-promise", "Rising Promise", "public");
+      await ensureEdge(org, grant, "SUBMITTED", { at: event.createdAt });
+      break;
+    }
+    case "BackgroundCheckCompleted": {
+      // Screening results are restricted: status + reference only, never content.
+      const person = await ensureNode("person", p.personId, p.email ?? p.personId, "restricted");
+      const screening = await ensureNode("document", `background-check:${p.referenceId}`, "Background check (reference)", "restricted");
+      await ensureEdge(person, screening, "SCREENED_BY", { status: p.status });
+      break;
+    }
+    case "PersonMerged": {
+      const survivor = await ensureNode("person", p.survivorId, p.survivorId, "restricted");
+      const duplicate = await ensureNode("person", p.duplicateId, p.duplicateId, "restricted");
+      await ensureEdge(duplicate, survivor, "MERGED_INTO", { reason: p.reason });
+      break;
+    }
+    case "WorkflowStarted": {
+      const wf = await ensureNode("workflow", `instance:${p.instanceId}`, `${p.workflowId}#${p.instanceId}`, "internal", { workflowId: p.workflowId, state: p.state });
+      if (p.personId) {
+        const person = await ensureNode("person", p.personId, p.personId, "restricted");
+        await ensureEdge(person, wf, "IN_WORKFLOW", { subjectRef: p.subjectRef });
+      }
+      break;
+    }
+    case "WorkflowTransitioned": {
+      await ensureNode("workflow", `instance:${p.instanceId}`, `${p.workflowId}#${p.instanceId}`, "internal", { workflowId: p.workflowId, state: p.to });
+      await db
+        .update(graphNodes)
+        .set({ props: { workflowId: p.workflowId, state: p.to, lastAction: p.action } })
+        .where(and(eq(graphNodes.kind, "workflow"), eq(graphNodes.refId, `instance:${p.instanceId}`)));
+      break;
+    }
+    case "DecisionRecorded": {
+      // Approvals/decisions are graph citizens so impact queries can trace
+      // why a change happened.
+      if (p.ledgerId) {
+        await ensureNode("decision", String(p.ledgerId), `${p.ledgerId}: ${String(p.decision).slice(0, 80)}`, "internal", { area: p.area });
+      }
+      break;
+    }
     default:
       break; // event types without projection rules are fine
   }
@@ -97,6 +152,42 @@ export async function projectPrograms(): Promise<void> {
       await ensureEdge(byName.get(prog.slug)!, byName.get(prog.parentSlug)!, "PART_OF");
     }
   }
+}
+
+/**
+ * Project platform structure: providers, capabilities (DEPENDS_ON provider),
+ * features (REQUIRES capability), policies (GOVERNS action groups). Runs at
+ * boot after verification so statuses are current. Structural — sourced from
+ * the registries, the same way programs are.
+ */
+export async function projectPlatform(): Promise<void> {
+  const { providers } = await import("../providers");
+  const { listPolicies } = await import("./policy");
+  const { capabilities: capsTable, features: featsTable } = await import("../../shared/schema");
+
+  const providerNodes = new Map<string, number>();
+  for (const p of providers) {
+    providerNodes.set(p.name, await ensureNode("provider", p.name, p.name, "public"));
+  }
+  const caps = await db.select().from(capsTable);
+  for (const cap of caps) {
+    const capNode = await ensureNode("capability", cap.name, cap.name, "public", { status: cap.status });
+    await db.update(graphNodes).set({ props: { status: cap.status, domain: cap.domain } }).where(and(eq(graphNodes.kind, "capability"), eq(graphNodes.refId, cap.name)));
+    const provider = providerNodes.get(cap.name);
+    if (provider && provider !== capNode) await ensureEdge(capNode, provider, "DEPENDS_ON");
+  }
+  const feats = await db.select().from(featsTable);
+  for (const f of feats) {
+    const featNode = await ensureNode("feature", f.name, f.name, "public", { healthy: f.healthy });
+    for (const cap of (f.requiredCapabilities as string[] | null) ?? []) {
+      const capNode = await ensureNode("capability", cap, cap, "public");
+      await ensureEdge(featNode, capNode, "REQUIRES");
+    }
+  }
+  for (const pol of listPolicies()) {
+    await ensureNode("policy", pol.id, `${pol.id}: ${pol.description.slice(0, 60)}`, "public", { version: pol.version, kind: pol.kind, actions: pol.actions });
+  }
+  console.log("[graph] platform structure projected (providers/capabilities/features/policies)");
 }
 
 /** Neighborhood query. Restricted nodes excluded unless includeRestricted. */

@@ -14,7 +14,7 @@ import { registerNotificationWorker, raiseTasksFromEvents, listNotifications, no
 import { ensurePerson, ensureParticipation, seedPrograms } from "./core/identity";
 import { seedDecisionLedger, recentDecisions } from "./core/decisions";
 import { runVerification, startVerificationSchedule } from "./core/registry";
-import { registerGraphProjector, projectPrograms, neighbors, graphStats } from "./core/graph";
+import { registerGraphProjector, projectPrograms, projectPlatform, neighbors, graphStats } from "./core/graph";
 import { registerAuthBroker } from "./core/authBroker";
 import { checkEligibility, listPolicies } from "./core/policy";
 import { registerJob, scheduleJob, jobStats } from "./core/jobs";
@@ -71,7 +71,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await scheduleJob("events.sweep", "* * * * *", "America/New_York", "every minute (recovery sweep)");
   })().catch((e) => console.error("[jobs] boot registration FAILED (in-process schedules still active):", e));
   startVerificationSchedule(); // in-process fallback keeps verification alive if jobs infra degrades
-  runVerification().catch((e) => console.error("[verify] boot verification error:", e));
+  runVerification()
+    .then(() => projectPlatform())
+    .catch((e) => console.error("[verify] boot verification/projection error:", e));
 
   // Internal exec bible — auth-gated (was publicly served from the static
   // build; moved to internal/ and placed behind Basic auth per M0)
