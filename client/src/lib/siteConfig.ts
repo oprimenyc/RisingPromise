@@ -39,7 +39,7 @@ export const siteConfig: SiteConfig = {
     name: "Rising Promise",
     tagline: "Everyone deserves a fighting chance. We're here to make sure they get it.",
     email: "info@risingpromise.org",
-    phone: "Coming Soon",
+    phone: "+1 (888) 981-4668",
     address: "Texas-Based. Serving Communities Nationwide.",
     nonprofitStatus: "501(c)(3) nonprofit | Registered in Texas | SAM.gov Registered",
   },

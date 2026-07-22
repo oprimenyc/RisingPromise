@@ -274,6 +274,23 @@ export default function About() {
         </div>
       </section>
 
+      {/* NONPROFIT VERIFICATION */}
+      <section className="section" style={{ background: '#f8f9fc', textAlign: 'center' }}>
+        <div className="section-inner" style={{ maxWidth: 640, margin: '0 auto' }}>
+          <span className="eyebrow">Organizational Verification</span>
+          <p style={{ fontSize: 15, color: '#4a5568', lineHeight: 1.9 }}>
+            Rising Promise is a 501(c)(3) nonprofit organization and the owner and operator of risingpromise.org.
+            <br />
+            EIN: 37-2202493
+            <br />
+            Official administrative email:{' '}
+            <a href="mailto:admin@risingpromise.org" style={{ color: '#c9a84c', fontWeight: 600 }}>
+              admin@risingpromise.org
+            </a>
+          </p>
+        </div>
+      </section>
+
       {/* VALUES */}
       <section className="section">
         <div className="section-inner">
