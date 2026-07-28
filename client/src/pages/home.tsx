@@ -924,9 +924,37 @@ export default function Home() {
             <div>
               <h4 className="font-sans font-semibold uppercase mb-4 text-white" style={{ fontSize: '0.75rem', letterSpacing: '0.08em' }}>Contact</h4>
               <div className="space-y-2 font-sans" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem' }}>
-                <p data-testid="text-footer-email">{siteConfig.organization.email}</p>
-                <p data-testid="text-footer-phone">{siteConfig.organization.phone}</p>
-                <p data-testid="text-footer-address">{siteConfig.organization.address}</p>
+                <p data-testid="text-footer-name">{siteConfig.organization.name}</p>
+                <p>
+                  <a
+                    href={`mailto:${siteConfig.organization.email}`}
+                    className="transition-colors hover:text-white"
+                    style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}
+                    data-testid="link-footer-email"
+                  >
+                    {siteConfig.organization.email}
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="tel:+18889814668"
+                    className="transition-colors hover:text-white"
+                    style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}
+                    data-testid="link-footer-phone"
+                  >
+                    {siteConfig.organization.phone}
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="https://risingpromise.org"
+                    className="transition-colors hover:text-white"
+                    style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}
+                    data-testid="link-footer-website"
+                  >
+                    {siteConfig.organization.address}
+                  </a>
+                </p>
               </div>
             </div>
             <div>
@@ -964,6 +992,18 @@ export default function Home() {
             </p>
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }} data-testid="text-footer-nonprofit">
               {siteConfig.organization.nonprofitStatus}
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginTop: '8px' }} data-testid="text-footer-ein">
+              Rising Promise is a 501(c)(3) nonprofit organization. EIN: 37-2202493
+            </p>
+            <p style={{ marginTop: '8px' }}>
+              <a
+                href="/organization-verification"
+                style={{ color: '#c9a84c', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none' }}
+                data-testid="link-footer-org-verification"
+              >
+                Organization Verification
+              </a>
             </p>
           </div>
         </div>

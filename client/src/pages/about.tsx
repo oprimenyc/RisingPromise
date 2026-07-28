@@ -279,7 +279,12 @@ export default function About() {
         <div className="section-inner" style={{ maxWidth: 640, margin: '0 auto' }}>
           <span className="eyebrow">Organizational Verification</span>
           <p style={{ fontSize: 15, color: '#4a5568', lineHeight: 1.9 }}>
-            Rising Promise is a 501(c)(3) nonprofit organization and the owner and operator of risingpromise.org.
+            Rising Promise
+            <br />
+            501(c)(3) nonprofit organization and the owner and operator of{' '}
+            <a href="https://risingpromise.org" style={{ color: '#c9a84c', fontWeight: 600 }}>
+              risingpromise.org
+            </a>
             <br />
             EIN: 37-2202493
             <br />
@@ -287,6 +292,16 @@ export default function About() {
             <a href="mailto:admin@risingpromise.org" style={{ color: '#c9a84c', fontWeight: 600 }}>
               admin@risingpromise.org
             </a>
+            <br />
+            Official phone:{' '}
+            <a href="tel:+18889814668" style={{ color: '#c9a84c', fontWeight: 600 }}>
+              +1 (888) 981-4668
+            </a>
+          </p>
+          <p style={{ marginTop: 20 }}>
+            <Link href="/organization-verification" style={{ color: '#c9a84c', fontWeight: 600, textDecoration: 'none', fontSize: 14 }}>
+              View full organization verification →
+            </Link>
           </p>
         </div>
       </section>

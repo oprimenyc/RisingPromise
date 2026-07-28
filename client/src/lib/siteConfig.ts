@@ -38,9 +38,9 @@ export const siteConfig: SiteConfig = {
   organization: {
     name: "Rising Promise",
     tagline: "Everyone deserves a fighting chance. We're here to make sure they get it.",
-    email: "info@risingpromise.org",
+    email: "admin@risingpromise.org",
     phone: "+1 (888) 981-4668",
-    address: "Texas-Based. Serving Communities Nationwide.",
+    address: "risingpromise.org",
     nonprofitStatus: "501(c)(3) nonprofit | Registered in Texas | SAM.gov Registered",
   },
 
@@ -214,7 +214,7 @@ export const siteConfig: SiteConfig = {
         {
           icon: "Handshake",
           text: "Partner With Us",
-          href: "mailto:info@risingpromise.org",
+          href: "mailto:admin@risingpromise.org",
           comingSoon: false,
         },
         {
