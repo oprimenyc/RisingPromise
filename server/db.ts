@@ -13,16 +13,18 @@ if (!process.env.DATABASE_URL) {
 }
 
 const url = new URL(process.env.DATABASE_URL);
-const isLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "::1";
+const isNeon = url.hostname.endsWith(".neon.tech");
 
-// Local development/runtime-verification uses node-postgres (Neon's driver
-// cannot reach a plain local Postgres); production keeps Neon. Logged at boot
-// so the runtime configuration is never ambiguous (D-005).
+// Only actual Neon endpoints speak Neon's websocket proxy protocol. Railway's
+// own Postgres addon (postgres.railway.internal) and local Postgres both use
+// plain TCP, so node-postgres is required there — using the Neon driver
+// against them fails every connection with ECONNREFUSED on the websocket
+// upgrade. Logged at boot so the runtime configuration is never ambiguous (D-005).
 type Db = NeonDatabase<typeof schema>;
 
 function createDb(): Db {
-  if (isLocal) {
-    console.log(`[db] driver=node-postgres host=${url.hostname} (local verification mode)`);
+  if (!isNeon) {
+    console.log(`[db] driver=node-postgres host=${url.hostname}`);
     const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
     return drizzlePg(pool, { schema }) as unknown as Db;
   }
